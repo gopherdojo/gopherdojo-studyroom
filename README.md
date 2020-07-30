@@ -7,6 +7,7 @@ connpass: https://gopherdojo.connpass.com/event/184604/
 
 1回目の課題を提出する場合は次のようにコードを書いて下さい。
 
+* このリポジトリをフォークしてください
 * ブランチ名を`kadai1-tenntenn`のようにする
 * `kadai1/tenntenn`のようにディレクトリを作る
 * READMEに説明や文章による課題の回答を書く
