@@ -1,7 +1,7 @@
-# ＃XX Gopher道場
-＃XX Gopher道場用のリポジトリです。
+# Open Gopher道場
+Open Gopher道場用のリポジトリです。
 
-connpass: https://gopherdojo.connpass.com/event/xxxxxx/
+connpass: https://gopherdojo.connpass.com/event/184604/
 
 ## 課題の提出方法
 
@@ -12,5 +12,8 @@ connpass: https://gopherdojo.connpass.com/event/xxxxxx/
 * READMEに説明や文章による課題の回答を書く
 * PRを送る
 
-※FBには時間がかかる可能性があります。
+## レビューについて
 
+* Slackの`#open`チャンネルでレビューを呼びかけてみてください。
+* PRは必ずレビューされる訳ではありません。
+* 他の人のPRも積極的にレビューをしてみましょう！
