@@ -1,7 +1,5 @@
-# Open Gopher道場
-Open Gopher道場用のリポジトリです。
-
-connpass: https://gopherdojo.connpass.com/event/184604/
+# Gopher道場 自習室
+Gopher道場 自習室用のリポジトリです。
 
 ## 課題の提出方法
 
@@ -15,6 +13,6 @@ connpass: https://gopherdojo.connpass.com/event/184604/
 
 ## レビューについて
 
-* Slackの`#open`チャンネルでレビューを呼びかけてみてください。
+* Slackの`#studyroom`チャンネルでレビューを呼びかけてみてください。
 * PRは必ずレビューされる訳ではありません。
 * 他の人のPRも積極的にレビューをしてみましょう！
