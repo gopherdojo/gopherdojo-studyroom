@@ -1,0 +1,31 @@
+name: 'static analysis checker'
+author: 'task4233'
+description: 'execute static analysis'
+inputs:
+  run:
+    description: 'execute commands. [fmt/imports/lint/gsc/sec/staticcheck]
+'
+    required: true
+  working-dir:
+    description: 'package working directory.'
+    default: 'nn'
+    required: false
+  send-comment:
+    description: 'if true, send comment to pull request'
+    default: true
+    required: false
+  repo-token:
+    description: "GitHub token."
+    default: ""
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.run }}
+    - ${{ inputs.working-dir }}
+    - ${{ inputs.send-comment }}
+    - ${{ inputs.repo-token }}
+branding:
+  icon: 'check-circle'
+  color: 'green'

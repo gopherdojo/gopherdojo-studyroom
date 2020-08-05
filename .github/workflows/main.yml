@@ -1,0 +1,72 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+name: Static check with PR and Add comment each error
+
+jobs:
+  fmt:
+    name: gofmt
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run gofmt
+      uses: ./.github/actions/static-check-action
+      with:
+        run: fmt
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  imports:
+    name: goimports
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run goimports
+      uses: ./.github/actions/static-check-action
+      with:
+        run: imports
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+  
+  lint:
+    name: golint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run golint
+      uses: ./.github/actions/static-check-action
+      with:
+        run: lint
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  gsc:
+    name: gsc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run gsc
+      uses: ./.github/actions/static-check-action
+      with:
+        run: gsc
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        
+  sec:
+    name: sec
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run gosec
+      uses: ./.github/actions/static-check-action
+      with:
+        run: sec
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        
+  staticcheck:
+    name: staticcheck
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run staticcheck
+      uses: ./.github/actions/static-check-action
+      with:
+        run: staticcheck
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
