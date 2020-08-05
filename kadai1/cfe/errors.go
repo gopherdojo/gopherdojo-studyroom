@@ -1,4 +1,4 @@
-package cfe
+package eimg
 
 // Default errors
 var (
@@ -12,6 +12,7 @@ var (
         Description: "This path is invalid",
         Hint: "Check if the path exists",
     }
+    
 )
 
 // Error is a representation of errors returned from this package.
