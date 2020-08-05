@@ -8,7 +8,7 @@ inputs:
     required: true
   working-dir:
     description: 'package working directory.'
-    default: 'nn'
+    default: 'kadai1/eimg'
     required: false
   send-comment:
     description: 'if true, send comment to pull request'

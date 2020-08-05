@@ -15,7 +15,7 @@ SUCCESS=0
 
 # if not set, assign default value
 if [ "$2" = "" ]; then
-    WORKING_DIR="nn"
+    WORKING_DIR="kadai1/eimg"
 fi
 if [ "$3" = "" ]; then
     SEND_COMMENT="true"
