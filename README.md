@@ -1,5 +1,5 @@
 # Gopher道場 自習室
-Gopher道場 自習室用のリポジトリです。
+[Gopher道場 自習室](https://gopherdojo.org/studyroom)用のリポジトリです。
 
 ## 課題の提出方法
 
