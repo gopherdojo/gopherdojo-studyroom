@@ -16,14 +16,14 @@ package eimg
 
 import (
 	"flag"
+	"fmt"
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-    "image"
-    "fmt"
-    "image/png"
-    "image/jpeg"
-    "image/gif"
 )
 
 const (
@@ -104,10 +104,10 @@ func (eimg *Eimg) ConvertExtension() error {
 		}
 
 		if extension == eimg.From {
-            err := eimg.EncodeFile(filePath)
-            if err != nil {
-                return err
-            }
+			err := eimg.EncodeFile(filePath)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -115,56 +115,68 @@ func (eimg *Eimg) ConvertExtension() error {
 
 // EncodeFile encodes file predefined arguments
 func (eimg *Eimg) EncodeFile(filePath string) error {
-    file, err := os.Open(filePath)
-    if err != nil {
-        return ErrInvalidPath.WithDebug(err.Error())
-    }
-    defer file.Close()
+	file, err := os.Open(filepath.Clean(filePath))
+	if err != nil {
+		return ErrInvalidPath.WithDebug(err.Error())
+	}
 
-    img, format, err := image.Decode(file)
-    if err != nil {
-        return ErrFailedConvert.WithDebug(err.Error())
-    }
-    fmt.Println(format)
+	// ref: https://www.yunabe.jp/docs/golang_pitfall.html
+	defer func() {
+		cerr := file.Close()
+		if cerr == nil {
+			return
+		}
+	}()
 
-    out, err := os.Create(filePath)
-    if err != nil {
-        return ErrInvalidFormat.WithDebug(err.Error())
-    }
-    defer out.Close()
+	img, format, err := image.Decode(file)
+	if err != nil {
+		return ErrFailedConvert.WithDebug(err.Error())
+	}
+	fmt.Println(format)
 
-    switch eimg.To {
-    case "png":
-        err := png.Encode(out, img)
-        if err != nil {
-            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is png.")
-        }
-    case "jpg", "jpeg":
-        err := jpeg.Encode(out, img, nil)
-        if err != nil {
-            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is jpeg/jpg.")
-        }
-    case "gif":
-        err = gif.Encode(out, img, nil)
-        if err != nil {
-            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
-        }
-    default:
-        // if other extensions which represented above,
-        // just convert the extension
-        fileName := filepath.Base(filePath) + filepath.Ext(filePath)
-        // fileName must meet len(fileName) > len(eimg.From)
-        if len(fileName) <= len(eimg.From) {
-            return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
-        }
-        
-        newFilePath := filePath[:len(filePath)-len(eimg.From)] + eimg.To
-        if err := os.Rename(filePath, newFilePath); err != nil {
-            return ErrFailedConvert.WithDebug(err.Error())
-        }
-    }
+	out, err := os.Create(filePath)
+	if err != nil {
+		return ErrInvalidFormat.WithDebug(err.Error())
+	}
+	defer func() {
+		cerr := out.Close()
+		if cerr == nil {
+			return
+		}
+	}()
 
-    return nil
+	switch eimg.To {
+	case "png":
+		err := png.Encode(out, img)
+		if err != nil {
+			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is png.")
+		}
+	case "jpg", "jpeg":
+		err := jpeg.Encode(out, img, nil)
+		if err != nil {
+			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is jpeg/jpg.")
+		}
+	case "gif":
+		err = gif.Encode(out, img, nil)
+		if err != nil {
+			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
+		}
+	default:
+		// if other extensions which represented above,
+		// just convert the extension
+		fileName := filepath.Base(filePath) + filepath.Ext(filePath)
+		// fileName must meet len(fileName) > len(eimg.From)
+		if len(fileName) <= len(eimg.From) {
+			return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+		}
+
+		newFilePath := filePath[:len(filePath)-len(eimg.From)] + eimg.To
+		if err := os.Rename(filePath, newFilePath); err != nil {
+			return ErrFailedConvert.WithDebug(err.Error())
+		}
+	}
+
+	return nil
 }
 
 // GetFilePathsRec gets file list recursively
