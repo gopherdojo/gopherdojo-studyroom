@@ -12,6 +12,16 @@ var (
 		Description: "This path is invalid",
 		Hint:        "Check if the path exists",
 	}
+    ErrInvalidFormat = &Error{
+        Name: "invalid format(s)",
+        Description: "The formats might be invalid",
+        Hint: "Check the specified formats",
+    }
+    ErrFailedConvert = &Error{
+        Name: "failed to convert image object",
+        Description: "Failed to Convert image object",
+        Hint: "Check the specified formats",
+    }
 )
 
 // Error is a representation of errors returned from this package.

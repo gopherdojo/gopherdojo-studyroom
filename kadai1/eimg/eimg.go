@@ -19,6 +19,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+    "image"
+    "fmt"
+    "image/png"
+    "image/jpeg"
+    "image/gif"
 )
 
 const (
@@ -98,14 +103,68 @@ func (eimg *Eimg) ConvertExtension() error {
 			continue
 		}
 
-		// # TODO
-		// # impelemnt encoding
-		// # ref: https://rennnosukesann.hatenablog.com/entry/2019/08/14/175308
 		if extension == eimg.From {
-            
+            err := eimg.EncodeFile(filePath)
+            if err != nil {
+                return err
+            }
 		}
 	}
 	return nil
+}
+
+// EncodeFile encodes file predefined arguments
+func (eimg *Eimg) EncodeFile(filePath string) error {
+    file, err := os.Open(filePath)
+    if err != nil {
+        return ErrInvalidPath.WithDebug(err.Error())
+    }
+    defer file.Close()
+
+    img, format, err := image.Decode(file)
+    if err != nil {
+        return ErrFailedConvert.WithDebug(err.Error())
+    }
+    fmt.Println(format)
+
+    out, err := os.Create(filePath)
+    if err != nil {
+        return ErrInvalidFormat.WithDebug(err.Error())
+    }
+    defer out.Close()
+
+    switch eimg.To {
+    case "png":
+        err := png.Encode(out, img)
+        if err != nil {
+            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is png.")
+        }
+    case "jpg", "jpeg":
+        err := jpeg.Encode(out, img, nil)
+        if err != nil {
+            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is jpeg/jpg.")
+        }
+    case "gif":
+        err = gif.Encode(out, img, nil)
+        if err != nil {
+            return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
+        }
+    default:
+        // if other extensions which represented above,
+        // just convert the extension
+        fileName := filepath.Base(filePath) + filepath.Ext(filePath)
+        // fileName must meet len(fileName) > len(eimg.From)
+        if len(fileName) <= len(eimg.From) {
+            return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+        }
+        
+        newFilePath := filePath[:len(filePath)-len(eimg.From)] + eimg.To
+        if err := os.Rename(filePath, newFilePath); err != nil {
+            return ErrFailedConvert.WithDebug(err.Error())
+        }
+    }
+
+    return nil
 }
 
 // GetFilePathsRec gets file list recursively
