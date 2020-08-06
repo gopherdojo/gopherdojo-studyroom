@@ -7,7 +7,7 @@
 //   - arguments
 //     - `-f`
 //       - file extension before executing
-//       - default setting is jpg
+//       - default setting is jpg/jpeg
 //     - `-t`
 //       - file extension after executing
 //       - default setting is png
@@ -34,16 +34,16 @@ const (
 // Eimg structs
 type Eimg struct {
 	RootDir string
-	From    string
-	To      string
+	FromExt    string
+	ToExt      string
 }
 
 // New for eimg package
 func New() *Eimg {
 	return &Eimg{
 		RootDir: ".",
-		From:    "jpg",
-		To:      "png",
+		FromExt:    "jpeg",
+		ToExt:      "png",
 	}
 }
 
@@ -61,31 +61,34 @@ func (eimg *Eimg) Run() error {
 
 // SetParameters sets parameters for execution.
 func (eimg *Eimg) SetParameters() error {
-	// parse information
-	fr := flag.String("f", "jpg", "file extension before executing")
-	to := flag.String("t", "png", "file extension after executing")
+    flg := flag.NewFlagSet("", flag.ExitOnError)
 
-	flag.Parse()
-	args := flag.Args()
+	// parse information
+	fr := flg.String("f", "jpeg", "file extension before executing")
+	to := flg.String("t", "png", "file extension after executing")
+
+	flg.Parse(os.Args)
+	args := flg.Args()
+	fmt.Println(len(args))
+fmt.Println(args)
+
+	fmt.Printf("fr: %s, to: %s\n", *fr, *to)
 
 	// set information.
-	if *fr != "jpg" {
-		eimg.From = *fr
+	if fr != nil && *fr != "jpeg" {
+		eimg.FromExt = *fr
 	}
-	if *to != "png" {
-		eimg.To = *to
-	}
-
-	// use default setting.
-	if len(args) == 0 {
-		return nil
+	if to != nil && *to != "png" {
+		eimg.ToExt = *to
 	}
 
-	if args[0] != "." {
-		if _, err := os.Stat(args[0]); err != nil {
+	fmt.Printf("fr: %s, to: %s, rootDir: %s\n", eimg.FromExt, eimg.ToExt, eimg.RootDir)
+
+	if args[len(args)-1] != "." {
+		if _, err := os.Stat(args[len(args)-1]); err != nil {
 			return ErrInvalidPath.WithDebug(err.Error())
 		}
-		eimg.RootDir = args[0]
+		eimg.RootDir = args[len(args)-1]
 	}
 
 	return nil
@@ -103,7 +106,7 @@ func (eimg *Eimg) ConvertExtension() error {
 			continue
 		}
 
-		if extension == eimg.From {
+		if extension == eimg.FromExt {
 			err := eimg.EncodeFile(filePath)
 			if err != nil {
 				return err
@@ -145,7 +148,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
-	switch eimg.To {
+	switch eimg.ToExt {
 	case "png":
 		err := png.Encode(out, img)
 		if err != nil {
@@ -165,12 +168,12 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		// if other extensions which represented above,
 		// just convert the extension
 		fileName := filepath.Base(filePath) + filepath.Ext(filePath)
-		// fileName must meet len(fileName) > len(eimg.From)
-		if len(fileName) <= len(eimg.From) {
+		// fileName must meet len(fileName) > len(eimg.FromExt)
+		if len(fileName) <= len(eimg.FromExt) {
 			return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
 		}
 
-		newFilePath := filePath[:len(filePath)-len(eimg.From)] + eimg.To
+		newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
 		if err := os.Rename(filePath, newFilePath); err != nil {
 			return ErrFailedConvert.WithDebug(err.Error())
 		}
