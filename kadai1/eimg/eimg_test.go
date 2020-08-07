@@ -3,14 +3,14 @@ package eimg
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"testing"
 )
 
 func TestEimg(t *testing.T) {
 	TSetParameters(t)
 
-	TGetFilePathsRec(t)
-	// TEncodeFile(t)
+	TEncodeFile(t)
 	// TConvertExtension(t)
 }
 
@@ -29,6 +29,8 @@ func TSetParameters(t *testing.T) {
 		{name: "set all arguments", rootDir: "test/img", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img", "gif", "jpeg"}},
 	}
 
+	unzip := exec.Command("unzip", "test.zip")
+	unzip.Run()
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
@@ -43,7 +45,6 @@ func TSetParameters(t *testing.T) {
 			if c.rootDir != "" {
 				os.Args = append(os.Args, c.rootDir)
 			}
-			fmt.Println(os.Args)
 
 			eimg := New()
 			if err := eimg.SetParameters(); err != nil {
@@ -68,8 +69,42 @@ func TSetParameters(t *testing.T) {
 		})
 
 	}
+	rmAll := exec.Command("rm", "-rf", "./test")
+	rmAll.Run()
 }
 
-func TGetFilePathsRec(t *testing.T) {
-    
+func TEncodeFile(t *testing.T) {
+	cases := []struct {
+		name     string
+		filePath string
+		fromExt  string
+		toExt    string
+		expected string
+	}{
+		{name: "check png", filePath: "test/img/green.jpeg", fromExt: "jpeg", toExt: "png", expected: "test/img/green.png"},
+		{name: "check jpg", filePath: "test/img/blue.gif", fromExt: "gif", toExt: "jpeg", expected: "test/img/blue.jpeg"},
+		{name: "check gif", filePath: "test/img/red.png", fromExt: "png", toExt: "gif", expected: "test/img/red.gif"},
+	}
+
+	eimg := New()
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			fmt.Printf("[TEST] %s begins\n", c.name)
+			unzip := exec.Command("unzip", "test.zip")
+			unzip.Run()
+
+			eimg.FromExt = c.fromExt
+			eimg.ToExt = c.toExt
+			if err := eimg.EncodeFile(c.filePath); err != nil {
+				t.Errorf("%s: %s", c.filePath, err)
+			}
+
+			if _, err := os.Stat(c.expected); err != nil {
+				t.Errorf("%s: %s", c.expected, err)
+			}
+			rmAll := exec.Command("rm", "-rf", "./test")
+			rmAll.Run()
+		})
+	}
 }

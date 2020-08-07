@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd nn
+cd kadai1/eimg
 go test -coverprofile=profile ./...
 go tool cover -html=profile

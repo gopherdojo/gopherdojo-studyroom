@@ -16,7 +16,6 @@ package eimg
 
 import (
 	"flag"
-	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -131,7 +130,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
-	img, format, err := image.Decode(file)
+	img, _, err := image.Decode(file)
 	if err != nil {
 		return ErrFailedConvert.WithDebug(err.Error())
 	}
@@ -163,20 +162,18 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		if err != nil {
 			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
 		}
-	default:
-        // not necessary
-		// // if other extensions which represented above,
-		// // just convert the extension
-		// fileName := filepath.Base(filePath) + filepath.Ext(filePath)
-		// // fileName must meet len(fileName) > len(eimg.FromExt)
-		// if len(fileName) <= len(eimg.FromExt) {
-		// 	return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
-		// }
+	}
 
-		// newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
-		// if err := os.Rename(filePath, newFilePath); err != nil {
-		// 	return ErrFailedConvert.WithDebug(err.Error())
-		// }
+	// just convert the extension
+	fileName := filepath.Base(filePath) + filepath.Ext(filePath)
+	// fileName must meet len(fileName) > len(eimg.FromExt)
+	if len(fileName) <= len(eimg.FromExt) {
+		return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+	}
+
+	newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
+	if err := os.Rename(filePath, newFilePath); err != nil {
+		return ErrFailedConvert.WithDebug(err.Error())
 	}
 
 	return nil
