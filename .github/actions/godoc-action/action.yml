@@ -1,0 +1,29 @@
+name: 'godoc generator'
+author: 'task4233'
+description: 'generate godoc & deploy gh-pages branch'
+inputs:
+  run:
+    description: 'generate godoc'
+    required: true
+  working-dir:
+    description: 'package working directory.'
+    default: 'kadai1/eimg'
+    required: false
+  send-comment:
+    description: 'if true, '
+    default: true
+    required: false
+  repo-token:
+    description: "GitHub token."
+    default: ""
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.run }}
+    - ${{ inputs.working-dir }}
+    - ${{ inputs.repo-token }}
+branding:
+  icon: 'check-circle'
+  color: 'green'
