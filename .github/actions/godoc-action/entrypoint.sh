@@ -39,7 +39,7 @@ init() {
 }
 
 generate_godoc() {
-    godoc -url 'http://localhost:8080/pkg/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/' | sed -e '1d' | sed 's/\/lib\/godoc/\./g' > ./${DOCNAME}/index.html
+    godoc -url 'http://localhost:8080/pkg/github.com/task4233/gopherdojo-studyroom/kadai1/task4233/eimg/' | sed -e '1d' | sed 's/\/lib\/godoc/\./g' > ./${DOCNAME}/index.html
 }
 
 # -------------
