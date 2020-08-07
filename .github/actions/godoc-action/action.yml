@@ -1,6 +1,6 @@
 name: 'godoc generator'
 author: 'task4233'
-description: 'generate godoc & deploy gh-pages branch'
+description: 'generate godoc'
 inputs:
   run:
     description: 'generate godoc'

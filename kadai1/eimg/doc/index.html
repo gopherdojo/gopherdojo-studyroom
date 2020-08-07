@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>eimg - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="./style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="./jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.14.4";</script>
+<script src="./godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="/pkg/">GoDoc</a></div>
+<a href="#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package eimg
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/task4233/gopherdojo-studyroom/kadai1/eimg"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+				<dd><a href="#pkg-subdirectories">Subdirectories</a></dd>
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+				<dd><a href="#pkg-variables">Variables</a></dd>
+			
+			
+			
+				
+				<dd><a href="#Eimg">type Eimg</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#New">func New() *Eimg</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Eimg.ConvertExtension">func (eimg *Eimg) ConvertExtension() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Eimg.EncodeFile">func (eimg *Eimg) EncodeFile(filePath string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Eimg.GetFilePathsRec">func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Eimg.Run">func (eimg *Eimg) Run() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Eimg.SetParameters">func (eimg *Eimg) SetParameters() error</a></dd>
+				
+			
+				
+				<dd><a href="#Error">type Error</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Error.Error">func (e *Error) Error() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Error.WithDebug">func (e *Error) WithDebug(debug string) *Error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Error.WithHint">func (e *Error) WithHint(hint string) *Error</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go">eimg.go</a>
+			
+				<a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/errors.go">errors.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				<p>
+Default errors
+</p>
+
+				<pre>var (
+    <span id="ErrInvalidArgs">ErrInvalidArgs</span> = &amp;<a href="#Error">Error</a>{
+        <a href="#Error.Name">Name</a>:        &#34;invalid arguments&#34;,
+        <a href="#Error.Description">Description</a>: &#34;They are few arguments&#34;,
+        <a href="#Error.Hint">Hint</a>:        &#34;arguments must be more than 1&#34;,
+    }
+    <span id="ErrInvalidPath">ErrInvalidPath</span> = &amp;<a href="#Error">Error</a>{
+        <a href="#Error.Name">Name</a>:        &#34;invalid path&#34;,
+        <a href="#Error.Description">Description</a>: &#34;This path is invalid&#34;,
+        <a href="#Error.Hint">Hint</a>:        &#34;Check if the path exists&#34;,
+    }
+    <span id="ErrInvalidFormat">ErrInvalidFormat</span> = &amp;<a href="#Error">Error</a>{
+        <a href="#Error.Name">Name</a>:        &#34;invalid format(s)&#34;,
+        <a href="#Error.Description">Description</a>: &#34;The formats might be invalid&#34;,
+        <a href="#Error.Hint">Hint</a>:        &#34;Check the specified formats&#34;,
+    }
+    <span id="ErrFailedConvert">ErrFailedConvert</span> = &amp;<a href="#Error">Error</a>{
+        <a href="#Error.Name">Name</a>:        &#34;failed to convert image object&#34;,
+        <a href="#Error.Description">Description</a>: &#34;Failed to Convert image object&#34;,
+        <a href="#Error.Hint">Hint</a>:        &#34;Check the specified formats&#34;,
+    }
+    <span id="ErrFileOperation">ErrFileOperation</span> = &amp;<a href="#Error">Error</a>{
+        <a href="#Error.Name">Name</a>:        &#34;failed file operation&#34;,
+        <a href="#Error.Description">Description</a>: &#34;Failed to (open/close/such a file operation)&#34;,
+    }
+)</pre>
+			
+		
+		
+		
+			
+			
+			<h2 id="Eimg">type <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=742:810#L29">Eimg</a>
+				<a class="permalink" href="#Eimg">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Eimg structs
+</p>
+
+			<pre>type Eimg struct {
+<span id="Eimg.RootDir"></span>    RootDir <a href="/pkg/builtin/#string">string</a>
+<span id="Eimg.FromExt"></span>    FromExt <a href="/pkg/builtin/#string">string</a>
+<span id="Eimg.ToExt"></span>    ToExt   <a href="/pkg/builtin/#string">string</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="New">func <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=887:903#L37">New</a>
+					<a class="permalink" href="#New">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func New() *<a href="#Eimg">Eimg</a></pre>
+				<p>
+New makes Eimg instance.
+Call this function if you use this package.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Eimg.ConvertExtension">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1816:1858#L88">ConvertExtension</a>
+					<a class="permalink" href="#Eimg.ConvertExtension">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (eimg *<a href="#Eimg">Eimg</a>) ConvertExtension() <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+ConvertExtension converts extension by using set parameters.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Eimg.EncodeFile">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=2356:2407#L112">EncodeFile</a>
+					<a class="permalink" href="#Eimg.EncodeFile">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (eimg *<a href="#Eimg">Eimg</a>) EncodeFile(filePath <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+EncodeFile encodes file predefined arguments
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Eimg.GetFilePathsRec">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=3987:4055#L176">GetFilePathsRec</a>
+					<a class="permalink" href="#Eimg.GetFilePathsRec">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (eimg *<a href="#Eimg">Eimg</a>) GetFilePathsRec(filePath <a href="/pkg/builtin/#string">string</a>) ([]<a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+GetFilePathsRec gets file list recursively
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Eimg.Run">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1024:1053#L46">Run</a>
+					<a class="permalink" href="#Eimg.Run">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (eimg *<a href="#Eimg">Eimg</a>) Run() <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+Run converts file extension(from -&gt; to).
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Eimg.SetParameters">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1247:1286#L58">SetParameters</a>
+					<a class="permalink" href="#Eimg.SetParameters">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (eimg *<a href="#Eimg">Eimg</a>) SetParameters() <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+SetParameters sets parameters for execution.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="Error">type <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/errors.go?s=873:1219#L22">Error</a>
+				<a class="permalink" href="#Error">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Error is a representation of errors returned from this package.
+</p>
+
+			<pre>type Error struct {
+<span id="Error.Name"></span>    <span class="comment">// Name is the name of this error.</span>
+    Name <a href="/pkg/builtin/#string">string</a> `json:&#34;error&#34;`
+<span id="Error.Description"></span>    <span class="comment">// Description is the description of this error.</span>
+    Description <a href="/pkg/builtin/#string">string</a> `json:&#34;decscription&#34;`
+<span id="Error.Hint"></span>    <span class="comment">// Hint gives user further information.</span>
+    Hint <a href="/pkg/builtin/#string">string</a> `json:&#34;hint,omitempty&#34;`
+<span id="Error.Debug"></span>    <span class="comment">// Debug gives debug information about this error.</span>
+    Debug <a href="/pkg/builtin/#string">string</a> `json:&#34;debug&#34;,omitempty`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+				
+				<h3 id="Error.Error">func (*Error) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/errors.go?s=1256:1286#L34">Error</a>
+					<a class="permalink" href="#Error.Error">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (e *<a href="#Error">Error</a>) Error() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+Error implement error interface
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Error.WithDebug">func (*Error) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/errors.go?s=1462:1508#L46">WithDebug</a>
+					<a class="permalink" href="#Error.WithDebug">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (e *<a href="#Error">Error</a>) WithDebug(debug <a href="/pkg/builtin/#string">string</a>) *<a href="#Error">Error</a></pre>
+				<p>
+WithDebug updates debug information
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Error.WithHint">func (*Error) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/errors.go?s=1332:1376#L39">WithHint</a>
+					<a class="permalink" href="#Error.WithHint">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (e *<a href="#Error">Error</a>) WithHint(hint <a href="/pkg/builtin/#string">string</a>) *<a href="#Error">Error</a></pre>
+				<p>
+WithHint updates hint
+</p>
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+	
+	
+		<h2 id="pkg-subdirectories">Subdirectories</h2>
+	
+	<div class="pkg-dir">
+		<table>
+			<tr>
+				<th class="pkg-name">Name</th>
+				<th class="pkg-synopsis">Synopsis</th>
+			</tr>
+
+			
+			<tr>
+				<td colspan="2"><a href="..">..</a></td>
+			</tr>
+			
+
+			
+				<tr>
+				
+					<td class="pkg-name" style="padding-left: 0px;">
+						<a href="cmd/">cmd</a>
+					</td>
+				
+					<td class="pkg-synopsis">
+						
+					</td>
+				</tr>
+			
+				<tr>
+				
+					<td class="pkg-name" style="padding-left: 20px;">
+						<a href="cmd/eimg/">eimg</a>
+					</td>
+				
+					<td class="pkg-synopsis">
+						
+					</td>
+				</tr>
+			
+		</table>
+	</div>
+
+
+
+<div id="footer">
+Build version go1.14.4.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="/doc/tos.html">Terms of Service</a> |
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>

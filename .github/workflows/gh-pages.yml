@@ -1,0 +1,21 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+name: make godoc and deploy gh-pages branch
+
+jobs:
+  genGoDocAndDeploy:
+    name: godoc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: genGoDoc
+      uses: ./.github/actions/godoc-action
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./doc

@@ -18,6 +18,7 @@ if [ "$2" = "" ]; then
 fi
 
 cd ${WORKING_DIR}
+DOCNAME="doc"
 PKGNAME=$(go list ./...)
 
 # ------------
@@ -26,30 +27,26 @@ PKGNAME=$(go list ./...)
 
 init() {
     # make directory setting for gh-pages
-    mkdir -p /gh-pages
-    rm -rf /gh-pages/dist
-    mkdir -p /gh-pages/dist
+    echo "make directory setting for gh-pages"
+    rm -rf ./${DOCNAME}
+    mkdir ./${DOCNAME}
     
     # install config file for layout
-    cp /go/src/golang.org/x/tools/godoc/static/jquery.js /gh-pages/dist/
-    cp /go/src/golang.org/x/tools/godoc/static/godocs.jp /gh-pages/dist/
-    cp /go/src/golang.org/x/tools/godoc/static/style.css /gh-pages/dist/
+    echo "install config file for layout"
+    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/jquery.js ./${DOCNAME}/
+    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/godocs.js ./${DOCNAME}/
+    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/style.css ./${DOCNAME}/
 }
 
 generate_godoc() {
-    godoc -url 'http://localhost:8080/pkg/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/' > /gh-pages/dist/index.html
-}
-
-
-deploy() {
-    npm install
-    npm run deploy
+    godoc -url 'http://localhost:8080/pkg/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/' | sed -e '1d' | sed 's/\/lib\/godoc/\./g' > ./${DOCNAME}/index.html
 }
 
 # -------------
 # Main
 # ------------
-init()
-generate_godoc()
-deploy()
+init
+generate_godoc
+
+exit ${SUCCESS}
 
