@@ -10,7 +10,6 @@ import (
 // TestEimg tests functions in eimg package as unittest.
 func TestEimg(t *testing.T) {
 	TSetParameters(t)
-
 	TEncodeFile(t)
 	TConvertExtension(t)
 }
@@ -32,7 +31,20 @@ func TSetParameters(t *testing.T) {
 	}
 
 	unzip := exec.Command("unzip", "test.zip")
-	unzip.Run()
+	if err := unzip.Run(); err != nil {
+		t.Errorf("failed to unzip")
+	}
+	defer func() {
+		if _, err := os.Stat("test"); err == nil {
+			rmAll := exec.Command("rm", "-rf", "./test")
+			if err := rmAll.Run(); err != nil {
+				return
+			}
+		} else {
+			return
+		}
+	}()
+
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
@@ -71,8 +83,6 @@ func TSetParameters(t *testing.T) {
 		})
 
 	}
-	rmAll := exec.Command("rm", "-rf", "./test")
-	rmAll.Run()
 }
 
 // TEncodeFile tests EncodeFile()
@@ -95,7 +105,19 @@ func TEncodeFile(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
 			unzip := exec.Command("unzip", "test.zip")
-			unzip.Run()
+			if err := unzip.Run(); err != nil {
+				t.Errorf("failed to unzip...")
+			}
+			defer func() {
+				if _, err := os.Stat("test"); err == nil {
+					rmAll := exec.Command("rm", "-rf", "./test")
+					if err := rmAll.Run(); err != nil {
+						return
+					}
+				} else {
+					return
+				}
+			}()
 
 			eimg.FromExt = c.fromExt
 			eimg.ToExt = c.toExt
@@ -106,8 +128,6 @@ func TEncodeFile(t *testing.T) {
 			if _, err := os.Stat(c.expected); err != nil {
 				t.Errorf("%s: %s", c.expected, err)
 			}
-			rmAll := exec.Command("rm", "-rf", "./test")
-			rmAll.Run()
 		})
 	}
 }
@@ -132,8 +152,20 @@ func TConvertExtension(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
 			unzip := exec.Command("unzip", "test.zip")
-			unzip.Run()
+			if err := unzip.Run(); err != nil {
+				t.Errorf("failed to unzip...")
+			}
 
+			defer func() {
+				if _, err := os.Stat("test"); err == nil {
+					rmAll := exec.Command("rm", "-rf", "./test")
+					if err := rmAll.Run(); err != nil {
+						return
+					}
+				} else {
+					return
+				}
+			}()
 			eimg.RootDir = c.rootDir
 			eimg.FromExt = c.fromExt
 			eimg.ToExt = c.toExt
@@ -142,19 +174,11 @@ func TConvertExtension(t *testing.T) {
 				t.Errorf("failed ConvertExtension: %s", err)
 			}
 
-			cmd := exec.Command("find", ".")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err := cmd.Run()
-			fmt.Println(err)
-
 			for _, filePath := range c.expected {
 				if _, err := os.Stat(filePath); err != nil {
 					t.Errorf("%s: %s", filePath, err)
 				}
 			}
-			rmAll := exec.Command("rm", "-rf", "./test")
-			rmAll.Run()
 		})
 	}
 }

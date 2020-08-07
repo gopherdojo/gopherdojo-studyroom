@@ -16,7 +16,6 @@ package eimg
 
 import (
 	"flag"
-	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -103,7 +102,6 @@ func (eimg *Eimg) ConvertExtension() error {
 	}
 	for _, filePath := range filePaths {
 		extension := filepath.Ext(filePath)
-		fmt.Printf("Extension: %s\n", filepath.Ext(filePath))
 		if extension == "" {
 			continue
 		}
