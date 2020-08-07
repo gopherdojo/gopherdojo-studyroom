@@ -31,19 +31,24 @@ const (
 	msg     = "eimg v" + version + ", converts file extension\n"
 )
 
+var (
+	fr = flag.String("f", "jpeg", "file extension before executing")
+	to = flag.String("t", "png", "file extension after executing")
+)
+
 // Eimg structs
 type Eimg struct {
 	RootDir string
-	FromExt    string
-	ToExt      string
+	FromExt string
+	ToExt   string
 }
 
 // New for eimg package
 func New() *Eimg {
 	return &Eimg{
 		RootDir: ".",
-		FromExt:    "jpeg",
-		ToExt:      "png",
+		FromExt: "jpeg",
+		ToExt:   "png",
 	}
 }
 
@@ -61,18 +66,19 @@ func (eimg *Eimg) Run() error {
 
 // SetParameters sets parameters for execution.
 func (eimg *Eimg) SetParameters() error {
-    flg := flag.NewFlagSet("", flag.ExitOnError)
+	// Init Parameters
+	*fr = "jpeg"
+	*to = "png"
 
 	// parse information
-	fr := flg.String("f", "jpeg", "file extension before executing")
-	to := flg.String("t", "png", "file extension after executing")
-
-	flg.Parse(os.Args)
-	args := flg.Args()
+	flag.Parse()
+	args := flag.Args()
+	fmt.Println(os.Args)
 	fmt.Println(len(args))
-fmt.Println(args)
+	fmt.Println(args)
 
-	fmt.Printf("fr: %s, to: %s\n", *fr, *to)
+	fmt.Printf("eimg.FromExt: %s, eimg.ToExt: %s\n", eimg.FromExt, eimg.ToExt)
+	fmt.Printf("*fr: %s, *to: %s\n", *fr, *to)
 
 	// set information.
 	if fr != nil && *fr != "jpeg" {
@@ -80,6 +86,8 @@ fmt.Println(args)
 	}
 	if to != nil && *to != "png" {
 		eimg.ToExt = *to
+	} else {
+		eimg.ToExt = "png"
 	}
 
 	fmt.Printf("fr: %s, to: %s, rootDir: %s\n", eimg.FromExt, eimg.ToExt, eimg.RootDir)
