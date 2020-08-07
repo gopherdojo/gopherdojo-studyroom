@@ -80,4 +80,4 @@ jobs:
        uses: ./.github/actions/godoc-action
        with:
          run: godoc
-	 repo-token: ${{ secrets.GITHUB_TOKEN }}
+         repo-token: ${{ secrets.GITHUB_TOKEN }}
