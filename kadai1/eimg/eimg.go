@@ -1,5 +1,5 @@
 /*
-eimg package encodes image
+Package eimg package encodes image
 - mandatory
   - set root directory
     - default setting is directory executed this command
@@ -102,7 +102,7 @@ func (eimg *Eimg) ConvertExtension() error {
 		return ErrInvalidPath.WithDebug(err.Error())
 	}
 
-    // encode each file
+	// encode each file
 	for _, filePath := range filePaths {
 		extension := filepath.Ext(filePath)
 		if extension == "" {
@@ -135,7 +135,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
-    // make image object
+	// make image object
 	img, _, err := image.Decode(file)
 	if err != nil {
 		return ErrFailedConvert.WithDebug(err.Error())
@@ -151,7 +151,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
-    // encode each file
+	// encode each file
 	switch eimg.ToExt {
 	case "png":
 		err := png.Encode(out, img)
@@ -186,15 +186,15 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 
 // GetFilePathsRec gets file list recursively
 func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
-    // if declare by `var`, element might be nil
-    resFilePaths := make([]string, 0)
+	// if declare by `var`, element might be nil
+	resFilePaths := make([]string, 0)
 
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
 		return nil, ErrInvalidPath.WithDebug(err.Error())
 	}
 
-    // add paths recursively
+	// add paths recursively
 	for _, file := range files {
 		nextFilePath := filepath.Join(filePath, file.Name())
 		if file.IsDir() {
