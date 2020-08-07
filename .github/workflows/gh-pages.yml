@@ -18,4 +18,4 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: kadai1/eimg/doc
+        publish_dir: kadai1/task4233/eimg/doc

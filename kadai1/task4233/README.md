@@ -33,7 +33,7 @@ Options:
  - 自作パッケージと標準パッケージと準標準パッケージのみ使う
    - golang.org/x以下のパッケージのこと
  - ユーザ定義型を作る
-   - [Error型](https://github.com/task4233/gopherdojo-studyroom/blob/kadai1-task4233/kadai1/eimg/errors.go#L31-L41)
+   - [Error型](https://github.com/task4233/gopherdojo-studyroom/blob/kadai1-task4233/kadai1/task4233/eimg/errors.go#L31-L41)
  - GoDocを作成する
    - [ここ](https://task4233.github.io/gopherdojo-studyroom/)に自動生成されるようにCD組みました
  - Go Modulesを使ってみる

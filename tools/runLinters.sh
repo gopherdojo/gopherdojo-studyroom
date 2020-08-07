@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd kadai1/eimg
+cd kadai1/task4233/eimg
 echo "run goimports"
 goimports -w .
 

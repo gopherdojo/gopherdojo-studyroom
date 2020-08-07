@@ -14,7 +14,7 @@ SUCCESS=0
 
 # if not set, assign default value
 if [ "$2" = "" ]; then
-    WORKING_DIR="kadai1/eimg"
+    WORKING_DIR="kadai1/task4233/eimg"
 fi
 
 cd ${WORKING_DIR}

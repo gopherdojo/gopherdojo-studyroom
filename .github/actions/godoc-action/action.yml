@@ -7,7 +7,7 @@ inputs:
     required: true
   working-dir:
     description: 'package working directory.'
-    default: 'kadai1/eimg'
+    default: 'kadai1/task4233/eimg'
     required: false
   send-comment:
     description: 'if true, '
