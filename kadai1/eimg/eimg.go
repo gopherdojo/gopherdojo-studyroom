@@ -1,17 +1,11 @@
 /*
-Package eimg package encodes image
-- mandatory
-  - set root directory
-    - default setting is directory executed this command
-  - execute recursively
-- optional
-  - arguments
-    - `-f`
-      - file extension before executing
-      - default setting is jpg/jpeg
-    - `-t`
-      - file extension after executing
-      - default setting is png
+Package eimg encodes image files.
+Both before and after extension can be specified.
+Default setting is `.jpg/jpeg` -> `.png`
+
+e.g.)
+eimg ./img -f=gif -t=jpg
+
 */
 package eimg
 
