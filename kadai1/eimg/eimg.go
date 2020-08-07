@@ -1,4 +1,4 @@
-// eimg package encode image
+// eimg package encodes image
 // - mandatory
 //   - set root directory
 //     - default setting is directory executed this command
@@ -73,12 +73,6 @@ func (eimg *Eimg) SetParameters() error {
 	// parse information
 	flag.Parse()
 	args := flag.Args()
-	fmt.Println(os.Args)
-	fmt.Println(len(args))
-	fmt.Println(args)
-
-	fmt.Printf("eimg.FromExt: %s, eimg.ToExt: %s\n", eimg.FromExt, eimg.ToExt)
-	fmt.Printf("*fr: %s, *to: %s\n", *fr, *to)
 
 	// set information.
 	if fr != nil && *fr != "jpeg" {
@@ -89,8 +83,6 @@ func (eimg *Eimg) SetParameters() error {
 	} else {
 		eimg.ToExt = "png"
 	}
-
-	fmt.Printf("fr: %s, to: %s, rootDir: %s\n", eimg.FromExt, eimg.ToExt, eimg.RootDir)
 
 	if args[len(args)-1] != "." {
 		if _, err := os.Stat(args[len(args)-1]); err != nil {
@@ -143,7 +135,6 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	if err != nil {
 		return ErrFailedConvert.WithDebug(err.Error())
 	}
-	fmt.Println(format)
 
 	out, err := os.Create(filePath)
 	if err != nil {
@@ -173,18 +164,19 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
 		}
 	default:
-		// if other extensions which represented above,
-		// just convert the extension
-		fileName := filepath.Base(filePath) + filepath.Ext(filePath)
-		// fileName must meet len(fileName) > len(eimg.FromExt)
-		if len(fileName) <= len(eimg.FromExt) {
-			return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
-		}
+        // not necessary
+		// // if other extensions which represented above,
+		// // just convert the extension
+		// fileName := filepath.Base(filePath) + filepath.Ext(filePath)
+		// // fileName must meet len(fileName) > len(eimg.FromExt)
+		// if len(fileName) <= len(eimg.FromExt) {
+		// 	return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+		// }
 
-		newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
-		if err := os.Rename(filePath, newFilePath); err != nil {
-			return ErrFailedConvert.WithDebug(err.Error())
-		}
+		// newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
+		// if err := os.Rename(filePath, newFilePath); err != nil {
+		// 	return ErrFailedConvert.WithDebug(err.Error())
+		// }
 	}
 
 	return nil

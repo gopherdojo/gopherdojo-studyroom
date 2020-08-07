@@ -9,7 +9,7 @@ import (
 func TestEimg(t *testing.T) {
 	TSetParameters(t)
 
-	// TGetFilePathsRec(t, eimg)
+	TGetFilePathsRec(t)
 	// TEncodeFile(t)
 	// TConvertExtension(t)
 }
@@ -68,4 +68,8 @@ func TSetParameters(t *testing.T) {
 		})
 
 	}
+}
+
+func TGetFilePathsRec(t *testing.T) {
+    
 }
