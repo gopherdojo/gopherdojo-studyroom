@@ -7,13 +7,15 @@ import (
 	"testing"
 )
 
+// TestEimg tests functions in eimg package as unittest.
 func TestEimg(t *testing.T) {
 	TSetParameters(t)
 
 	TEncodeFile(t)
-	// TConvertExtension(t)
+	TConvertExtension(t)
 }
 
+// TSetParameters tests SetPerameters().
 func TSetParameters(t *testing.T) {
 
 	cases := []struct {
@@ -73,6 +75,7 @@ func TSetParameters(t *testing.T) {
 	rmAll.Run()
 }
 
+// TEncodeFile tests EncodeFile()
 func TEncodeFile(t *testing.T) {
 	cases := []struct {
 		name     string
@@ -102,6 +105,53 @@ func TEncodeFile(t *testing.T) {
 
 			if _, err := os.Stat(c.expected); err != nil {
 				t.Errorf("%s: %s", c.expected, err)
+			}
+			rmAll := exec.Command("rm", "-rf", "./test")
+			rmAll.Run()
+		})
+	}
+}
+
+// TConvertExtension tests ConvertExtension()
+func TConvertExtension(t *testing.T) {
+	cases := []struct {
+		name     string
+		rootDir  string
+		fromExt  string
+		toExt    string
+		expected []string
+	}{
+		{name: "check png", rootDir: "test", fromExt: "jpeg", toExt: "png", expected: []string{"test/img/green.png"}},
+		{name: "check jpg", rootDir: "test", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img/blue.jpeg"}},
+		{name: "check gif", rootDir: "test", fromExt: "png", toExt: "gif", expected: []string{"test/img/red.gif", "test/white.gif"}},
+	}
+
+	eimg := New()
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			fmt.Printf("[TEST] %s begins\n", c.name)
+			unzip := exec.Command("unzip", "test.zip")
+			unzip.Run()
+
+			eimg.RootDir = c.rootDir
+			eimg.FromExt = c.fromExt
+			eimg.ToExt = c.toExt
+
+			if err := eimg.ConvertExtension(); err != nil {
+				t.Errorf("failed ConvertExtension: %s", err)
+			}
+
+			cmd := exec.Command("find", ".")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Run()
+			fmt.Println(err)
+
+			for _, filePath := range c.expected {
+				if _, err := os.Stat(filePath); err != nil {
+					t.Errorf("%s: %s", filePath, err)
+				}
 			}
 			rmAll := exec.Command("rm", "-rf", "./test")
 			rmAll.Run()

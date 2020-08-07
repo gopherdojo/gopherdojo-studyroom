@@ -16,6 +16,7 @@ package eimg
 
 import (
 	"flag"
+	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -42,7 +43,8 @@ type Eimg struct {
 	ToExt   string
 }
 
-// New for eimg package
+// New makes Eimg instance.
+// Call this function if you use this package.
 func New() *Eimg {
 	return &Eimg{
 		RootDir: ".",
@@ -101,11 +103,14 @@ func (eimg *Eimg) ConvertExtension() error {
 	}
 	for _, filePath := range filePaths {
 		extension := filepath.Ext(filePath)
+		fmt.Printf("Extension: %s\n", filepath.Ext(filePath))
 		if extension == "" {
 			continue
 		}
 
-		if extension == eimg.FromExt {
+		// filepath.Ext starts with "."
+		// e.g.) filepath.Ext(filePath) => .txt
+		if extension[1:] == eimg.FromExt {
 			err := eimg.EncodeFile(filePath)
 			if err != nil {
 				return err
@@ -181,8 +186,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 
 // GetFilePathsRec gets file list recursively
 func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
-	// folder has likely more than 5 files...?
-	resFilePaths := make([]string, 5)
+	resFilePaths := make([]string, 0)
 
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
@@ -190,7 +194,7 @@ func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
 	}
 
 	for _, file := range files {
-		nextFilePath := filepath.Join(eimg.RootDir, file.Name())
+		nextFilePath := filepath.Join(filePath, file.Name())
 		if file.IsDir() {
 			nextFiles, err := eimg.GetFilePathsRec(nextFilePath)
 			if err != nil {
