@@ -2,8 +2,8 @@
 
 
 ## Description
-Package eimg encodes image files with set directory recursively.
-Both before and after extension can be specified.
+Package eimg encodes image files with set directory recursively.  
+Both before and after extension can be specified.  
 Default setting is `.jpg/jpeg` -> `.png`
 
 Convert the images under the `./img` from `gif` to `jpg`.
