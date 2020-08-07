@@ -11,6 +11,7 @@ package eimg
 
 import (
 	"flag"
+	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -62,6 +63,11 @@ func (eimg *Eimg) Run() error {
 
 // SetParameters sets parameters for execution.
 func (eimg *Eimg) SetParameters() error {
+	if len(os.Args) == 1 {
+		fmt.Fprintf(os.Stderr, "Usage:\n\t./eimg [-f=fromExtension -t=toExtension] rootDir\n")
+		os.Exit(1)
+	}
+
 	// Init Parameters
 	*fr = "jpeg"
 	*to = "png"
