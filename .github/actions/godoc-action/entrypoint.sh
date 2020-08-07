@@ -33,9 +33,9 @@ init() {
     
     # install config file for layout
     echo "install config file for layout"
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/jquery.js ./${DOCNAME}/
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/godocs.js ./${DOCNAME}/
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/style.css ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/jquery.js ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/godocs.js ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/style.css ./${DOCNAME}/
 }
 
 generate_godoc() {
@@ -47,6 +47,7 @@ generate_godoc() {
 # ------------
 init
 generate_godoc
+
 
 exit ${SUCCESS}
 
