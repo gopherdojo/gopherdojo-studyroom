@@ -1,17 +1,18 @@
-// eimg package encodes image
-// - mandatory
-//   - set root directory
-//     - default setting is directory executed this command
-//   - execute recursively
-// - optional
-//   - arguments
-//     - `-f`
-//       - file extension before executing
-//       - default setting is jpg/jpeg
-//     - `-t`
-//       - file extension after executing
-//       - default setting is png
-
+/*
+eimg package encodes image
+- mandatory
+  - set root directory
+    - default setting is directory executed this command
+  - execute recursively
+- optional
+  - arguments
+    - `-f`
+      - file extension before executing
+      - default setting is jpg/jpeg
+    - `-t`
+      - file extension after executing
+      - default setting is png
+*/
 package eimg
 
 import (
@@ -35,7 +36,8 @@ var (
 	to = flag.String("t", "png", "file extension after executing")
 )
 
-// Eimg structs
+// Eimg struct has RootDir, FromDir, ToExt.
+// They are used to execute this commnad.
 type Eimg struct {
 	RootDir string
 	FromExt string
@@ -83,7 +85,6 @@ func (eimg *Eimg) SetParameters() error {
 	} else {
 		eimg.ToExt = "png"
 	}
-
 	if args[len(args)-1] != "." {
 		if _, err := os.Stat(args[len(args)-1]); err != nil {
 			return ErrInvalidPath.WithDebug(err.Error())
@@ -100,6 +101,8 @@ func (eimg *Eimg) ConvertExtension() error {
 	if err != nil {
 		return ErrInvalidPath.WithDebug(err.Error())
 	}
+
+    // encode each file
 	for _, filePath := range filePaths {
 		extension := filepath.Ext(filePath)
 		if extension == "" {
@@ -124,7 +127,6 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	if err != nil {
 		return ErrInvalidPath.WithDebug(err.Error())
 	}
-
 	// ref: https://www.yunabe.jp/docs/golang_pitfall.html
 	defer func() {
 		cerr := file.Close()
@@ -133,11 +135,11 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
+    // make image object
 	img, _, err := image.Decode(file)
 	if err != nil {
 		return ErrFailedConvert.WithDebug(err.Error())
 	}
-
 	out, err := os.Create(filePath)
 	if err != nil {
 		return ErrInvalidFormat.WithDebug(err.Error())
@@ -149,6 +151,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}()
 
+    // encode each file
 	switch eimg.ToExt {
 	case "png":
 		err := png.Encode(out, img)
@@ -167,13 +170,12 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 		}
 	}
 
-	// just convert the extension
+	// convert each extension
 	fileName := filepath.Base(filePath) + filepath.Ext(filePath)
 	// fileName must meet len(fileName) > len(eimg.FromExt)
 	if len(fileName) <= len(eimg.FromExt) {
 		return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
 	}
-
 	newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
 	if err := os.Rename(filePath, newFilePath); err != nil {
 		return ErrFailedConvert.WithDebug(err.Error())
@@ -184,13 +186,15 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 
 // GetFilePathsRec gets file list recursively
 func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
-	resFilePaths := make([]string, 0)
+    // if declare by `var`, element might be nil
+    resFilePaths := make([]string, 0)
 
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
 		return nil, ErrInvalidPath.WithDebug(err.Error())
 	}
 
+    // add paths recursively
 	for _, file := range files {
 		nextFilePath := filepath.Join(filePath, file.Name())
 		if file.IsDir() {
