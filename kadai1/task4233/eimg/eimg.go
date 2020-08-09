@@ -68,7 +68,8 @@ func (eimg *Eimg) SetParameters() error {
 		os.Exit(1)
 	}
 
-	// Init Parameters
+	// Init Parameters for tests like
+	// https://github.com/task4233/gopherdojo-studyroom/blob/kadai1-task4233/kadai1/task4233/eimg/eimg_test.go#L28-L29 .
 	*fr = "jpeg"
 	*to = "png"
 
@@ -77,6 +78,7 @@ func (eimg *Eimg) SetParameters() error {
 	args := flag.Args()
 
 	// set information.
+	// validation implements in EncodeFile() for functional extension.
 	if fr != nil && *fr != "jpeg" {
 		eimg.FromExt = *fr
 	}
