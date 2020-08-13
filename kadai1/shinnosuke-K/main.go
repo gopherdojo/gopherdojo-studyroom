@@ -2,11 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
+
+	"github.com/shinnosuke-K/gopherdojo-studyroom/kadai1/shinnosuke-K/conv"
 )
 
 func main() {
@@ -14,15 +13,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	dirPath := flag.String("path", pwd, "Directory path to convert image file's extension")
+	before := flag.String("b", "jpg", "Image format before change")
+	after := flag.String("a", "png", "Image format after change")
 	flag.Parse()
 
-	files, err := ioutil.ReadDir(*dirPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	conv.Do(*dirPath, *before, *after)
 
-	for _, f := range files {
-		fmt.Println(f.Name(), f.IsDir(), filepath.Ext(f.Name()))
-	}
 }
