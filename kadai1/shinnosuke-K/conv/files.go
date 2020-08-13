@@ -17,6 +17,11 @@ func getFiles(path string) {
 	}
 
 	for _, f := range files {
-		fmt.Println(f.Name(), f.IsDir(), filepath.Ext(f.Name()))
+		if f.IsDir() {
+			getFiles(filepath.Join(path, f.Name()))
+		} else {
+			fmt.Println(f.Name(), f.IsDir(), filepath.Ext(f.Name()))
+
+		}
 	}
 }
