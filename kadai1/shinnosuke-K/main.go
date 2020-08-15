@@ -15,7 +15,7 @@ func main() {
 	}
 
 	dirPath := flag.String("path", pwd, "Directory path to convert image file's extension")
-	before := flag.String("b", "jpg", "Image format before change")
+	before := flag.String("b", "jpeg", "Image format before change")
 	after := flag.String("a", "png", "Image format after change")
 	flag.Parse()
 
