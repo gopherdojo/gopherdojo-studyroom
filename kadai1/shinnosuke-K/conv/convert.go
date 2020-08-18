@@ -21,6 +21,13 @@ func Do(dirPath string, before string, after string) {
 	for n := range files {
 		fmt.Println(files[n])
 
+		switch after {
+		case "png":
+			if err := files[n].convertToPNG(); err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
 }
 
 func checkOpt(before string, after string) error {
