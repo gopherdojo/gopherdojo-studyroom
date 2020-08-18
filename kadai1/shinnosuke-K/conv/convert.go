@@ -2,13 +2,11 @@ package conv
 
 import (
 	"fmt"
-	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	"image/png"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -45,13 +43,8 @@ func checkOpt(before string, after string) error {
 }
 
 func (f *File) convertToPNG() error {
-	file, err := os.Open(filepath.Join(f.Dir, f.Name))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
 
-	imgFile, _, err := image.Decode(file)
+	imgFile, err := decodeImg(f.Dir, f.Name)
 	if err != nil {
 		return err
 	}
