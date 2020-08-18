@@ -19,7 +19,6 @@ func Do(dirPath string, before string, after string) {
 	files := getImgFiles(dirPath, before)
 	for n := range files {
 		fmt.Println(files[n])
-	}
 
 }
 
