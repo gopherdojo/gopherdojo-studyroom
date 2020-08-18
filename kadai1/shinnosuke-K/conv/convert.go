@@ -44,11 +44,6 @@ func checkOpt(before string, after string) error {
 	return fmt.Errorf("imgconv: invaild image extension")
 }
 
-//func convertToJPG(filePath string) error {
-//
-//}
-//
-
 func (f *File) convertToPNG() error {
 	file, err := os.Open(filepath.Join(f.Dir, f.Name))
 	if err != nil {
@@ -73,8 +68,3 @@ func (f *File) convertToPNG() error {
 	}
 	return nil
 }
-
-//
-//func convertToGif(filePath string) error {
-//
-//}
