@@ -16,7 +16,7 @@ func Do(dirPath string, before string, after string) {
 		os.Exit(1)
 	}
 
-	files := getFiles(dirPath)
+	files := getImgFiles(dirPath, before)
 	for n := range files {
 		fmt.Println(files[n])
 	}

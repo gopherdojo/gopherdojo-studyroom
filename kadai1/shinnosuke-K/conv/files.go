@@ -14,7 +14,7 @@ type File struct {
 
 var fileList = make([]File, 0)
 
-func getFiles(path string) []File {
+func getImgFiles(path string, beforeEx string) []File {
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -23,12 +23,13 @@ func getFiles(path string) []File {
 
 	for _, f := range files {
 		if f.IsDir() {
-			getFiles(filepath.Join(path, f.Name()))
-		} else {
+			getImgFiles(filepath.Join(path, f.Name()), beforeEx)
+
+		} else if filepath.Ext(f.Name())[1:] == beforeEx {
 			fileList = append(fileList, File{
 				Dir:       path,
 				Name:      f.Name(),
-				Extension: filepath.Ext(f.Name())[1:],
+				Extension: filepath.Ext(f.Name()),
 			})
 		}
 	}
