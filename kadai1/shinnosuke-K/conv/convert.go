@@ -22,8 +22,6 @@ func Do(dirPath string, before string, after string) {
 
 	files := getImgFiles(dirPath, before)
 	for n := range files {
-		fmt.Println(files[n])
-
 		switch after {
 		case "png":
 			if err := files[n].convertToPNG(); err != nil {
