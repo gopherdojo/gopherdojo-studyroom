@@ -3,7 +3,7 @@ package conv
 import (
 	"fmt"
 	_ "image/gif"
-	_ "image/jpeg"
+	"image/jpeg"
 	"image/png"
 	"log"
 	"os"
@@ -29,6 +29,11 @@ func Do(dirPath string, before string, after string) {
 			if err := files[n].convertToPNG(); err != nil {
 				log.Fatal(err)
 			}
+		case "jpeg", "jpg":
+			if err := files[n].convertToJPG(); err != nil {
+				log.Fatal(err)
+			}
+
 		}
 	}
 }
@@ -57,6 +62,26 @@ func (f *File) convertToPNG() error {
 	defer destFile.Close()
 
 	if err := png.Encode(destFile, imgFile); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *File) convertToJPG() error {
+
+	imgFile, err := decodeToImg(f.Dir, f.Name)
+	if err != nil {
+		return err
+	}
+
+	destFileName := strings.Replace(f.Name, f.Extension, ".jpg", 1)
+	destFile, err := os.Create(destFileName)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	if err := jpeg.Encode(destFile, imgFile, nil); err != nil {
 		return err
 	}
 	return nil
