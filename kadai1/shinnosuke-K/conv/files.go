@@ -38,7 +38,7 @@ func getImgFiles(path string, beforeEx string) []File {
 	return fileList
 }
 
-func decodeImg(dir string, name string) (image.Image, error) {
+func decodeToImg(dir string, name string) (image.Image, error) {
 	file, err := os.Open(filepath.Join(dir, name))
 	if err != nil {
 		return nil, err

@@ -44,7 +44,7 @@ func checkOpt(before string, after string) error {
 
 func (f *File) convertToPNG() error {
 
-	imgFile, err := decodeImg(f.Dir, f.Name)
+	imgFile, err := decodeToImg(f.Dir, f.Name)
 	if err != nil {
 		return err
 	}
