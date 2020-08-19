@@ -43,6 +43,7 @@ func decodeImg(dir string, name string) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
 	imgFile, _, err := image.Decode(file)
 	return imgFile, err
