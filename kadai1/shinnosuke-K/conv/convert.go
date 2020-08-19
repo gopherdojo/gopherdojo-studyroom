@@ -14,6 +14,11 @@ var imgExts = []string{"gif", "png", "jpg", "jpeg"}
 
 func Do(dirPath string, before string, after string) {
 
+	if ok := existDir(dirPath); !ok {
+		fmt.Println("not found dir")
+		os.Exit(1)
+	}
+
 	err := checkOpt(before, after)
 	if err != nil {
 		fmt.Println(err)

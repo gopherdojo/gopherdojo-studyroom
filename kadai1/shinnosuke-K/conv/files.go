@@ -38,6 +38,14 @@ func getImgFiles(path string, beforeEx string) []File {
 	return fileList
 }
 
+func existDir(path string) bool {
+	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
+		return false
+	} else {
+		return true
+	}
+}
+
 func decodeToImg(dir string, name string) (image.Image, error) {
 	file, err := os.Open(filepath.Join(dir, name))
 	if err != nil {
