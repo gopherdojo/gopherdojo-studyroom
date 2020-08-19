@@ -19,8 +19,7 @@ func Do(dirPath string, before string, after string) {
 		os.Exit(1)
 	}
 
-	err := checkOpt(before, after)
-	if err != nil {
+	if err := checkOpt(before, after); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
