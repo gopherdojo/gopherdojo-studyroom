@@ -26,6 +26,21 @@ func convExt(srcPath string, to Ext) string {
 	return srcPath[:len(srcPath)-len(ext)] + string(to)
 }
 
+// 画像ファイルを出力
+func outputImage(dst *os.File, img image.Image, to Ext) {
+	switch to {
+	case PNG:
+		err := png.Encode(dst, img)
+		assert(err, "Failed to output image file in .png format.")
+	case JPEG:
+		err := jpeg.Encode(dst, img, nil)
+		assert(err, "Failed to output image file in .jpg format.")
+	case GIF:
+		err := gif.Encode(dst, img, nil)
+		assert(err, "Failed to output image file in .gif format.")
+	}
+}
+
 // エラー処理
 func assert(err error, msg string) {
 	if err != nil {
@@ -38,7 +53,12 @@ func Do(srcPath string, to Ext) {
 	// ファイルオープン
 	src, err := os.Open(srcPath)
 	assert(err, "Invalid image file path "+srcPath)
-	defer src.Close()
+
+	defer func() {
+		if err := src.Close(); err != nil {
+			assert(err, "Failed to close destinatiln file")
+		}
+	}()
 
 	// ファイルオブジェクトを画像オブジェクトに変換
 	img, _, err := image.Decode(src)
@@ -48,17 +68,15 @@ func Do(srcPath string, to Ext) {
 	dstPath := convExt(srcPath, to)
 	dst, err := os.Create(dstPath)
 	assert(err, "Failed to create destination file.")
-	defer dst.Close()
+
+	defer func() {
+		if err := dst.Close(); err != nil {
+			assert(err, "Failed to close destinatiln file")
+		}
+	}()
 
 	// 画像ファイルを出力
-	switch to {
-	case PNG:
-		png.Encode(dst, img)
-	case JPEG:
-		jpeg.Encode(dst, img, nil)
-	case GIF:
-		gif.Encode(dst, img, nil)
-	}
+	outputImage(dst, img, to)
 
 	// 元ファイルを削除
 	if err := os.Remove(srcPath); err != nil {
