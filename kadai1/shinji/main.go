@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"kadai1/convimg"
 	"os"
 	"path/filepath"
+
+	"kadai1/convimg"
 )
 
 var (

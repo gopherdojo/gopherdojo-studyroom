@@ -6,7 +6,6 @@ import (
 	"image"
 	"image/gif"
 	"image/jpeg"
-	_ "image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
