@@ -2,7 +2,7 @@ package conv
 
 import (
 	"fmt"
-	_ "image/gif"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"log"
@@ -35,6 +35,10 @@ func Do(dirPath string, before string, after string) {
 			}
 		case "jpeg", "jpg":
 			if err := convertToJPG(files[n]); err != nil {
+				log.Fatal(err)
+			}
+		case "gif":
+			if err := convertToGif(files[n]); err != nil {
 				log.Fatal(err)
 			}
 
@@ -89,4 +93,23 @@ func convertToJPG(f file.File) error {
 		return err
 	}
 	return nil
+}
+
+func convertToGif(f file.File) error {
+
+	imgFile, err := file.DecodeToImg(f.Dir, f.Name)
+	if err != nil {
+		return err
+	}
+
+	destFileName := strings.Replace(f.Name, f.Extension, ".gif", 1)
+	destFile, err := os.Create(destFileName)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	if err := gif.Encode(destFile, imgFile, nil); err != nil {
+		return err
+	}
 }
