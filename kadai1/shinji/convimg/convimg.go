@@ -26,17 +26,19 @@ func convExt(srcPath string, to Ext) string {
 }
 
 // 画像ファイルを出力
-func outputImage(dst *os.File, img image.Image, to Ext) {
+func outputImage(dst *os.File, img image.Image, to Ext) error {
 	switch to {
 	case PNG:
 		err := png.Encode(dst, img)
-		assert(err, "Failed to output image file in .png format.")
+		return err
 	case JPEG:
 		err := jpeg.Encode(dst, img, nil)
-		assert(err, "Failed to output image file in .jpg format.")
+		return err
 	case GIF:
 		err := gif.Encode(dst, img, nil)
-		assert(err, "Failed to output image file in .gif format.")
+		return err
+	default:
+		return nil
 	}
 }
 
@@ -76,7 +78,8 @@ func Do(srcPath string, to Ext, rmSrc bool) {
 	}()
 
 	// 画像ファイルを出力
-	outputImage(dst, img, to)
+	err = outputImage(dst, img, to)
+	assert(err, "Failed to output image file.\n")
 
 	// 元ファイルを削除（オプション）
 	if rmSrc {
