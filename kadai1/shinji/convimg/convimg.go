@@ -54,26 +54,26 @@ func Do(srcPath string, to Ext, rmSrc bool) {
 	// ファイルオープン
 	src, err := os.Open(filepath.Clean(srcPath))
 
-	assert(err, "Invalid image file path "+srcPath)
+	assert(err, "Invalid image file path "+srcPath+"\n")
 
 	defer func() {
 		if err := src.Close(); err != nil {
-			assert(err, "Failed to close destinatiln file")
+			assert(err, "Failed to close destinatiln file.\n")
 		}
 	}()
 
 	// ファイルオブジェクトを画像オブジェクトに変換
 	img, _, err := image.Decode(src)
-	assert(err, "Failed to convert source file to image.")
+	assert(err, "Failed to convert source file to image.\n")
 
 	// 出力ファイルを生成
 	dstPath := convExt(srcPath, to)
 	dst, err := os.Create(dstPath)
-	assert(err, "Failed to create destination file.")
+	assert(err, "Failed to create destination file.\n")
 
 	defer func() {
 		if err := dst.Close(); err != nil {
-			assert(err, "Failed to close destinatiln file")
+			assert(err, "Failed to close destinatiln file.\n")
 		}
 	}()
 
@@ -84,10 +84,10 @@ func Do(srcPath string, to Ext, rmSrc bool) {
 	// 元ファイルを削除（オプション）
 	if rmSrc {
 		if err := os.Remove(srcPath); err != nil {
-			assert(err, "Failed to delete source file")
+			assert(err, "Failed to delete source file.\n")
 		}
 	}
 
 	// 結果を標準出力
-	fmt.Println("convarted " + srcPath + " to " + dstPath)
+	fmt.Println("convarted " + srcPath + " to " + dstPath + "\n")
 }
