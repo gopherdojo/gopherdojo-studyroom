@@ -26,7 +26,7 @@
 # 使い方
 ```shell
 $ cd {Path_To_Repository}/kadai1/shinji
-$ ./testdata.zsh    # テストデータ生成&初期化
+$ ./testdata.sh    # テストデータ生成&初期化
 $ go build main.go  # ビルド
 ```
 
