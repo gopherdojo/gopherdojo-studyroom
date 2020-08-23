@@ -48,7 +48,7 @@ func assert(err error, msg string) {
 }
 
 // 画像を変換します。
-func Do(srcPath string, to Ext) {
+func Do(srcPath string, to Ext, rmSrc bool) {
 	// ファイルオープン
 	src, err := os.Open(filepath.Clean(srcPath))
 
@@ -78,9 +78,11 @@ func Do(srcPath string, to Ext) {
 	// 画像ファイルを出力
 	outputImage(dst, img, to)
 
-	// 元ファイルを削除
-	if err := os.Remove(srcPath); err != nil {
-		assert(err, "Failed to delete source file")
+	// 元ファイルを削除（オプション）
+	if rmSrc {
+		if err := os.Remove(srcPath); err != nil {
+			assert(err, "Failed to delete source file")
+		}
 	}
 
 	// 結果を標準出力
