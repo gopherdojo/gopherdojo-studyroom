@@ -15,7 +15,6 @@ func main() {
 	flag.Parse()
 	dir := flag.Arg(0)
 	paths := dirwalk(dir, from)
-	fmt.Println(paths)
 	for _, path := range paths {
 		err := readFile(path, from, to)
 		if err != nil {
