@@ -1,4 +1,4 @@
-package conv
+package file
 
 import (
 	"image"
@@ -16,7 +16,7 @@ type File struct {
 
 var fileList = make([]File, 0)
 
-func getImgFiles(path string, beforeEx string) []File {
+func GetImgFiles(path string, beforeEx string) []File {
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -25,7 +25,7 @@ func getImgFiles(path string, beforeEx string) []File {
 
 	for _, f := range files {
 		if f.IsDir() {
-			getImgFiles(filepath.Join(path, f.Name()), beforeEx)
+			GetImgFiles(filepath.Join(path, f.Name()), beforeEx)
 
 		} else if filepath.Ext(f.Name())[1:] == beforeEx {
 			fileList = append(fileList, File{
@@ -38,7 +38,7 @@ func getImgFiles(path string, beforeEx string) []File {
 	return fileList
 }
 
-func existDir(path string) bool {
+func ExistDir(path string) bool {
 	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
 		return false
 	} else {
@@ -46,7 +46,7 @@ func existDir(path string) bool {
 	}
 }
 
-func decodeToImg(dir string, name string) (image.Image, error) {
+func DecodeToImg(dir string, name string) (image.Image, error) {
 	file, err := os.Open(filepath.Join(dir, name))
 	if err != nil {
 		return nil, err

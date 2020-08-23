@@ -8,13 +8,15 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/shinnosuke-K/gopherdojo-studyroom/kadai1/shinnosuke-K/file"
 )
 
 var imgExts = []string{"gif", "png", "jpg", "jpeg"}
 
 func Do(dirPath string, before string, after string) {
 
-	if ok := existDir(dirPath); !ok {
+	if ok := file.ExistDir(dirPath); !ok {
 		fmt.Println("not found dir")
 		os.Exit(1)
 	}
@@ -24,15 +26,15 @@ func Do(dirPath string, before string, after string) {
 		os.Exit(1)
 	}
 
-	files := getImgFiles(dirPath, before)
+	files := file.GetImgFiles(dirPath, before)
 	for n := range files {
 		switch after {
 		case "png":
-			if err := files[n].convertToPNG(); err != nil {
+			if err := convertToPNG(files[n]); err != nil {
 				log.Fatal(err)
 			}
 		case "jpeg", "jpg":
-			if err := files[n].convertToJPG(); err != nil {
+			if err := convertToJPG(files[n]); err != nil {
 				log.Fatal(err)
 			}
 
@@ -49,9 +51,9 @@ func checkOpt(before string, after string) error {
 	return fmt.Errorf("imgconv: invaild image extension")
 }
 
-func (f *File) convertToPNG() error {
+func convertToPNG(f file.File) error {
 
-	imgFile, err := decodeToImg(f.Dir, f.Name)
+	imgFile, err := file.DecodeToImg(f.Dir, f.Name)
 	if err != nil {
 		return err
 	}
@@ -69,9 +71,9 @@ func (f *File) convertToPNG() error {
 	return nil
 }
 
-func (f *File) convertToJPG() error {
+func convertToJPG(f file.File) error {
 
-	imgFile, err := decodeToImg(f.Dir, f.Name)
+	imgFile, err := file.DecodeToImg(f.Dir, f.Name)
 	if err != nil {
 		return err
 	}
