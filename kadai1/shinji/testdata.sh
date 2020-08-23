@@ -1,5 +1,5 @@
 
-#!/bin/zsh
+#!/bin/sh
 
 rm -r testdata
 
