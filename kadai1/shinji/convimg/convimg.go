@@ -50,7 +50,8 @@ func assert(err error, msg string) {
 // 画像を変換します。
 func Do(srcPath string, to Ext) {
 	// ファイルオープン
-	src, err := os.Open(srcPath)
+	src, err := os.Open(filepath.Clean(srcPath))
+
 	assert(err, "Invalid image file path "+srcPath)
 
 	defer func() {
