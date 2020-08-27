@@ -20,5 +20,4 @@ func main() {
 	flag.Parse()
 
 	conv.Do(*dirPath, *before, *after)
-
 }
