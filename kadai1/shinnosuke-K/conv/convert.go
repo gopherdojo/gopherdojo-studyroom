@@ -32,7 +32,6 @@ func Do(dirPath string, before string, after string) {
 		if err := convert(after, files[n]); err != nil {
 			log.Fatal(err)
 		}
-
 	}
 }
 
@@ -42,7 +41,7 @@ func checkOpt(before string, after string) error {
 			return nil
 		}
 	}
-	return errors.New("imgconv: invaild image extension")
+	return errors.New("imgconv: invalid image extension")
 }
 
 func convert(afterEx string, file file.File) error {
