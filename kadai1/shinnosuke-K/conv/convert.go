@@ -48,15 +48,15 @@ func convert(afterEx string, file file.File) error {
 	switch afterEx {
 	case "png":
 		if err := convertToPNG(file); err != nil {
-			return err
+			return fmt.Errorf("%w:Couldn't convert to png", err)
 		}
 	case "jpeg", "jpg":
 		if err := convertToJPG(file); err != nil {
-			return err
+			return fmt.Errorf("%w:Couldn't convert to jpg or jpeg", err)
 		}
 	case "gif":
 		if err := convertToGif(file); err != nil {
-			return err
+			return fmt.Errorf("%w:Couldn't convert to gif", err)
 		}
 	}
 	return nil
