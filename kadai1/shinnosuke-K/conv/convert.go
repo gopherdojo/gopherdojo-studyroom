@@ -29,21 +29,10 @@ func Do(dirPath string, before string, after string) {
 
 	files := file.GetImgFiles(dirPath, before)
 	for n := range files {
-		switch after {
-		case "png":
-			if err := convertToPNG(files[n]); err != nil {
-				log.Fatal(err)
-			}
-		case "jpeg", "jpg":
-			if err := convertToJPG(files[n]); err != nil {
-				log.Fatal(err)
-			}
-		case "gif":
-			if err := convertToGif(files[n]); err != nil {
-				log.Fatal(err)
-			}
-
+		if err := convert(after, files[n]); err != nil {
+			log.Fatal(err)
 		}
+
 	}
 }
 
@@ -54,6 +43,24 @@ func checkOpt(before string, after string) error {
 		}
 	}
 	return errors.New("imgconv: invaild image extension")
+}
+
+func convert(afterEx string, file file.File) error {
+	switch afterEx {
+	case "png":
+		if err := convertToPNG(file); err != nil {
+			return err
+		}
+	case "jpeg", "jpg":
+		if err := convertToJPG(file); err != nil {
+			return err
+		}
+	case "gif":
+		if err := convertToGif(file); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func convertToPNG(f file.File) error {
