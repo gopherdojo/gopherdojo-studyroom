@@ -119,6 +119,5 @@ func convertToGif(f file.File) error {
 	if err := gif.Encode(destFile, imgFile, nil); err != nil {
 		return err
 	}
-
 	return nil
 }
