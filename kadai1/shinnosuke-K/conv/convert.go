@@ -1,6 +1,7 @@
 package conv
 
 import (
+	"errors"
 	"fmt"
 	"image/gif"
 	"image/jpeg"
@@ -52,7 +53,7 @@ func checkOpt(before string, after string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("imgconv: invaild image extension")
+	return errors.New("imgconv: invaild image extension")
 }
 
 func convertToPNG(f file.File) error {
