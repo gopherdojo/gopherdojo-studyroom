@@ -15,10 +15,11 @@ import (
 
 var paths []string
 
-func dirwalk(dir string, from *string) []string {
+func dirwalk(dir string, from *string) ([]string, err) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "%s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return err
 	}
 
 	for _, file := range files {
@@ -28,7 +29,7 @@ func dirwalk(dir string, from *string) []string {
 		}
 		ext := filepath.Ext(file.Name())
 		if ext == *from {
-			src := dir + "/" + file.Name()
+			src := filepath.Join(dir,file.Name())
 			paths = append(paths, src)
 		}
 	}
@@ -39,6 +40,7 @@ func readFile(path string, from *string, to *string) error {
 	src, err := os.Open(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return err
 	}
 	defer src.Close()
 
@@ -52,6 +54,7 @@ func readFile(path string, from *string, to *string) error {
 	out, err := os.Create(distPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return error
 	}
 	defer out.Close()
 
@@ -67,6 +70,9 @@ func handleFile() string {
 	return answer
 }
 
-func deleteFile(path string) {
+func deleteFile(path string) err{
 	os.Remove(path)
+	if err != nil {
+		return err
+	}
 }
