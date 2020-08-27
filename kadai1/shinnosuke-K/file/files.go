@@ -3,7 +3,6 @@ package file
 import (
 	"image"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -16,18 +15,21 @@ type File struct {
 
 var fileList = make([]File, 0)
 
-func GetImgFiles(path string, beforeEx string) []File {
+func GetImgFiles(path string, beforeEx string) ([]File, error) {
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	for _, f := range files {
 		if f.IsDir() {
-			GetImgFiles(filepath.Join(path, f.Name()), beforeEx)
+			_, err := GetImgFiles(filepath.Join(path, f.Name()), beforeEx)
+			if err != nil {
+				return nil, err
+			}
 
-		} else if filepath.Ext(f.Name())[1:] == beforeEx {
+		} else if filepath.Ext(f.Name()) != "" && filepath.Ext(f.Name())[1:] == beforeEx {
 			fileList = append(fileList, File{
 				Dir:       path,
 				Name:      f.Name(),
@@ -35,7 +37,7 @@ func GetImgFiles(path string, beforeEx string) []File {
 			})
 		}
 	}
-	return fileList
+	return fileList, nil
 }
 
 func ExistDir(path string) bool {
