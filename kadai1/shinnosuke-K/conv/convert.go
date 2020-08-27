@@ -6,7 +6,6 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"os"
 	"strings"
 
@@ -27,10 +26,16 @@ func Do(dirPath string, before string, after string) {
 		os.Exit(1)
 	}
 
-	files := file.GetImgFiles(dirPath, before)
+	files, err := file.GetImgFiles(dirPath, before)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	for n := range files {
 		if err := convert(after, files[n]); err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	}
 }
