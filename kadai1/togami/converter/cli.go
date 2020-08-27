@@ -15,7 +15,7 @@ import (
 
 var paths []string
 
-func dirwalk(dir string, from *string) ([]string, err) {
+func dirwalk(dir string, from *string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -70,7 +70,7 @@ func handleFile() string {
 	return answer
 }
 
-func deleteFile(path string) err{
+func deleteFile(path string) error{
 	os.Remove(path)
 	if err != nil {
 		return err
