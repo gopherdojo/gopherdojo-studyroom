@@ -41,7 +41,7 @@ func checkOpt(before string, after string) error {
 			return nil
 		}
 	}
-	return errors.New("imgconv: invalid image extension")
+	return errors.New("image convert error: invalid image extension")
 }
 
 func convert(afterEx string, file file.File) error {
@@ -55,7 +55,7 @@ func convert(afterEx string, file file.File) error {
 			return fmt.Errorf("%w:Couldn't convert to jpg or jpeg", err)
 		}
 	case "gif":
-		if err := convertToGif(file); err != nil {
+		if err := convertToGIF(file); err != nil {
 			return fmt.Errorf("%w:Couldn't convert to gif", err)
 		}
 	}
@@ -102,7 +102,7 @@ func convertToJPG(f file.File) error {
 	return nil
 }
 
-func convertToGif(f file.File) error {
+func convertToGIF(f file.File) error {
 
 	imgFile, err := file.DecodeToImg(f.Dir, f.Name)
 	if err != nil {
