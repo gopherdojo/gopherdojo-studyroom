@@ -62,12 +62,23 @@ func readFile(path string, from *string, to *string) error {
 	return err
 }
 
-func handleFile() string {
+func handleFile(paths []string) {
 	fmt.Println("Would you want to delete the original fail? y/n")
 	stdin := bufio.NewScanner(os.Stdin)
 	stdin.Scan()
 	answer := stdin.Text()
-	return answer
+	switch answer {
+	case "y":
+		for _, path := range paths {
+			deleteFile(path)
+			fmt.Println("File deleted.")
+		}
+	case "n":
+		return
+	default:
+		fmt.Println("Please enter again")
+		handleFile(paths)
+	}
 }
 
 func deleteFile(path string) error{

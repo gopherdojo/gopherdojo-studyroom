@@ -28,17 +28,5 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
-	answer := handleFile()
-	switch answer {
-	case "y":
-		for _, path := range paths {
-			deleteFile(path)
-		}
-	case "n":
-		return
-	default:
-		fmt.Println("Please enter again")
-		handleFile()
-	}
+	handleFile(paths)
 }
