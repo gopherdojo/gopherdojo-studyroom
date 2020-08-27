@@ -11,14 +11,21 @@ var (
 	to   *string = flag.String("t", ".png", "Enter the dest for ext you want to convert")
 )
 
-func main() {
+func init(){
 	flag.Parse()
+}
+
+func main() {
 	dir := flag.Arg(0)
-	paths := dirwalk(dir, from)
+	paths, err := dirwalk(dir, from)
+	if err != nil {
+		os.Exit(1)
+	}
 	for _, path := range paths {
 		err := readFile(path, from, to)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "%s\n", err)
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
 		}
 	}
 

@@ -18,8 +18,8 @@ var paths []string
 func dirwalk(dir string, from *string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return err
+		fmt.Fprintf(os.Stderr,"%s\n",err)
+		return  paths,err
 	}
 
 	for _, file := range files {
@@ -33,13 +33,12 @@ func dirwalk(dir string, from *string) ([]string, error) {
 			paths = append(paths, src)
 		}
 	}
-	return paths
+	return paths, err
 }
 
 func readFile(path string, from *string, to *string) error {
 	src, err := os.Open(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return err
 	}
 	defer src.Close()
@@ -47,6 +46,7 @@ func readFile(path string, from *string, to *string) error {
 	img, _, err := image.Decode(src)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return err
 	}
 
 	distPath := path[:len(path)-len(*from)] + *to
@@ -54,7 +54,7 @@ func readFile(path string, from *string, to *string) error {
 	out, err := os.Create(distPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return error
+		return err
 	}
 	defer out.Close()
 
@@ -71,8 +71,9 @@ func handleFile() string {
 }
 
 func deleteFile(path string) error{
-	os.Remove(path)
+	err := os.Remove(path)
 	if err != nil {
 		return err
 	}
+	return err
 }
