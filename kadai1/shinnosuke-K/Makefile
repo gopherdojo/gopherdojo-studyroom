@@ -1,4 +1,4 @@
-init: create
+all: create
 	go build -o imgconv main.go
 
 create:
