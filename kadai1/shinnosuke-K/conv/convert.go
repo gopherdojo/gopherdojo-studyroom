@@ -7,6 +7,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/shinnosuke-K/gopherdojo-studyroom/kadai1/shinnosuke-K/file"
@@ -14,7 +15,7 @@ import (
 
 var imgExts = []string{"gif", "png", "jpg", "jpeg"}
 
-func Do(dirPath string, before string, after string) {
+func Do(dirPath string, before string, after string, delImg bool) {
 
 	if ok := file.ExistDir(dirPath); !ok {
 		fmt.Println("not found dir")
@@ -34,6 +35,13 @@ func Do(dirPath string, before string, after string) {
 
 	for n := range files {
 		if err := convert(after, files[n]); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	if delImg {
+		if err := deleteImg(files); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -123,6 +131,16 @@ func convertToGIF(f file.File) error {
 
 	if err := gif.Encode(destFile, imgFile, nil); err != nil {
 		return err
+	}
+	return nil
+}
+
+func deleteImg(files []file.File) error {
+	for n := range files {
+		path := filepath.Join(files[n].Dir, files[n].Name)
+		if err := os.Remove(path); err != nil {
+			return fmt.Errorf("%w: Couldn't delete %s", err, path)
+		}
 	}
 	return nil
 }
