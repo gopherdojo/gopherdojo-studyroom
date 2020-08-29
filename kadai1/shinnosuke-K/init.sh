@@ -15,7 +15,7 @@ exist "dummyImg/png"
 
 # create sample image files for test
 create() {
-  for i in $(seq 1 10)
+  for i in $(seq 1 3)
   do
     convert standard.png "$1"/"$i"."$2"
   done
