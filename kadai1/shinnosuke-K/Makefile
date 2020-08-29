@@ -1,5 +1,8 @@
 init:
 	@sh init.sh && go build -o imgconv main.go
 
+create:
+	@sh init.sh
+
 clean:
 	@rm -r dummyImg
