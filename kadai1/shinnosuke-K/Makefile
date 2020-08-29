@@ -1,5 +1,5 @@
-init:
-	@sh init.sh && go build -o imgconv main.go
+init: create
+	go build -o imgconv main.go
 
 create:
 	@sh init.sh
