@@ -14,23 +14,23 @@ func TestExistDir(t *testing.T) {
 		want bool
 	}{
 		{
-			name: ".から始まり存在する",
-			args: args{path: "./conv"},
-			want: false,
-		},
-		{
-			name: ".から始まり存在しない",
-			args: args{"./kadai1"},
-			want: false,
-		},
-		{
-			name: "..を使って存在する",
-			args: args{path: "../"},
+			name: "存在する相対パス",
+			args: args{path: "../conv"},
 			want: true,
 		},
 		{
-			name: "..を使って存在しない",
-			args: args{path: "../kadai"},
+			name: "存在する絶対パス",
+			args: args{path: "/"},
+			want: true,
+		},
+		{
+			name: "存在しない相対パス",
+			args: args{path: "../tmp"},
+			want: false,
+		},
+		{
+			name: "存在しない絶対パス",
+			args: args{path: "/shinnosuke"},
 			want: false,
 		},
 	}
