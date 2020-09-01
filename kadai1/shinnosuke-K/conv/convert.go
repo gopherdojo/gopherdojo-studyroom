@@ -46,6 +46,8 @@ func Do(dirPath string, before string, after string, delImg bool) {
 	}
 }
 
+// 指定した拡張子が正しいか確認
+// Check that the extension you specified is correct.
 func checkOpt(before string, after string) error {
 	imgExts := []string{"gif", "png", "jpg", "jpeg"}
 	for n := range imgExts {
@@ -134,6 +136,8 @@ func convertToGIF(f file.File) error {
 	return nil
 }
 
+// ファイルを削除
+// delete file
 func deleteImg(files []file.File) error {
 	for n := range files {
 		path := filepath.Join(files[n].Dir, files[n].Name)
