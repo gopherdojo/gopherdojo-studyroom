@@ -13,8 +13,6 @@ import (
 	"github.com/shinnosuke-K/gopherdojo-studyroom/kadai1/shinnosuke-K/file"
 )
 
-var imgExts = []string{"gif", "png", "jpg", "jpeg"}
-
 func Do(dirPath string, before string, after string, delImg bool) {
 
 	if ok := file.ExistDir(dirPath); !ok {
@@ -49,6 +47,7 @@ func Do(dirPath string, before string, after string, delImg bool) {
 }
 
 func checkOpt(before string, after string) error {
+	imgExts := []string{"gif", "png", "jpg", "jpeg"}
 	for n := range imgExts {
 		if strings.ToLower(before) == imgExts[n] || strings.ToLower(after) == imgExts[n] {
 			return nil
