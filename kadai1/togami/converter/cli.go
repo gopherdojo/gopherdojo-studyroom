@@ -19,7 +19,7 @@ func dirwalk(dir string, from *string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Printf("%s\n", err)
-		return paths, err
+		return nil, err
 	}
 
 	for _, file := range files {
@@ -64,7 +64,7 @@ func readFile(path string, from *string, to *string) error {
 }
 
 func handleFile(paths []string) {
-	fmt.Println("Would you want to delete the original fail? y/n")
+	fmt.Print("Would you want to delete the original fail? y/n:")
 	stdin := bufio.NewScanner(os.Stdin)
 	stdin.Scan()
 	answer := stdin.Text()
