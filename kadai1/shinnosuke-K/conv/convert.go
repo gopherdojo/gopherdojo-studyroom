@@ -1,7 +1,6 @@
 package conv
 
 import (
-	"errors"
 	"fmt"
 	"image/gif"
 	"image/jpeg"
@@ -20,7 +19,12 @@ func Do(dirPath string, before string, after string, delImg bool) {
 		os.Exit(1)
 	}
 
-	if err := checkOpt(before, after); err != nil {
+	if err := checkOpt(before); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if err := checkOpt(after); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -48,14 +52,14 @@ func Do(dirPath string, before string, after string, delImg bool) {
 
 // 指定した拡張子が正しいか確認
 // Check that the extension you specified is correct.
-func checkOpt(before string, after string) error {
+func checkOpt(ex string) error {
 	imgExts := []string{"gif", "png", "jpg", "jpeg"}
 	for n := range imgExts {
-		if strings.ToLower(before) == imgExts[n] || strings.ToLower(after) == imgExts[n] {
+		if strings.ToLower(ex) == imgExts[n] {
 			return nil
 		}
 	}
-	return errors.New("image convert error: invalid image extension")
+	return fmt.Errorf("image convert error: invalid image extension '%s'", ex)
 }
 
 func convert(afterEx string, file file.File) error {
