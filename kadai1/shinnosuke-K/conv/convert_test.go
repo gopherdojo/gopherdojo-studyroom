@@ -4,83 +4,67 @@ import "testing"
 
 func Test_checkOpt(t *testing.T) {
 	type args struct {
-		before string
-		after  string
+		ex string
 	}
 	tests := []struct {
 		name    string
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
-			name:    "-aが違う",
-			args:    args{after: "d"},
+			name:    "拡張子が違う（小文字）",
+			args:    args{ex: "d"},
 			wantErr: true,
 		},
 		{
-			name:    "-bが違う",
-			args:    args{before: "d"},
+			name:    "拡張子が違う（大文字）",
+			args:    args{ex: "D"},
 			wantErr: true,
 		},
 		{
-			name: "-a, -b 両方違う",
-			args: args{
-				before: "d",
-				after:  "d",
-			},
-			wantErr: true,
-		},
-		{
-			name:    "-bのデフォルトと同じ拡張子を-aで指定",
-			args:    args{after: "jpeg"},
+			name:    "拡張子が正しい（png）",
+			args:    args{ex: "png"},
 			wantErr: false,
 		},
 		{
-			name:    "-aのデフォルトと同じ拡張子を-bで指定",
-			args:    args{before: "png"},
+			name:    "拡張子が正しい（jpg）",
+			args:    args{ex: "jpg"},
 			wantErr: false,
 		},
 		{
-			name:    "-aが大文字で正しい",
-			args:    args{after: "GIF"},
+			name:    "拡張子が正しい（jpeg）",
+			args:    args{ex: "jpeg"},
 			wantErr: false,
 		},
 		{
-			name:    "-aが大文字で正しくない",
-			args:    args{after: "D"},
-			wantErr: true,
-		},
-		{
-			name:    "-bが大文字で正しい",
-			args:    args{before: "GIF"},
+			name:    "拡張子が正しい（gif）",
+			args:    args{ex: "gif"},
 			wantErr: false,
 		},
 		{
-			name:    "-bが大文字で正しくない",
-			args:    args{before: "D"},
-			wantErr: true,
+			name:    "拡張子が正しい（PNG）",
+			args:    args{ex: "PNG"},
+			wantErr: false,
 		},
 		{
-			name: "-a, -b 両方大文字で違う",
-			args: args{
-				before: "D",
-				after:  "D",
-			},
-			wantErr: true,
+			name:    "拡張子が正しい（JPG）",
+			args:    args{ex: "JPG"},
+			wantErr: false,
 		},
 		{
-			name: "-a, -b 両方大文字で正しい",
-			args: args{
-				before: "JPEG",
-				after:  "GIF",
-			},
+			name:    "拡張子が正しい（JPEG）",
+			args:    args{ex: "JPEG"},
+			wantErr: false,
+		},
+		{
+			name:    "拡張子が正しい（GIF）",
+			args:    args{ex: "GIF"},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := checkOpt(tt.args.before, tt.args.after); (err != nil) != tt.wantErr {
+			if err := checkOpt(tt.args.ex); (err != nil) != tt.wantErr {
 				t.Errorf("checkOpt() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
