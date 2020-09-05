@@ -20,6 +20,31 @@
 
 # 使用方法
 
+```
+使用方法:
+  imgconv [-from=<ext>] [-to=<ext>] target_directory
+引数:
+  -from=<ext> 変換前の拡張子 [gif jpeg jpg png bmp] (default: jpg)
+  -to=<ext>   変換後の拡張子 [gif jpeg jpg png bmp] (default: png)
+```
+
+例）
+```
+❯ go build image_conversion.go
+
+❯ ./image_conversion testdata
+変換が完了しました
+
+❯ ./image_conversion -from=png -to=bmp testdata
+変換が完了しました
+
+❯ ./image_conversion testdata testdata    // 引数が多い
+使用方法:
+  ./image_conversion [-from=<ext>] [-to=<ext>] target_directory
+引数:
+  -from=<ext> 変換前の拡張子 [gif jpeg jpg png bmp] (default: jpg)
+  -to=<ext>   変換後の拡張子 [gif jpeg jpg png bmp] (default: png)
+```
 
 ---
 
@@ -33,4 +58,6 @@
 2. GoDoc の使い方がいまいち分からなかった。godocコマンドで生成するって言っている記事もあれば、自動生成されると言っているものもある。
   実際に[go.dev](https://go.dev/about)に掲載するにはどうすればいいのか？
 
-3.
+3. テストを使用と思ったが、同じパッケージなのに参照できなかった。
+何故なのか？
+また、プログラム引数を取る場合、どうすやってテストすれば良いのか。
