@@ -29,7 +29,10 @@ func main() {
 		func(srcPath string, info os.FileInfo, err error) error {
 			if filepath.Ext(srcPath) == *from {
 				// fmt.Println(srcPath)
-				convimg.Do(srcPath, convimg.Ext(*to), *rmSrc)
+				convimgerr := convimg.Do(srcPath, convimg.Ext(*to), *rmSrc)
+				if convimgerr != nil {
+					fmt.Fprintln(os.Stderr, "ERROR:", convimgerr)
+				}
 			}
 			return nil
 		})
