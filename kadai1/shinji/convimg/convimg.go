@@ -19,7 +19,51 @@ const (
 	GIF  Ext = ".gif"
 )
 
-// 拡張子を変更します。
+func decode(srcPath string) (image.Image, error) {
+	// ファイルオープン
+	src, openerr := os.Open(filepath.Clean(srcPath))
+	if openerr != nil {
+		return nil, openerr
+	}
+	var closeerr error
+	defer func() {
+		if closeerr = src.Close(); closeerr != nil {
+			fmt.Fprintln(os.Stderr, "ERROR:", closeerr)
+		}
+	}()
+
+	// ファイルオブジェクトを画像オブジェクトに変換
+	img, _, decodeerr := image.Decode(src)
+	if decodeerr != nil {
+		return nil, decodeerr
+	}
+
+	return img, nil
+}
+
+func encode(dstPath string, img image.Image, to Ext) error {
+	// 出力ファイルを生成
+	dst, createerr := os.Create(dstPath)
+	if createerr != nil {
+		return createerr
+	}
+	defer func() {
+		var closeerr error
+		if closeerr = dst.Close(); closeerr != nil {
+			fmt.Fprintln(os.Stderr, "ERROR:", closeerr)
+		}
+	}()
+
+	// 画像オブジェクトを指定の拡張子で出力
+	outputerr := outputImage(dst, img, to)
+	if outputerr != nil {
+		return outputerr
+	}
+
+	return nil
+}
+
+// 拡張子を変更
 func convExt(srcPath string, to Ext) string {
 	ext := filepath.Ext(srcPath)
 	return srcPath[:len(srcPath)-len(ext)] + string(to)
@@ -42,45 +86,21 @@ func outputImage(dst *os.File, img image.Image, to Ext) error {
 	}
 }
 
-// 画像を変換します。
+// 画像を変換
 func Do(srcPath string, to Ext, rmSrc bool) error {
-	// ファイルオープン
-	src, openerr := os.Open(filepath.Clean(srcPath))
-	if openerr != nil {
-		return openerr
-	}
-	defer func() error {
-		var srccloseerr error
-		if srccloseerr := src.Close(); srccloseerr != nil {
-			return srccloseerr
-		}
-		return srccloseerr
-	}()
-
-	// ファイルオブジェクトを画像オブジェクトに変換
-	img, _, decodeerr := image.Decode(src)
+	//変換前ファイルをdecode
+	img, decodeerr := decode(srcPath)
 	if decodeerr != nil {
 		return decodeerr
 	}
 
-	// 出力ファイルを生成
+	//変換後ファイルのパスを生成
 	dstPath := convExt(srcPath, to)
-	dst, createerr := os.Create(dstPath)
-	if createerr != nil {
-		return createerr
-	}
-	defer func() error {
-		var dstcloseerr error
-		if dstcloseerr = dst.Close(); dstcloseerr != nil {
-			return dstcloseerr
-		}
-		return dstcloseerr
-	}()
 
-	// 画像ファイルを出力
-	outputerr := outputImage(dst, img, to)
-	if outputerr != nil {
-		return outputerr
+	//変換後ファイルを指定の拡張子でencode
+	encodeerr := encode(dstPath, img, to)
+	if encodeerr != nil {
+		return encodeerr
 	}
 
 	// 元ファイルを削除（オプション）
