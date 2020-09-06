@@ -15,28 +15,33 @@ var (
 	rmSrc *bool   = flag.Bool("r", false, "remove original file")
 )
 
-func main() {
-	flag.Parse()
-
-	// fmt.Println(convimg.Ext(*from))
-	// fmt.Println(convimg.Ext(*to))
-	// fmt.Println(*rmSrc)
-
-	dir := flag.Arg(0)
-	// fmt.Println(dir)
-
+func srcFileList(dir string, from *string) ([]string, error) {
+	var srcFileList []string
 	err := filepath.Walk(dir,
 		func(srcPath string, info os.FileInfo, err error) error {
 			if filepath.Ext(srcPath) == *from {
-				// fmt.Println(srcPath)
-				convimgerr := convimg.Do(srcPath, convimg.Ext(*to), *rmSrc)
-				if convimgerr != nil {
-					fmt.Fprintln(os.Stderr, "ERROR:", convimgerr)
-				}
+				srcFileList = append(srcFileList, srcPath)
 			}
 			return nil
 		})
+	return srcFileList, err
+}
+
+func main() {
+	flag.Parse()
+	dir := flag.Arg(0)
+
+	// 変換前ファイルのリストを取得
+	filelist, err := srcFileList(dir, from)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintln(os.Stderr, "ERROR:", err)
+	}
+
+	// 変換
+	for _, srcPath := range filelist {
+		convimgerr := convimg.Do(srcPath, convimg.Ext(*to), *rmSrc)
+		if convimgerr != nil {
+			fmt.Fprintln(os.Stderr, "ERROR:", convimgerr)
+		}
 	}
 }
