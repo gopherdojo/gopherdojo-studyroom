@@ -41,6 +41,12 @@ func decode(srcPath string) (image.Image, error) {
 	return img, nil
 }
 
+// 拡張子を変更
+func convExt(srcPath string, to Ext) string {
+	ext := filepath.Ext(srcPath)
+	return srcPath[:len(srcPath)-len(ext)] + string(to)
+}
+
 func encode(dstPath string, img image.Image, to Ext) error {
 	// 出力ファイルを生成
 	dst, createerr := os.Create(dstPath)
@@ -61,12 +67,6 @@ func encode(dstPath string, img image.Image, to Ext) error {
 	}
 
 	return nil
-}
-
-// 拡張子を変更
-func convExt(srcPath string, to Ext) string {
-	ext := filepath.Ext(srcPath)
-	return srcPath[:len(srcPath)-len(ext)] + string(to)
 }
 
 // 画像ファイルを出力
