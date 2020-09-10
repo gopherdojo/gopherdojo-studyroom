@@ -12,6 +12,14 @@ import (
 	"github.com/shinnosuke-K/gopherdojo-studyroom/kadai1/shinnosuke-K/file"
 )
 
+// Extensions
+const (
+	PNG  string = "png"
+	JPG  string = "jpg"
+	JPEG string = "jpeg"
+	GIF  string = "gif"
+)
+
 func Do(dirPath string, before string, after string, delImg bool) {
 
 	if ok := file.ExistDir(dirPath); !ok {
@@ -53,7 +61,7 @@ func Do(dirPath string, before string, after string, delImg bool) {
 // 指定した拡張子が正しいか確認
 // Check that the extension you specified is correct.
 func checkOpt(ex string) error {
-	imgExts := []string{"gif", "png", "jpg", "jpeg"}
+	imgExts := []string{PNG, JPG, JPEG, GIF}
 	for n := range imgExts {
 		if strings.ToLower(ex) == imgExts[n] {
 			return nil
@@ -64,15 +72,15 @@ func checkOpt(ex string) error {
 
 func convert(afterEx string, file file.File) error {
 	switch afterEx {
-	case "png":
+	case PNG:
 		if err := convertToPNG(file); err != nil {
 			return fmt.Errorf("%w:Couldn't convert to png", err)
 		}
-	case "jpeg", "jpg":
+	case JPEG, JPG:
 		if err := convertToJPG(file); err != nil {
 			return fmt.Errorf("%w:Couldn't convert to jpg or jpeg", err)
 		}
-	case "gif":
+	case GIF:
 		if err := convertToGIF(file); err != nil {
 			return fmt.Errorf("%w:Couldn't convert to gif", err)
 		}
