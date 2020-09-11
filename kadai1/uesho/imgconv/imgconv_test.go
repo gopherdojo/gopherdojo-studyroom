@@ -8,10 +8,10 @@ func TestDo(t *testing.T) {
 
 }
 func TestToString(t *testing.T) {
-	// var gif ImageExt = "gif"
-	// if gif.toString() != "gif" {
-	// 	t.Errorf("toString = %s; want gif", gif)
-	// }
+	var gif ImageExt = "gif"
+	if gif.toString() != "gif" {
+		t.Errorf("toString = %s; want gif", gif)
+	}
 }
 
 func TestToImageExt(t *testing.T) {

@@ -22,7 +22,7 @@
 
 ```
 使用方法:
-  imgconv [-from=<ext>] [-to=<ext>] target_directory
+  image_conversion [-from=<ext>] [-to=<ext>] target_directory
 引数:
   -from=<ext> 変換前の拡張子 [gif jpeg jpg png bmp] (default: jpg)
   -to=<ext>   変換後の拡張子 [gif jpeg jpg png bmp] (default: png)
@@ -40,7 +40,7 @@
 
 ❯ ./image_conversion testdata testdata    // 引数が多い
 使用方法:
-  ./image_conversion [-from=<ext>] [-to=<ext>] target_directory
+  image_conversion [-from=<ext>] [-to=<ext>] target_directory
 引数:
   -from=<ext> 変換前の拡張子 [gif jpeg jpg png bmp] (default: jpg)
   -to=<ext>   変換後の拡張子 [gif jpeg jpg png bmp] (default: png)

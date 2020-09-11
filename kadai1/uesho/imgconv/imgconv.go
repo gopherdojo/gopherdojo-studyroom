@@ -83,10 +83,10 @@ func newImageConverter(from, to string) (*imageConverter, error) {
 }
 
 // 画像を読み込む
-func (image_converter imageConverter) readImage(path string) (image.Image, error) {
+func (c *imageConverter) readImage(path string) (image.Image, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("ファイルを開くことができませんでした: ", path)
+		return nil, fmt.Errorf("ファイルを開くことができませんでした: %s", path)
 	}
 	defer file.Close()
 
@@ -99,14 +99,14 @@ func (image_converter imageConverter) readImage(path string) (image.Image, error
 }
 
 // 画像を保存する
-func (image_converter imageConverter) saveImage(image image.Image, path string) error {
+func (c *imageConverter) saveImage(image image.Image, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	switch image_converter.to {
+	switch c.to {
 	case GIF:
 		err = gif.Encode(file, image, nil)
 	case JPEG, JPG:
@@ -116,7 +116,7 @@ func (image_converter imageConverter) saveImage(image image.Image, path string) 
 	case BMP:
 		err = bmp.Encode(file, image)
 	default:
-		err = fmt.Errorf("変換不可能な拡張子です: %s", image_converter.to)
+		err = fmt.Errorf("変換不可能な拡張子です: %s", c.to)
 	}
 
 	if err != nil {
@@ -131,20 +131,20 @@ func getFileNameWithoutExt(path string) string {
 }
 
 // 画像ファイルを変換する
-func (image_converter imageConverter) convert(src string) error {
+func (c *imageConverter) convert(src string) error {
 	dir := filepath.Dir(src)
-	dst := filepath.Join(dir, fmt.Sprintf("%s.%s", getFileNameWithoutExt(src), image_converter.to.toString()))
+	dst := filepath.Join(dir, fmt.Sprintf("%s.%s", getFileNameWithoutExt(src), c.to.toString()))
 
 	if _, err := os.Stat(dst); !os.IsNotExist(err) {
 		return fmt.Errorf("ファイルはすでに存在しています: %s", dst)
 	}
 
-	img, err := image_converter.readImage(src)
+	img, err := c.readImage(src)
 	if err != nil {
 		return err
 	}
 
-	err = image_converter.saveImage(img, dst)
+	err = c.saveImage(img, dst)
 	if err != nil {
 		return err
 	}
@@ -153,14 +153,14 @@ func (image_converter imageConverter) convert(src string) error {
 }
 
 // ディレクトリ内の指定された画像ファイルを全て変換する
-func (image_converter imageConverter) convertAll(dir string) error {
+func (c *imageConverter) convertAll(dir string) error {
 	walk_err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if !info.IsDir() && filepath.Ext(path)[1:] == image_converter.from.toString() {
-			if err := image_converter.convert(path); err != nil {
+		if !info.IsDir() && filepath.Ext(path)[1:] == c.from.toString() {
+			if err := c.convert(path); err != nil {
 				return err
 			}
 		}
