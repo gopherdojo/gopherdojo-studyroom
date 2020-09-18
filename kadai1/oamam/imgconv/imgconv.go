@@ -14,9 +14,13 @@ import (
 type ext string
 
 const (
-	GIF  ext = "gif"
-	PNG  ext = "png"
-	JPG  ext = "jpg"
+	// GIF extension
+	GIF ext = "gif"
+	// PNG extension
+	PNG ext = "png"
+	// JPG extension
+	JPG ext = "jpg"
+	// JPEG extension
 	JPEG ext = "jpeg"
 )
 
@@ -30,11 +34,11 @@ type target struct {
 	outputExt  ext
 }
 
-func (t *target) GetInputFile() string {
+func (t *target) getInputFile() string {
 	return t.inputPath + t.fileName + "." + string(t.inputExt)
 }
 
-func (t *target) GetOutputFile() string {
+func (t *target) getOutputFile() string {
 	return t.outputPath + t.fileName + "." + string(t.outputExt)
 }
 
@@ -59,8 +63,8 @@ func getTargets(id *string, od *string, ie *string, oe *string) ([]target, error
 	return targets, nil
 }
 
-func decode(t target) (image.Image, error) {
-	inputFile := t.GetInputFile()
+func (t *target) decode() (image.Image, error) {
+	inputFile := t.getInputFile()
 	input, err := os.Open(inputFile)
 	if err != nil {
 		return nil, err
@@ -73,8 +77,8 @@ func decode(t target) (image.Image, error) {
 	return img, nil
 }
 
-func encode(t target, img image.Image) error {
-	outputFile := t.GetOutputFile()
+func (t *target) encode(img image.Image) error {
+	outputFile := t.getOutputFile()
 	output, err := os.Create(outputFile)
 	if err != nil {
 		return err
@@ -98,11 +102,11 @@ func encode(t target, img image.Image) error {
 
 func convert(targets []target) error {
 	for _, t := range targets {
-		img, err := decode(t)
+		img, err := t.decode()
 		if err != nil {
 			return err
 		}
-		if err := encode(t, img); err != nil {
+		if err := t.encode(img); err != nil {
 			return err
 		}
 	}
