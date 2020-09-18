@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/oamam/gopherdojo-studyroom/imgconv"
+	"github.com/oamam/gopherdojo-studyroom/kadai1/oamam/imgconv"
 )
 
 func main() {
