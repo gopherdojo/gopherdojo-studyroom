@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gopherdojo-studyroom/kadai1/oamam/imgconv"
 	"log"
+
+	"github.com/oamam/gopherdojo-studyroom/imgconv"
 )
 
 func main() {
