@@ -1,3 +1,4 @@
 bin/
-images/output/
+images/output/*
 .DS_Store
+!.gitkeep

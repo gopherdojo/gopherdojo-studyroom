@@ -1,0 +1,7 @@
+linters:
+  disable-all: true
+  enable:
+    - goimports
+    - golint
+issues:
+  exclude-use-default: false
