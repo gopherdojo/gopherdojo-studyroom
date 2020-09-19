@@ -120,7 +120,7 @@ func convert(targets []target) error {
 }
 
 // Do performs the conversion and returns an error if it fails.
-func Do(id *string, od *string, ie *string, oe *string) error {
+func Do(id, od, ie, oe *string) error {
 	if err := validation(id, od, ie, oe); err != nil {
 		return err
 	}
