@@ -42,7 +42,7 @@ func (t *target) getOutputFile() string {
 	return t.outputPath + t.fileName + "." + string(t.outputExt)
 }
 
-func getTargets(id *string, od *string, ie *string, oe *string) ([]target, error) {
+func getTargets(id, od, ie, oe *string) ([]target, error) {
 	var targets []target
 	err := filepath.Walk(*id, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == "."+*ie {
@@ -63,13 +63,19 @@ func getTargets(id *string, od *string, ie *string, oe *string) ([]target, error
 	return targets, nil
 }
 
+func checkClose(input *os.File, err *error) {
+	if cErr := input.Close(); *err == nil {
+		*err = cErr
+	}
+}
+
 func (t *target) decode() (image.Image, error) {
 	inputFile := t.getInputFile()
 	input, err := os.Open(inputFile)
 	if err != nil {
 		return nil, err
 	}
-	defer input.Close()
+	defer checkClose(input, &err)
 	img, _, err := image.Decode(input)
 	if err != nil {
 		return nil, err
@@ -83,7 +89,7 @@ func (t *target) encode(img image.Image) error {
 	if err != nil {
 		return err
 	}
-	defer output.Close()
+	defer checkClose(output, &err)
 	switch t.outputExt {
 	case JPG, JPEG:
 		err = jpeg.Encode(output, img, nil)
