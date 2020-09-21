@@ -18,6 +18,11 @@ const (
 	ExtensionPng    = ".png"
 )
 
+type fileDest struct {
+	from *os.File
+	to   *os.File
+}
+
 // ConvertImages converts an image file with an extension to another specified by "extFrom" and "extTo" in "destDir" directory.
 func ConvertImages(destDir, extFrom, extTo string) error {
 	if extFrom == extTo {
@@ -52,41 +57,41 @@ func convert(filepath, extFrom, extTo string) error {
 
 	switch extFrom {
 	case ExtensionJpg:
-		return jpegToPng(from, to)
+		return jpegToPng(fileDest{from, to})
 	case ExtensionPng:
-		return pngToJpeg(from, to)
+		return pngToJpeg(fileDest{from, to})
 	default:
 		return nil
 	}
 }
 
-func jpegToPng(from, to *os.File) error {
-	if !isJpeg(from) {
+func jpegToPng(dest fileDest) error {
+	if !isJpeg(dest.from) {
 		return errors.New("content type of the original file is not " + ContentTypeJpeg)
 	}
 
-	jpegImg, err := jpeg.Decode(from)
+	jpegImg, err := jpeg.Decode(dest.from)
 
 	if err != nil {
 		return err
 	}
 
-	png.Encode(to, jpegImg)
+	png.Encode(dest.to, jpegImg)
 	return nil
 }
 
-func pngToJpeg(from, to *os.File) error {
-	if !isPng(from) {
+func pngToJpeg(dest fileDest) error {
+	if !isPng(dest.from) {
 		return errors.New("content type of the original file is not " + ContentTypePng)
 	}
 
-	pngImg, err := png.Decode(from)
+	pngImg, err := png.Decode(dest.from)
 
 	if err != nil {
 		return err
 	}
 
-	return jpeg.Encode(to, pngImg, nil)
+	return jpeg.Encode(dest.to, pngImg, nil)
 }
 
 func isJpeg(file *os.File) bool {
