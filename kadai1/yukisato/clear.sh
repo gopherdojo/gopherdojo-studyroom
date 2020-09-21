@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find ./files -type f -name "*.jpg" | xargs -I {} rm {}
+find ./files -type f -name "*.png" | xargs -I {} rm {}
