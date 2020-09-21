@@ -18,6 +18,7 @@ const (
 	ExtensionPng    = ".png"
 )
 
+// Indecates file destination to convert.
 type fileDest struct {
 	from *os.File
 	to   *os.File
@@ -42,6 +43,7 @@ func ConvertImages(destDir, extFrom, extTo string) error {
 	})
 }
 
+// Convert all the image files with a specified extension under target directory to another file with anotehr extension.
 func convert(filepath, extFrom, extTo string) error {
 	from, err := os.Open(filepath)
 	if err != nil {
@@ -65,6 +67,7 @@ func convert(filepath, extFrom, extTo string) error {
 	}
 }
 
+// Convert an image file from jpeg to png.
 func jpegToPng(dest fileDest) error {
 	if !isJpeg(dest.from) {
 		return errors.New("content type of the original file is not " + ContentTypeJpeg)
@@ -80,6 +83,7 @@ func jpegToPng(dest fileDest) error {
 	return nil
 }
 
+// Convert an image file from png to jpeg.
 func pngToJpeg(dest fileDest) error {
 	if !isPng(dest.from) {
 		return errors.New("content type of the original file is not " + ContentTypePng)
@@ -94,16 +98,19 @@ func pngToJpeg(dest fileDest) error {
 	return jpeg.Encode(dest.to, pngImg, nil)
 }
 
+// Determine if the content type of a given file is image/jpeg
 func isJpeg(file *os.File) bool {
 	contentType, _ := getFileContentType(file)
 	return contentType == ContentTypeJpeg
 }
 
+// Determine if the content type of a given file is image/png
 func isPng(file *os.File) bool {
 	contentType, _ := getFileContentType(file)
 	return contentType == ContentTypePng
 }
 
+// Detect content type from the first 512 bytes of a given file.
 func getFileContentType(file *os.File) (string, error) {
 	// Using the first 512 bytes to detect the content type.
 	buffer := make([]byte, 512)
