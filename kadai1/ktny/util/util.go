@@ -2,24 +2,43 @@ package util
 
 import (
 	"bytes"
-	"fmt"
 	"image/jpeg"
 	"image/png"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func Dirwalk(dir string) []string {
+var (
+	ImageExtensions = []string{"jpg", "jpeg", "png", "gif"}
+)
+
+func GetExtension(s string) string {
+	t := strings.Split(s, ".")
+	extension := t[len(t)-1]
+	return extension
+}
+
+func Contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
+func DirWalk(dir string) []string {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}
 
-	var paths []string
+	paths := make([]string, 0, len(files))
 	for _, file := range files {
 		if file.IsDir() {
-			paths = append(paths, Dirwalk(filepath.Join(dir, file.Name()))...)
+			paths = append(paths, DirWalk(filepath.Join(dir, file.Name()))...)
 			continue
 		}
 		paths = append(paths, filepath.Join(dir, file.Name()))
@@ -28,13 +47,7 @@ func Dirwalk(dir string) []string {
 	return paths
 }
 
-func convertImageDir(targetDir, from, to string) {
-	filename := "image1.jpg"
-	path := fmt.Sprintf("targetDir/%s", filename)
-	convertImage(path, from, to)
-}
-
-func convertImage(path, from, to string) {
+func ConvertImage(path, from, to string) {
 	f, err := os.Open(path)
 	if err != nil {
 		panic(err)

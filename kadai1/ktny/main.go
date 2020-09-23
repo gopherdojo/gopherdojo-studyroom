@@ -24,5 +24,15 @@ func main() {
 	// targetDir配下を再帰的に画像変換する
 	// convertImageDir(targetDir, *from, *to)
 	println(targetDir, *from, *to)
-	fmt.Printf("%v", util.Dirwalk(targetDir))
+
+	util.ConvertImage("./sample.jpg", *from, *to)
+
+	// filepaths := util.DirWalk(targetDir)
+	// for _, filepath := range filepaths {
+	// 	extension := util.GetExtension(filepath)
+	// 	if util.Contains(util.ImageExtensions, extension) {
+	// 		fmt.Printf("convert %s from %s to %s\n", filepath, *from, *to)
+	// 		util.ConvertImage(filepath, *from, *to)
+	// 	}
+	// }
 }
