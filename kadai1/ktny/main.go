@@ -21,18 +21,23 @@ func main() {
 	}
 	targetDir = strings.TrimRight(targetDir, "/")
 
+	// println(targetDir, *from, *to)
+
 	// targetDir配下を再帰的に画像変換する
-	// convertImageDir(targetDir, *from, *to)
-	println(targetDir, *from, *to)
-
-	util.ConvertImage("./sample.jpg", *from, *to)
-
-	// filepaths := util.DirWalk(targetDir)
-	// for _, filepath := range filepaths {
-	// 	extension := util.GetExtension(filepath)
-	// 	if util.Contains(util.ImageExtensions, extension) {
-	// 		fmt.Printf("convert %s from %s to %s\n", filepath, *from, *to)
-	// 		util.ConvertImage(filepath, *from, *to)
-	// 	}
-	// }
+	filepaths := util.DirWalk(targetDir)
+	fmt.Printf("targetDir: %s, from: %s, to: %s\n", targetDir, *from, *to)
+	for _, filepath := range filepaths {
+		switch *from {
+		case "jpg", "jpeg":
+			if strings.HasSuffix(filepath, ".jpg") || strings.HasSuffix(filepath, ".jpeg") {
+				fmt.Printf("convert %s\n", filepath)
+				util.ConvertImage(filepath, *from, *to)
+			}
+		case "png":
+			if strings.HasSuffix(filepath, ".png") {
+				fmt.Printf("convert %s\n", filepath)
+				util.ConvertImage(filepath, *from, *to)
+			}
+		}
+	}
 }
