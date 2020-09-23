@@ -34,7 +34,6 @@ func DirWalk(dir string) []string {
 	if err != nil {
 		panic(err)
 	}
-
 	paths := make([]string, 0, len(files))
 	for _, file := range files {
 		if file.IsDir() {
@@ -43,7 +42,6 @@ func DirWalk(dir string) []string {
 		}
 		paths = append(paths, filepath.Join(dir, file.Name()))
 	}
-
 	return paths
 }
 
@@ -64,11 +62,17 @@ func ConvertImage(path, from, to string) {
 		panic(err)
 	}
 
-	file, err := os.Create(path)
+	newFilePath := strings.Replace(path, from, to, 1)
+
+	file, err := os.Create(newFilePath)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
 	file.Write(buf.Bytes())
+
+	if err := os.Remove(path); err != nil {
+		panic(err)
+	}
 }
