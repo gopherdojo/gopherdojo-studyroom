@@ -16,12 +16,12 @@
 - Go Modulesを使ってみる
 
 ## ビルド
-```
+```sh
 go build -o convimg cmd/convimg/main.go
 ```
 
 ## 使い方
-```
+```sh
 ./convimg [options] dir
 
 dir
@@ -36,7 +36,11 @@ options
 
 ## 例
 testdata配下のjpg画像をpngに変換する
-`./convimg testdata`
+```sh
+./convimg testdata
+```
 
 testdata/child配下のpng画像をgifに変換する
-`./convimg --from=png --to=gif testdata/child`
+```sh
+./convimg --from=png --to=gif testdata/child
+```
