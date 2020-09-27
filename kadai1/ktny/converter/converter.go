@@ -1,5 +1,5 @@
-// 画像変換用のユーティリティパッケージ
-package util
+// 画像変換パッケージ
+package converter
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ const (
 )
 
 // extがサポートされている拡張子かを返す
-func IsSupportExt(ext string) bool {
+func IsSupportedExt(ext string) bool {
 	switch ext {
 	case JPG, JPEG, PNG, GIF:
 		return true

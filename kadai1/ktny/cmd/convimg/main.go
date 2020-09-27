@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"kadai1/ktny/util"
+	"kadai1/ktny/converter"
 	"os"
 	"strings"
 )
@@ -14,8 +14,8 @@ var (
 )
 
 func init() {
-	flag.StringVar(&from, "from", util.JPG, "from ext. support jpg, jpeg, png, gif.")
-	flag.StringVar(&to, "to", util.PNG, "to ext. support jpg, jpeg, png, gif.")
+	flag.StringVar(&from, "from", converter.JPG, "from ext. support jpg, jpeg, png, gif.")
+	flag.StringVar(&to, "to", converter.PNG, "to ext. support jpg, jpeg, png, gif.")
 }
 
 func main() {
@@ -36,16 +36,16 @@ func main() {
 	}
 
 	// 指定された拡張子がサポートされていない場合は終了する
-	if !util.IsSupportExt(from) {
+	if !converter.IsSupportedExt(from) {
 		fmt.Printf("[Error]%s is not supported ext.", from)
-	} else if !util.IsSupportExt(to) {
+	} else if !converter.IsSupportedExt(to) {
 		fmt.Printf("[Error]%s is not supported ext.", to)
 	}
 
 	fmt.Printf("[Info]from=%s, to=%s, targetDir=%s\n", from, to, targetDir)
 
 	// targetDir配下のファイルパスを取得する
-	filepaths, err := util.DirWalk(targetDir)
+	filepaths, err := converter.DirWalk(targetDir)
 	if err != nil {
 		fmt.Printf("[Error]%s", err)
 		os.Exit(1)
@@ -53,9 +53,9 @@ func main() {
 
 	// 指定された拡張子の画像ファイルを変換する
 	for _, filepath := range filepaths {
-		if util.CanConvert(from, filepath) {
+		if converter.CanConvert(from, filepath) {
 			fmt.Printf("[Info]convert %s\n", filepath)
-			if err := util.ConvertImage(filepath, from, to); err != nil {
+			if err := converter.ConvertImage(filepath, from, to); err != nil {
 				fmt.Printf("[Error]%s", err)
 			}
 		} else {
