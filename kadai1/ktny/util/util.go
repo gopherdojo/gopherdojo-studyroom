@@ -1,3 +1,4 @@
+// 画像変換用のユーティリティパッケージ
 package util
 
 import (
@@ -14,6 +15,7 @@ import (
 
 type img image.Image
 
+// サポートする拡張子
 const (
 	JPG  = "jpg"
 	JPEG = "jpeg"
@@ -21,6 +23,7 @@ const (
 	GIF  = "gif"
 )
 
+// extがサポートされている拡張子かを返す
 func IsSupportExt(ext string) bool {
 	switch ext {
 	case JPG, JPEG, PNG, GIF:
@@ -30,6 +33,7 @@ func IsSupportExt(ext string) bool {
 	}
 }
 
+// dir配下のファイルパスを再帰的に返す
 func DirWalk(dir string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -50,7 +54,8 @@ func DirWalk(dir string) ([]string, error) {
 	return paths, nil
 }
 
-func CanConvertExt(from, path string) bool {
+// 変換可能なファイルかを返す
+func CanConvert(from, path string) bool {
 	switch from {
 	case JPG, JPEG:
 		return strings.HasSuffix(path, toExt(JPG)) || strings.HasSuffix(path, toExt(JPEG))
@@ -63,10 +68,12 @@ func CanConvertExt(from, path string) bool {
 	}
 }
 
+// 文字列の先頭に"."を付加して返す
 func toExt(s string) string {
 	return "." + s
 }
 
+// 画像を指定の拡張子で変換する
 func ConvertImage(path, from, to string) error {
 	var img img
 	var err error
