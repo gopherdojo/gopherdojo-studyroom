@@ -14,3 +14,5 @@
 - 準標準パッケージ：golang.org/x以下のパッケージ
 - ユーザ定義型を作ってみる
 - GoDocを生成してみる
+
+go mod init cvsをやった

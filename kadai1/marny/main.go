@@ -1,12 +1,18 @@
-//Test
-//
-//Title
-//
 package main
 
-import "gopherdojo-studyroom/kadai1/marny/sample"
+import (
+	"cvs/conversion"
+	"flag"
+	"fmt"
+)
 
 func main() {
-	a := sample.Foo("test")
-	sample.PrintFoo(a)
+	var (
+		extension string
+	)
+
+	flag.StringVar(&extension, "e", "png", "拡張子の指定")
+	flag.Parse()
+	ext := conversion.ExtensionChange(extension)
+	fmt.Println(ext)
 }
