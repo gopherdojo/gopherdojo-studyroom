@@ -1,16 +1,21 @@
 /*
-	ExtensionChange = 拡張子の指定
+Conversion は 画像の拡張子の変更を行うためのパッケージです。
+
 */
 package conversion
 
-func ExtensionChange(ext string) string {
-	var result string
+const (
+	JPEG = "jpeg"
+	JPG  = "jpg"
+	GIF  = "gif"
+	PNG  = "png"
+)
 
-	if ext == "jpeg" {
-		result = "jpegなんだけど"
-	} else {
-		result = "チャーーーーリーーーー！！"
+func ExtensionCheck(ext string) bool {
+	switch ext {
+	case JPEG, JPG, GIF, PNG:
+		return true
+	default:
+		return false
 	}
-
-	return result
 }

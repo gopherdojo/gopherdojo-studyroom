@@ -13,6 +13,6 @@ func main() {
 
 	flag.StringVar(&extension, "e", "png", "拡張子の指定")
 	flag.Parse()
-	ext := conversion.ExtensionChange(extension)
+	ext := conversion.ExtensionCheck(extension)
 	fmt.Println(ext)
 }
