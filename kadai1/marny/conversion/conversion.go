@@ -6,9 +6,16 @@ package conversion
 
 import (
 	"errors"
+	"fmt"
 	"image"
+	"image/gif"
 	"image/jpeg"
+	"image/png"
 	"os"
+
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 )
 
 const (
@@ -57,19 +64,39 @@ func FileExtension(extension string, imagepath string, dirpath string) error {
 	if err != nil {
 		return errors.New("os.Create失敗")
 	}
-	output, err := os.Create(imagepath)
+
+	output, err := os.Create(dirpath)
 	defer output.Close()
 	if err != nil {
 		return errors.New("output失敗")
 	}
-	img, _, err := image.Decode(exFile)
-	if err != nil {
-		return errors.New("image.Decode失敗")
+
+	img, _, Err := image.Decode(exFile)
+	if Err != nil {
+		return errors.New("Decode失敗")
 	}
 
 	switch extension {
-	case "." + JPEG:
-		err = jpeg.Encode(exFile, img, nil)
+	case JPEG, JPG:
+		err = jpeg.Encode(output, img, nil)
+		if err != nil {
+			return errors.New("Encode失敗")
+		}
+		fmt.Println("変換成功")
+		return nil
+	case GIF:
+		err = gif.Encode(output, img, nil)
+		if err != nil {
+			return errors.New("Encode失敗")
+		}
+		fmt.Println("変換成功")
+		return nil
+	case PNG:
+		err = png.Encode(output, img)
+		if err != nil {
+			return errors.New("Encode失敗")
+		}
+		fmt.Println("変換成功")
 		return nil
 	}
 	return nil
