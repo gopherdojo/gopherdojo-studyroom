@@ -39,13 +39,22 @@ func ExtensionCheck(ext string) error {
 func FilepathCheck(imagepath string) error {
 	switch imagepath {
 	case "":
-		return errors.New("ファイルの指定がされてません" + imagepath)
+		return errors.New("ファイルの指定がされてません")
 	default:
 		if f, err := os.Stat(imagepath); os.IsNotExist(err) || f.IsDir() {
 			return errors.New("ファイルが存在しません" + imagepath)
 		} else {
 			return nil
 		}
+	}
+}
+
+func DirpathCheck(dirpath string) error {
+	switch dirpath {
+	case "":
+		return errors.New("変換後のファイル名が指定されていません")
+	default:
+		return nil
 	}
 }
 
