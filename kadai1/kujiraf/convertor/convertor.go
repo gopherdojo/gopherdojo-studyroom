@@ -1,7 +1,6 @@
 package imgconv
 
 import (
-	"errors"
 	"fmt"
 	"image"
 	"image/gif"
@@ -40,17 +39,25 @@ func (c *Convertor) Validate() error {
 
 	// -inが指定されているか
 	if c.Src == "" {
-		return errors.New("-in is required")
+		return fmt.Errorf("-in is required")
 	}
 
 	// -from, -toはサポート対象のものを指定しているか
 	attachDotIfNotPresent(&c.From)
 	if ok := isSupported(c.From); !ok {
-		return errors.New("-from dose not support " + c.From)
+		return fmt.Errorf("-from dose not support %s", c.From)
 	}
 	attachDotIfNotPresent(&c.To)
 	if ok := isSupported(c.To); !ok {
-		return errors.New("-to dose not support " + c.To)
+		return fmt.Errorf("-to dose not support %s", c.To)
+	}
+
+	// -fromと-toが同じ値ではないか
+	if c.From == c.To {
+		return fmt.Errorf("-from and -to are same. -from %s, -to %s", c.From, c.To)
+	}
+	if (c.From == JPEG || c.From == JPG) && (c.To == JPEG || c.To == JPG) {
+		return fmt.Errorf("-from and -to are same. -from %s, -to %s", c.From, c.To)
 	}
 
 	return nil
