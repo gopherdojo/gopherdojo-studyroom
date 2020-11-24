@@ -42,14 +42,20 @@ func (c *Convertor) Validate() error {
 		return fmt.Errorf("-in is required")
 	}
 
-	// -from, -toはサポート対象のものを指定しているか
-	attachDotIfNotPresent(&c.From)
-	if ok := isSupported(c.From); !ok {
-		return fmt.Errorf("-from dose not support %s", c.From)
+	// -in で指定されたディレクトリは存在するか
+	if f, err := os.Stat(c.Src); os.IsNotExist(err) || !f.IsDir() {
+		return fmt.Errorf("%s directory does not exist", c.Src)
 	}
-	attachDotIfNotPresent(&c.To)
-	if ok := isSupported(c.To); !ok {
-		return fmt.Errorf("-to dose not support %s", c.To)
+
+	// -from, -toはサポート対象のものを指定しているか
+	tmp := []*string{&c.From, &c.To}
+	for _, ext := range tmp {
+		if !strings.Contains(*ext, ".") {
+			*ext = "." + *ext
+		}
+		if ok := isSupported(*ext); !ok {
+			return fmt.Errorf("%s is not supported", *ext)
+		}
 	}
 
 	// -fromと-toが同じ値ではないか
@@ -63,12 +69,6 @@ func (c *Convertor) Validate() error {
 	return nil
 }
 
-func attachDotIfNotPresent(ext *string) {
-	if !strings.Contains(*ext, ".") {
-		*ext = "." + *ext
-	}
-}
-
 func isSupported(ext string) bool {
 	switch ext {
 	case JPEG, JPG, PNG, GIF:
@@ -79,14 +79,43 @@ func isSupported(ext string) bool {
 }
 
 // DoConvert converts image's extension from c.From to c.To.
-func (c Convertor) DoConvert() error {
+func (c *Convertor) DoConvert() error {
+
+	// 出力先パスを絶対パスに変える
+	if !filepath.IsAbs(c.Dst) {
+		abs, err := filepath.Abs(c.Dst)
+		if err != nil {
+			return err
+		}
+		c.Dst = abs
+	}
+	c.debugf("output root path : %s\n", c.Dst)
+
+	// 処理対象のディレクトリに移動する。処理が終われば元の場所に戻る。
+	prevDir, err := filepath.Abs(".")
+	c.debugf("current dir : %s\n", prevDir)
+	if err != nil {
+		return err
+	}
+	os.Chdir(c.Src)
+	defer os.Chdir(prevDir)
+
+	// 処理対象のディレクトリ名取得
+	workDir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	srcRoot := filepath.Base(workDir)
+	c.debugf("src dir name : %s\n", srcRoot)
+
 	// 再帰的に処理を実行する
-	err := filepath.Walk(c.Src,
+	err = filepath.Walk(".",
 		func(path string, info os.FileInfo, err error) error {
 			if filepath.Ext(path) == c.From {
+				c.debugf("found. %s\n", path)
 
 				// 対象のファイルに対して処理を実行する
-				err := c.convert(path)
+				err := c.convert(path, srcRoot)
 				if err != nil {
 					return err
 				}
@@ -100,11 +129,11 @@ func (c Convertor) DoConvert() error {
 	return nil
 }
 
-func (c *Convertor) convert(inputfile string) error {
+func (c *Convertor) convert(inputfile string, root string) error {
 	c.debugf("target file path=%v\n", inputfile)
 
 	// 出力先ディレクトリの作成
-	dst := filepath.Dir(filepath.Join(c.Dst, inputfile))
+	dst := filepath.Dir(filepath.Join(c.Dst, root, inputfile))
 	c.debugf("output path=%v\n", dst)
 	err := os.MkdirAll(dst, os.ModeDir)
 	if err != nil {

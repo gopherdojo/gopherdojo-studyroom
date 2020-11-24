@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-var validateTests = []struct {
+var validatetestdata = []struct {
 	name string
 	in   Convertor
 	out  string
@@ -15,26 +15,33 @@ var validateTests = []struct {
 		"-in is required",
 	},
 	{
+		"not exist dir",
+		Convertor{
+			Src: "aaa",
+		},
+		"aaa directory does not exist",
+	},
+	{
 		"invalid -from",
 		Convertor{
-			Src:  "aaa",
+			Src:  "../testdata",
 			From: "jjpeg",
 		},
-		"-from dose not support .jjpeg",
+		".jjpeg is not supported",
 	},
 	{
 		"invalid -to",
 		Convertor{
-			Src:  "aaa",
+			Src:  "../testdata",
 			From: "jpeg",
 			To:   "ppng",
 		},
-		"-to dose not support .ppng",
+		".ppng is not supported",
 	},
 	{
 		"-from and -to are same",
 		Convertor{
-			Src:  "aaa",
+			Src:  "../testdata",
 			From: "png",
 			To:   "png",
 		},
@@ -43,7 +50,7 @@ var validateTests = []struct {
 	{
 		"both -from and -to are jpg",
 		Convertor{
-			Src:  "aaa",
+			Src:  "../testdata",
 			From: "jpeg",
 			To:   "jpg",
 		},
@@ -52,7 +59,7 @@ var validateTests = []struct {
 }
 
 func TestValidateNG(t *testing.T) {
-	for _, tt := range validateTests {
+	for _, tt := range validatetestdata {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := tt.in.Validate(); err.Error() != tt.out {
 				t.Errorf("got [%s], want [%s]", err.Error(), tt.out)
@@ -63,11 +70,49 @@ func TestValidateNG(t *testing.T) {
 
 func TestValidateOK(t *testing.T) {
 	c := Convertor{
-		Src:  "aaa",
+		Src:  "../testdata",
 		From: "jpeg",
 		To:   "png",
 	}
 	if err := c.Validate(); err != nil {
 		t.Errorf(err.Error())
+	}
+}
+
+var doConvertorTest = []struct {
+	name string
+	in   Convertor
+	out  error
+}{
+	{
+		"no target files",
+		Convertor{
+			Src:     "../testdata/empty",
+			From:    ".jpg",
+			To:      ".png",
+			IsDebug: true,
+		},
+		nil,
+	},
+	{
+		"convert valid data",
+		Convertor{
+			Src:     "../testdata/valid_data",
+			Dst:     "../output",
+			From:    ".jpg",
+			To:      ".png",
+			IsDebug: true,
+		},
+		nil,
+	},
+}
+
+func TestDoConvert(t *testing.T) {
+	for _, tt := range doConvertorTest {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.in.DoConvert(); err != nil {
+				t.Errorf("Unexpected error. %s", err)
+			}
+		})
 	}
 }
