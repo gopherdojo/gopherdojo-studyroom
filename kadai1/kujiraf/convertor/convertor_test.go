@@ -95,12 +95,34 @@ var doConvertorTest = []struct {
 		nil,
 	},
 	{
-		"convert valid data",
+		"jpg -> png",
 		Convertor{
 			Src:     "../testdata/valid_data",
-			Dst:     "../output",
+			Dst:     "../output_JpgToPng",
 			From:    ".jpg",
 			To:      ".png",
+			IsDebug: true,
+		},
+		nil,
+	},
+	{
+		"png -> gif",
+		Convertor{
+			Src:     "../testdata/valid_data",
+			Dst:     "../output_PngToGif",
+			From:    ".png",
+			To:      ".gif",
+			IsDebug: true,
+		},
+		nil,
+	},
+	{
+		"gif -> jpg",
+		Convertor{
+			Src:     "../testdata/valid_data",
+			Dst:     "../output_GIFToJPEG",
+			From:    ".gif",
+			To:      ".jpeg",
 			IsDebug: true,
 		},
 		nil,
