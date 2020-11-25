@@ -1,4 +1,4 @@
-package imgconv
+package converter
 
 import (
 	"testing"

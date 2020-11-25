@@ -14,7 +14,9 @@
 - [x] Go Modulesを使ってみる
 
 # 使い方
+ツールは`go build -o bin/imgconv imgconv/main.go`でビルドすると、`bin/`配下に生成される
 ```
+[options]
   -debug
         debug message flag. default value is false.
   -from .jpg
@@ -23,9 +25,4 @@
         output directory. default is ./output (default "./output")
   -to .png
         extension after converted. default is .png (default ".png")
-```
-
-## 使用例
-```
-imgconv.exe -in testdata
 ```
