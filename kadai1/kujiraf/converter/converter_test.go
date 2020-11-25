@@ -6,24 +6,24 @@ import (
 
 var validatetestdata = []struct {
 	name string
-	in   Convertor
+	in   Converter
 	out  string
 }{
 	{
 		"no -in",
-		Convertor{},
+		Converter{},
 		"-in is required",
 	},
 	{
 		"not exist dir",
-		Convertor{
+		Converter{
 			Src: "aaa",
 		},
 		"aaa directory does not exist",
 	},
 	{
 		"invalid -from",
-		Convertor{
+		Converter{
 			Src:  "../testdata",
 			From: "jjpeg",
 		},
@@ -31,7 +31,7 @@ var validatetestdata = []struct {
 	},
 	{
 		"invalid -to",
-		Convertor{
+		Converter{
 			Src:  "../testdata",
 			From: "jpeg",
 			To:   "ppng",
@@ -40,7 +40,7 @@ var validatetestdata = []struct {
 	},
 	{
 		"-from and -to are same",
-		Convertor{
+		Converter{
 			Src:  "../testdata",
 			From: "png",
 			To:   "png",
@@ -49,7 +49,7 @@ var validatetestdata = []struct {
 	},
 	{
 		"both -from and -to are jpg",
-		Convertor{
+		Converter{
 			Src:  "../testdata",
 			From: "jpeg",
 			To:   "jpg",
@@ -69,7 +69,7 @@ func TestValidateNG(t *testing.T) {
 }
 
 func TestValidateOK(t *testing.T) {
-	c := Convertor{
+	c := Converter{
 		Src:  "../testdata",
 		From: "jpeg",
 		To:   "png",
@@ -81,12 +81,12 @@ func TestValidateOK(t *testing.T) {
 
 var doConvertorTest = []struct {
 	name string
-	in   Convertor
+	in   Converter
 	out  error
 }{
 	{
 		"no target files",
-		Convertor{
+		Converter{
 			Src:     "../testdata/empty",
 			From:    ".jpg",
 			To:      ".png",
@@ -96,7 +96,7 @@ var doConvertorTest = []struct {
 	},
 	{
 		"jpg -> png",
-		Convertor{
+		Converter{
 			Src:     "../testdata/valid_data",
 			Dst:     "../output_JpgToPng",
 			From:    ".jpg",
@@ -107,7 +107,7 @@ var doConvertorTest = []struct {
 	},
 	{
 		"png -> gif",
-		Convertor{
+		Converter{
 			Src:     "../testdata/valid_data",
 			Dst:     "../output_PngToGif",
 			From:    ".png",
@@ -118,7 +118,7 @@ var doConvertorTest = []struct {
 	},
 	{
 		"gif -> jpg",
-		Convertor{
+		Converter{
 			Src:     "../testdata/valid_data",
 			Dst:     "../output_GIFToJPEG",
 			From:    ".gif",

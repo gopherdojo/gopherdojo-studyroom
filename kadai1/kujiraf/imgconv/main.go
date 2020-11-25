@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	imgconv "gopherdojo-studyroom/kadai1/kujiraf/convertor"
+	imgconv "gopherdojo-studyroom/kadai1/kujiraf/converter"
 	"os"
 )
 
-var cvt *imgconv.Convertor
+var cvt *imgconv.Converter
 
 func init() {
-	cvt = &imgconv.Convertor{}
+	cvt = &imgconv.Converter{}
 	flag.StringVar(&cvt.Src, "in", "", "[required] input directory.")
 	flag.StringVar(&cvt.Dst, "out", "./output", "output directory. default is `./output`")
 	flag.StringVar(&cvt.From, "from", ".jpg", "extension before convert. default is `.jpg`")

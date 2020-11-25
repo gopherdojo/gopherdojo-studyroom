@@ -19,13 +19,13 @@ const (
 	GIF  = ".gif"
 )
 
-// Convertor is image convertor.
+// Converter is image convertor.
 // Src: Source directory. Required value.
 // Dst: Destination directory.
 // From: Extension before convert.
 // To: Extension after converted.
-// IsDebug: Convertor debug flag.
-type Convertor struct {
+// IsDebug: Converter debug flag.
+type Converter struct {
 	Src     string
 	Dst     string
 	From    string
@@ -34,7 +34,7 @@ type Convertor struct {
 }
 
 // Validate validates flags
-func (c *Convertor) Validate() error {
+func (c *Converter) Validate() error {
 	c.debugf("Flags : %+v\n", c)
 
 	// -inが指定されているか
@@ -79,7 +79,7 @@ func isSupported(ext string) bool {
 }
 
 // DoConvert converts image's extension from c.From to c.To.
-func (c *Convertor) DoConvert() error {
+func (c *Converter) DoConvert() error {
 
 	// 出力先パスを絶対パスに変える
 	if !filepath.IsAbs(c.Dst) {
@@ -129,7 +129,7 @@ func (c *Convertor) DoConvert() error {
 	return nil
 }
 
-func (c *Convertor) convert(inputfile string, root string) error {
+func (c *Converter) convert(inputfile string, root string) error {
 	c.debugf("target file path=%v\n", inputfile)
 
 	// 出力先ディレクトリの作成
@@ -161,7 +161,7 @@ func (c *Convertor) convert(inputfile string, root string) error {
 	return nil
 }
 
-func (c Convertor) decode(input string) (image.Image, error) {
+func (c Converter) decode(input string) (image.Image, error) {
 	in, err := os.Open(input)
 	defer in.Close()
 	if err != nil {
@@ -181,7 +181,7 @@ func (c Convertor) decode(input string) (image.Image, error) {
 	}
 }
 
-func (c Convertor) encode(output string, m image.Image) error {
+func (c Converter) encode(output string, m image.Image) error {
 	newfile, err := os.Create(output)
 	defer newfile.Close()
 	if err != nil {
@@ -203,13 +203,13 @@ func (c Convertor) encode(output string, m image.Image) error {
 	}
 }
 
-func (c Convertor) debugf(format string, a ...interface{}) {
+func (c Converter) debugf(format string, a ...interface{}) {
 	c.debug(func() string {
 		return fmt.Sprintf(format, a...)
 	})
 }
 
-func (c Convertor) debug(msg func() string) {
+func (c Converter) debug(msg func() string) {
 	if c.IsDebug {
 		fmt.Print("[Debug]", msg())
 	}
