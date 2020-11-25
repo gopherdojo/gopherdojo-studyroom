@@ -11,7 +11,7 @@ var cvt *imgconv.Converter
 
 func init() {
 	cvt = &imgconv.Converter{}
-	flag.StringVar(&cvt.Src, "in", "", "[required] input directory.")
+	cvt.Src = flag.Arg(0)
 	flag.StringVar(&cvt.Dst, "out", "./output", "output directory. default is `./output`")
 	flag.StringVar(&cvt.From, "from", ".jpg", "extension before convert. default is `.jpg`")
 	flag.StringVar(&cvt.To, "to", ".png", "extension after converted. default is `.png`")

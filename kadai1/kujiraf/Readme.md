@@ -10,5 +10,22 @@
 - [x] 自作パッケージと標準パッケージと準標準パッケージのみ使う
 - [x] 準標準パッケージ：`golang.org/x`以下のパッケージ
 - [x] ユーザ定義型を作ってみる
-- [ ] GoDocを生成してみる
+- [x] GoDocを生成してみる
 - [x] Go Modulesを使ってみる
+
+# 使い方
+```
+  -debug
+        debug message flag. default value is false.
+  -from .jpg
+        extension before convert. default is .jpg (default ".jpg")
+  -out ./output
+        output directory. default is ./output (default "./output")
+  -to .png
+        extension after converted. default is .png (default ".png")
+```
+
+## 使用例
+```
+imgconv.exe -in testdata
+```

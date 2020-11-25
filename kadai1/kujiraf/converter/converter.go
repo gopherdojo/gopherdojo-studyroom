@@ -37,12 +37,7 @@ type Converter struct {
 func (c *Converter) Validate() error {
 	c.debugf("Flags : %+v\n", c)
 
-	// -inが指定されているか
-	if c.Src == "" {
-		return fmt.Errorf("-in is required")
-	}
-
-	// -in で指定されたディレクトリは存在するか
+	// 指定されたディレクトリは存在するか
 	if f, err := os.Stat(c.Src); os.IsNotExist(err) || !f.IsDir() {
 		return fmt.Errorf("%s directory does not exist", c.Src)
 	}

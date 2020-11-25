@@ -10,11 +10,6 @@ var validatetestdata = []struct {
 	out  string
 }{
 	{
-		"no -in",
-		Converter{},
-		"-in is required",
-	},
-	{
 		"not exist dir",
 		Converter{
 			Src: "aaa",
