@@ -16,9 +16,9 @@ import (
 type Converter struct {
 	Directory string
 	// The extension to convert images from
-	FromExt   string
+	FromExt string
 	// The extension to convert images to
-	ToExt     string
+	ToExt string
 }
 
 var supported = map[string]bool{
@@ -82,7 +82,6 @@ func (c *Converter) Walk() error {
 			return fmt.Errorf("failed to open %s: %v", path, rErr)
 		}
 		defer reader.Close()
-
 
 		dest := strings.TrimSuffix(path, filepath.Ext(path)) + "." + c.ToExt
 		writer, wErr := os.Create(dest)

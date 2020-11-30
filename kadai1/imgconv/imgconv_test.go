@@ -184,4 +184,3 @@ func testExist(t *testing.T, path string) bool {
 	}
 	return true
 }
-
