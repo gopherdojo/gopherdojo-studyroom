@@ -21,7 +21,7 @@ type Converter struct {
 	ToExt string
 }
 
-var supported = map[string]bool{
+var supported = map[string]struct{}{
 	"jpg":  true,
 	"jpeg": true,
 	"png":  true,
