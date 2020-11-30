@@ -110,10 +110,10 @@ func TestConverter_Walk(t *testing.T) {
 		ToExt   string
 	}
 	tests := []struct {
-		name              string
-		fields            fields
+		name                string
+		fields              fields
 		convertedFilePathes []string
-		wantErr           bool
+		wantErr             bool
 	}{
 		{
 			".jpg => .png",
