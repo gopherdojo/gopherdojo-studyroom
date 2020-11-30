@@ -22,10 +22,10 @@ type Converter struct {
 }
 
 var supported = map[string]struct{}{
-	"jpg":  true,
-	"jpeg": true,
-	"png":  true,
-	"gif":  true,
+	"jpg":  struct{}{},
+	"jpeg": struct{}{},
+	"png":  struct{}{},
+	"gif":  struct{}{},
 }
 
 // New allocates a new image converter
@@ -46,7 +46,7 @@ func validate(directory, from, to string) error {
 	}
 
 	if !info.IsDir() {
-		return fmt.Errorf("%s must be directory:", src)
+		return fmt.Errorf("%s must be directory", src)
 	}
 
 	if _, ok := supported[from]; !ok {
@@ -101,8 +101,6 @@ func (c *Converter) convert(w io.Writer, r io.Reader) error {
 
 	switch c.ToExt {
 	case "jpg", "jpeg":
-		fallthrough
-	case "jpeg":
 		return jpeg.Encode(w, img, nil)
 	case "png":
 		return png.Encode(w, img)
