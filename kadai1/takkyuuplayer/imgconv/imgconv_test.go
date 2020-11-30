@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(file.Name())
+	t.Cleanup(func() { os.Remove(file.Name()) })
 
 	type args struct {
 		directory string
@@ -139,7 +139,7 @@ func TestConverter_Walk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			dir := createTestTempDir(t)
-			//defer os.RemoveAll(dir)
+			defer os.RemoveAll(dir)
 
 			c := &imgconv.Converter{
 				Directory: dir,
