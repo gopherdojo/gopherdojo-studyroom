@@ -100,7 +100,7 @@ func (c *Converter) convert(w io.Writer, r io.Reader) error {
 	}
 
 	switch c.ToExt {
-	case "jpg":
+	case "jpg", "jpeg":
 		fallthrough
 	case "jpeg":
 		return jpeg.Encode(w, img, nil)
