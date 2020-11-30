@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/takkyuuplayer/gopherdojo-studyroom/kadai1/imgconv"
+	"github.com/takkyuuplayer/gopherdojo-studyroom/kadai1/takkyuuplayer/imgconv"
 )
 
 var fromExt = flag.String("from", "jpg", "The extension to convert from")

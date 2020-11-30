@@ -73,7 +73,7 @@ func (c *Converter) Walk() error {
 		if info.IsDir() {
 			return nil
 		}
-		ext := strings.TrimLeft(filepath.Ext(path), ".")
+		ext := normalizedExt(path)
 		if ext != c.FromExt {
 			return nil
 		}
@@ -110,5 +110,18 @@ func (c *Converter) convert(w io.Writer, r io.Reader) error {
 		return gif.Encode(w, img, nil)
 	default:
 		return fmt.Errorf("unknown format %s", c.ToExt)
+	}
+}
+func normalizedExt(path string) string {
+	ext := strings.TrimLeft(filepath.Ext(path), ".")
+	ext = strings.ToLower(ext)
+
+	switch ext {
+	case "jpeg":
+		fallthrough
+	case "jpg":
+		return "jpg"
+	default:
+		return ext
 	}
 }

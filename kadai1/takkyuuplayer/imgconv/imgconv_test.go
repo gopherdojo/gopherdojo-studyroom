@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/takkyuuplayer/gopherdojo-studyroom/kadai1/imgconv"
+	"github.com/takkyuuplayer/gopherdojo-studyroom/kadai1/takkyuuplayer/imgconv"
 )
 
 func TestNew(t *testing.T) {
@@ -112,25 +112,25 @@ func TestConverter_Walk(t *testing.T) {
 	tests := []struct {
 		name              string
 		fields            fields
-		convertedFilePath string
+		convertedFilePathes []string
 		wantErr           bool
 	}{
 		{
 			".jpg => .png",
 			fields{"jpg", "png"},
-			"/moon.png",
+			[]string{"/moon.png", "/earth.png"},
 			false,
 		},
 		{
 			".png => .jpg",
 			fields{"png", "jpg"},
-			"/sub/sun.jpg",
+			[]string{"/sub/sun.jpg"},
 			false,
 		},
 		{
 			".jpg => .gif",
 			fields{"jpg", "gif"},
-			"/moon.gif",
+			[]string{"/moon.gif", "/earth.gif"},
 			false,
 		},
 	}
@@ -151,10 +151,16 @@ func TestConverter_Walk(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Walk() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			path := filepath.Join(dir, tt.convertedFilePath)
-			if err == nil && !testExist(t, path) {
-				t.Errorf("%v has not been created", path)
+			if err != nil {
+				return
 			}
+			for _, path := range tt.convertedFilePathes {
+				fullPath := filepath.Join(dir, path)
+				if !testExist(t, fullPath) {
+					t.Errorf("%v has not been created", path)
+				}
+			}
+
 		})
 	}
 }
