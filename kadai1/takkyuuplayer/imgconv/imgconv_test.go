@@ -75,6 +75,12 @@ func TestNew(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:    "Invalid: .jpeg => .jpg",
+			args:    args{"./", "jpg", "jpg"},
+			want:    nil,
+			wantErr: true,
+		},
+		{
 			name:    "Invalid: directory does not exists",
 			args:    args{"/dir/does/not/exist", "jpg", "jpg"},
 			want:    nil,

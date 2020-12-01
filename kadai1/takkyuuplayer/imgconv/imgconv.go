@@ -40,10 +40,14 @@ func validate(directory, from, to string) error {
 	src := filepath.Clean(directory)
 	info, err := os.Stat(src)
 
-	if os.IsNotExist(err) {
-		err = fmt.Errorf("%s is not exists: %w", src, err)
-		return err
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = fmt.Errorf("%s does not exist: %w", src, err)
+			return err
+		}
+		return fmt.Errorf("%s failed to get information: %w", src, err)
 	}
+
 
 	if !info.IsDir() {
 		return fmt.Errorf("%s must be directory", src)
@@ -57,7 +61,7 @@ func validate(directory, from, to string) error {
 		return fmt.Errorf("unsupported format %s", from)
 	}
 
-	if from == to {
+	if normalizedExt(from) == normalizedExt(to) {
 		return fmt.Errorf("%s should be different from %s", from, to)
 	}
 
@@ -110,14 +114,15 @@ func (c *Converter) convert(w io.Writer, r io.Reader) error {
 		return fmt.Errorf("unknown format %s", c.ToExt)
 	}
 }
-func normalizedExt(path string) string {
-	ext := strings.TrimLeft(filepath.Ext(path), ".")
+func normalizedExt(path_or_ext string) string {
+	ext := strings.TrimLeft(filepath.Ext(path_or_ext), ".")
+	if ext == "" {
+		ext = path_or_ext
+	}
 	ext = strings.ToLower(ext)
 
 	switch ext {
-	case "jpeg":
-		fallthrough
-	case "jpg":
+	case "jpeg", "jpg":
 		return "jpg"
 	default:
 		return ext
