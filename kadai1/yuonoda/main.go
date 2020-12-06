@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io/ioutil"
@@ -30,12 +31,25 @@ func main() {
 	}
 
 	// 変換
-	newBuf := new(bytes.Buffer)
-	if err != png.Encode(newBuf, jpgImg) {
-		log.Fatal(err)
+	switch *toFmt {
+	case "png":
+		newBuf := new(bytes.Buffer)
+		if err != png.Encode(newBuf, jpgImg) {
+			log.Fatal(err)
+		}
+		// ファイル出力
+		ioutil.WriteFile("gopher.png", newBuf.Bytes(), 0644)
+		break
+	case "gif":
+		newBuf := new(bytes.Buffer)
+		if err != gif.Encode(newBuf, jpgImg, nil) {
+			log.Fatal(err)
+		}
+		// ファイル出力
+		ioutil.WriteFile("gopher.gif", newBuf.Bytes(), 0644)
+		break
+	default:
+		log.Fatal("You cannot convert to the specified format")
 	}
-
-	// ファイル出力
-	ioutil.WriteFile("gopher.png", newBuf.Bytes(), 0644)
 
 }
