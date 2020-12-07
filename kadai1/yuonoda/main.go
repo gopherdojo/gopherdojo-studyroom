@@ -17,9 +17,9 @@ var fromFmt = flag.String("from", "jpg", "Specify a format of your original imag
 var toFmt = flag.String("to", "png", "Specify a format which you want to convert the image to")
 var path = flag.String("path", ".", "Path to a directory in which images will be converted recursively")
 
-func getImages(path string, fmt string) ([]os.FileInfo, error) { // TODO 何を返すべきか
+func getImagePathes(path string, fmt string) ([]string, error) {
 	// ディレクトリ内を再帰的に探索
-	var files []os.FileInfo
+	var pathes []string
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -34,15 +34,15 @@ func getImages(path string, fmt string) ([]os.FileInfo, error) { // TODO 何を�
 			if ext != fmt { // TODO jpgの表記
 				return nil
 			}
-			files = append(files, info)
+			pathes = append(pathes, path)
 			return nil
 		})
 
 	// エラーがあれば、エラーを返す
 	if err != nil {
-		return []os.FileInfo{}, err
+		return []string{}, err
 	}
-	return files, nil
+	return pathes, nil
 }
 
 func main() {
@@ -52,9 +52,10 @@ func main() {
 	fmt.Printf("path: %s\n", *path)
 	fmt.Println("-------")
 
-	files, err := getImages(*path, *fromFmt)
-	for _, f := range files {
-		fmt.Println(f.Name())
+	// 画像の一覧を取得
+	pathes, err := getImagePathes(*path, *fromFmt)
+	for _, path := range pathes {
+		fmt.Println(path)
 	}
 
 	return
