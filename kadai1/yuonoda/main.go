@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"flag"
-	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -95,43 +94,38 @@ func encodeImg(buf io.Writer, img image.Image, fmt string) error {
 
 func main() {
 	flag.Parse()
-	fmt.Printf("fromFmt: %s\n", *fromFmt)
-	fmt.Printf("toFmt: %s\n", *toFmt)
-	fmt.Printf("path: %s\n", *path)
-	fmt.Println("-------")
 
-	// 画像の一覧を取得
+	// 指定フォーマットの画像の一覧を取得
 	pathes, err := getImagePathes(*path, *fromFmt)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// 画像パスをループさせて一括変換
 	for _, path := range pathes {
-		fmt.Println(path)
+		log.Printf("Converting %s to %s", path, *toFmt)
+
+		// 元画像を読み込み
+		imageBytes, err := ioutil.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// 画像をデコード
+		buffer := bytes.NewReader(imageBytes)
+		img, err := decodeImg(buffer, *fromFmt)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// 変換
+		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
+		newBuf := new(bytes.Buffer)
+		encodeImg(newBuf, img, *toFmt)
+
+		// ファイル出力
+		newName := nameNoExt + "." + *toFmt
+		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
-
-	// 元画像を読み込み
-	path := pathes[0]
-	log.Printf("%s\n", path)
-	imageBytes, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// 画像をデコード
-	buffer := bytes.NewReader(imageBytes)
-	img, err := decodeImg(buffer, *fromFmt)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// 変換
-	nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
-	newBuf := new(bytes.Buffer)
-	encodeImg(newBuf, img, *toFmt)
-
-	// ファイル出力
-	newName := nameNoExt + "." + *toFmt
-	log.Println(newName)
-	ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 
 }
