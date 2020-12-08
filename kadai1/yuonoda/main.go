@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
+	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -45,6 +47,24 @@ func getImagePathes(path string, fmt string) ([]string, error) {
 	return pathes, nil
 }
 
+func decodeImage(buf *bytes.Reader, fmt string) (image.Image, error) {
+	var img image.Image
+	var err error
+	switch fmt {
+	case "jpg":
+		img, err = jpeg.Decode(buf)
+		break
+	case "png":
+		img, err = png.Decode(buf)
+		break
+	case "gif":
+		img, err = gif.Decode(buf)
+	default:
+		err = errors.New("decode format couldn't be found")
+	}
+	return img, err
+}
+
 func main() {
 	flag.Parse()
 	fmt.Printf("fromFmt: %s\n", *fromFmt)
@@ -54,18 +74,23 @@ func main() {
 
 	// 画像の一覧を取得
 	pathes, err := getImagePathes(*path, *fromFmt)
+	if err != nil {
+		log.Fatal(err)
+	}
 	for _, path := range pathes {
 		fmt.Println(path)
 	}
 
-	return
 	// 元画像を読み込み
-	imageBytes, err := ioutil.ReadFile("./gopher.jpg")
+	path := pathes[0]
+	log.Printf("%s\n", path)
+	imageBytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	buffer := bytes.NewReader(imageBytes)
-	jpgImg, err := jpeg.Decode(buffer)
+	img, err := decodeImage(buffer, *fromFmt)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,7 +99,7 @@ func main() {
 	switch *toFmt {
 	case "png":
 		newBuf := new(bytes.Buffer)
-		if err != png.Encode(newBuf, jpgImg) {
+		if err != png.Encode(newBuf, img) {
 			log.Fatal(err)
 		}
 		// ファイル出力
@@ -82,7 +107,7 @@ func main() {
 		break
 	case "gif":
 		newBuf := new(bytes.Buffer)
-		if err != gif.Encode(newBuf, jpgImg, nil) {
+		if err != gif.Encode(newBuf, img, nil) {
 			log.Fatal(err)
 		}
 		// ファイル出力
