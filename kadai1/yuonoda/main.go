@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var fromFmt = flag.String("from", "jpg", "Specify a format of your original image")
@@ -89,6 +90,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// 画像をデコード
 	buffer := bytes.NewReader(imageBytes)
 	img, err := decodeImage(buffer, *fromFmt)
 	if err != nil {
@@ -96,25 +98,26 @@ func main() {
 	}
 
 	// 変換
+	nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
+	newBuf := new(bytes.Buffer)
 	switch *toFmt {
 	case "png":
-		newBuf := new(bytes.Buffer)
 		if err != png.Encode(newBuf, img) {
 			log.Fatal(err)
 		}
-		// ファイル出力
-		ioutil.WriteFile("gopher.png", newBuf.Bytes(), 0644)
 		break
 	case "gif":
-		newBuf := new(bytes.Buffer)
 		if err != gif.Encode(newBuf, img, nil) {
 			log.Fatal(err)
 		}
-		// ファイル出力
-		ioutil.WriteFile("gopher.gif", newBuf.Bytes(), 0644)
 		break
 	default:
 		log.Fatal("You cannot convert to the specified format")
 	}
+
+	// ファイル出力
+	newName := nameNoExt + "." + *toFmt
+	log.Println(newName)
+	ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 
 }
