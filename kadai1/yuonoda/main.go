@@ -9,6 +9,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -48,7 +49,7 @@ func getImagePathes(path string, fmt string) ([]string, error) {
 	return pathes, nil
 }
 
-func decodeImage(buf *bytes.Reader, fmt string) (image.Image, error) {
+func decodeImg(buf *bytes.Reader, fmt string) (image.Image, error) {
 	var img image.Image
 	var err error
 	switch fmt {
@@ -61,9 +62,35 @@ func decodeImage(buf *bytes.Reader, fmt string) (image.Image, error) {
 	case "gif":
 		img, err = gif.Decode(buf)
 	default:
-		err = errors.New("decode format couldn't be found")
+		err = errors.New("decode format is incorrect")
 	}
 	return img, err
+}
+
+func encodeImg(buf io.Writer, img image.Image, fmt string) error {
+	// 変換
+	var err error
+	switch fmt {
+	case "png":
+		if err != png.Encode(buf, img) {
+			return err
+		}
+		break
+	case "gif":
+		if err != gif.Encode(buf, img, nil) {
+			return err
+		}
+		break
+	case "jpg":
+		if err != jpeg.Encode(buf, img, nil) {
+			return err
+		}
+		break
+	default:
+		return errors.New("encode format is incorrect")
+		break
+	}
+	return nil
 }
 
 func main() {
@@ -92,7 +119,7 @@ func main() {
 
 	// 画像をデコード
 	buffer := bytes.NewReader(imageBytes)
-	img, err := decodeImage(buffer, *fromFmt)
+	img, err := decodeImg(buffer, *fromFmt)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,20 +127,7 @@ func main() {
 	// 変換
 	nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
 	newBuf := new(bytes.Buffer)
-	switch *toFmt {
-	case "png":
-		if err != png.Encode(newBuf, img) {
-			log.Fatal(err)
-		}
-		break
-	case "gif":
-		if err != gif.Encode(newBuf, img, nil) {
-			log.Fatal(err)
-		}
-		break
-	default:
-		log.Fatal("You cannot convert to the specified format")
-	}
+	encodeImg(newBuf, img, *toFmt)
 
 	// ファイル出力
 	newName := nameNoExt + "." + *toFmt
