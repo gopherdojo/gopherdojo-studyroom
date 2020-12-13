@@ -20,9 +20,9 @@ var fromFmt = flag.String("from", "jpg", "Specify a format of your original imag
 var toFmt = flag.String("to", "png", "Specify a format which you want to convert the image to")
 var path = flag.String("path", ".", "Path to a directory in which images will be converted recursively")
 
-func getImagePathes(path string, fmt string) ([]string, error) {
+func getImagePaths(path string, fmt string) ([]string, error) {
 	// ディレクトリ内を再帰的に探索
-	var pathes []string
+	var paths []string
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -37,7 +37,7 @@ func getImagePathes(path string, fmt string) ([]string, error) {
 			if ext == "" || ext[1:] != fmt { // TODO jpgの表記
 				return nil
 			}
-			pathes = append(pathes, path)
+			paths = append(paths, path)
 			return nil
 		})
 
@@ -45,7 +45,7 @@ func getImagePathes(path string, fmt string) ([]string, error) {
 	if err != nil {
 		return []string{}, err
 	}
-	return pathes, nil
+	return paths, nil
 }
 
 func decodeImg(buf *bytes.Reader, fmt string) (image.Image, error) {
@@ -97,13 +97,13 @@ func Do() {
 	flag.Parse()
 
 	// 指定フォーマットの画像の一覧を取得
-	pathes, err := getImagePathes(*path, *fromFmt)
+	paths, err := getImagePaths(*path, *fromFmt)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// 画像パスをループさせて一括変換
-	for _, path := range pathes {
+	for _, path := range paths {
 		log.Printf("converting %s to %s", path, *toFmt)
 
 		// 元画像を読み込み
