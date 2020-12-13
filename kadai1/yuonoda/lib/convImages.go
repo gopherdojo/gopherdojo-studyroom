@@ -1,4 +1,4 @@
-package gen_imags
+package convImages
 
 import (
 	"bytes"
@@ -92,6 +92,7 @@ func encodeImg(buf io.Writer, img image.Image, fmt string) error {
 	return nil
 }
 
+// Convert images to specified format recursively.
 func Do() {
 	flag.Parse()
 

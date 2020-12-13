@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	gen_imags.Do()
+	convImages.Do()
 }
