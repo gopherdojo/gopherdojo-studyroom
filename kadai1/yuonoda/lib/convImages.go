@@ -53,9 +53,9 @@ type img struct {
 	Image image.Image
 }
 
-func (i *img) decode(buf *bytes.Reader, fmt string) error {
+func (i *img) decode(buf *bytes.Reader, imgFmt string) error {
 	var err error
-	switch fmt {
+	switch imgFmt {
 	case "jpg":
 		i.Image, err = jpeg.Decode(buf)
 		break
@@ -70,9 +70,9 @@ func (i *img) decode(buf *bytes.Reader, fmt string) error {
 	return err
 }
 
-func (i *img) encode(buf io.Writer, fmt string) error {
+func (i *img) encode(buf io.Writer, imgFmt string) error {
 	// 変換
-	switch fmt {
+	switch imgFmt {
 	case "png":
 		return png.Encode(buf, i.Image)
 	case "gif":
