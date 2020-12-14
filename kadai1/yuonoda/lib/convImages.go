@@ -43,7 +43,7 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 
 	// エラーがあれば、エラーを返す
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 	return paths, nil
 }
