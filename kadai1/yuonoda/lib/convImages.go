@@ -72,26 +72,15 @@ func (i *img) decode(buf *bytes.Reader, fmt string) error {
 
 func (i *img) encode(buf io.Writer, fmt string) error {
 	// 変換
-	var err error
 	switch fmt {
 	case "png":
-		if err != png.Encode(buf, i.Image) {
-			return err
-		}
-		break
+		return png.Encode(buf, i.Image)
 	case "gif":
-		if err != gif.Encode(buf, i.Image, nil) {
-			return err
-		}
-		break
+		return gif.Encode(buf, i.Image, nil)
 	case "jpg":
-		if err != jpeg.Encode(buf, i.Image, nil) {
-			return err
-		}
-		break
+		return jpeg.Encode(buf, i.Image, nil)
 	default:
 		return errors.New("encode format is incorrect")
-		break
 	}
 	return nil
 }
