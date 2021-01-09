@@ -2,13 +2,7 @@ package convImages
 
 import (
 	"bytes"
-	"errors"
 	"flag"
-	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -48,43 +42,6 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 	return paths, nil
 }
 
-type img struct {
-	name  string
-	Image image.Image
-}
-
-func (i *img) decode(buf *bytes.Reader, imgFmt string) error {
-	var err error
-	switch imgFmt {
-	case "jpg":
-		i.Image, err = jpeg.Decode(buf)
-		break
-	case "png":
-		i.Image, err = png.Decode(buf)
-		break
-	case "gif":
-		i.Image, err = gif.Decode(buf)
-	default:
-		err = errors.New("decode format is incorrect")
-	}
-	return err
-}
-
-func (i *img) encode(buf io.Writer, imgFmt string) error {
-	// 変換
-	switch imgFmt {
-	case "png":
-		return png.Encode(buf, i.Image)
-	case "gif":
-		return gif.Encode(buf, i.Image, nil)
-	case "jpg":
-		return jpeg.Encode(buf, i.Image, nil)
-	default:
-		return errors.New("encode format is incorrect")
-	}
-	return nil
-}
-
 // Convert images to specified format recursively.
 func Do() {
 	flag.Parse()
@@ -107,22 +64,22 @@ func Do() {
 
 		// 画像をデコード
 		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
-		img := img{nameNoExt, nil}
+		c := imgConverter{nameNoExt, nil}
 		buffer := bytes.NewReader(imageBytes)
-		err = img.decode(buffer, *fromFmt)
+		err = c.decode(buffer, *fromFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// 変換
+		// 画像のエンコード
 		newBuf := new(bytes.Buffer)
-		err = img.encode(newBuf, *toFmt)
+		err = c.encode(newBuf, *toFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// ファイル出力
-		newName := img.name + "." + *toFmt
+		newName := c.name + "." + *toFmt
 		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
 
