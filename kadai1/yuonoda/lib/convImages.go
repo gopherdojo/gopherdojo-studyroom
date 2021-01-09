@@ -43,51 +43,44 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 
 	// エラーがあれば、エラーを返す
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 	return paths, nil
 }
 
-func decodeImg(buf *bytes.Reader, fmt string) (image.Image, error) {
-	var img image.Image
+type img struct {
+	name  string
+	Image image.Image
+}
+
+func (i *img) decode(buf *bytes.Reader, imgFmt string) error {
 	var err error
-	switch fmt {
+	switch imgFmt {
 	case "jpg":
-		img, err = jpeg.Decode(buf)
+		i.Image, err = jpeg.Decode(buf)
 		break
 	case "png":
-		img, err = png.Decode(buf)
+		i.Image, err = png.Decode(buf)
 		break
 	case "gif":
-		img, err = gif.Decode(buf)
+		i.Image, err = gif.Decode(buf)
 	default:
 		err = errors.New("decode format is incorrect")
 	}
-	return img, err
+	return err
 }
 
-func encodeImg(buf io.Writer, img image.Image, fmt string) error {
+func (i *img) encode(buf io.Writer, imgFmt string) error {
 	// 変換
-	var err error
-	switch fmt {
+	switch imgFmt {
 	case "png":
-		if err != png.Encode(buf, img) {
-			return err
-		}
-		break
+		return png.Encode(buf, i.Image)
 	case "gif":
-		if err != gif.Encode(buf, img, nil) {
-			return err
-		}
-		break
+		return gif.Encode(buf, i.Image, nil)
 	case "jpg":
-		if err != jpeg.Encode(buf, img, nil) {
-			return err
-		}
-		break
+		return jpeg.Encode(buf, i.Image, nil)
 	default:
 		return errors.New("encode format is incorrect")
-		break
 	}
 	return nil
 }
@@ -113,19 +106,23 @@ func Do() {
 		}
 
 		// 画像をデコード
+		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
+		img := img{nameNoExt, nil}
 		buffer := bytes.NewReader(imageBytes)
-		img, err := decodeImg(buffer, *fromFmt)
+		err = img.decode(buffer, *fromFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// 変換
-		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
 		newBuf := new(bytes.Buffer)
-		encodeImg(newBuf, img, *toFmt)
+		err = img.encode(newBuf, *toFmt)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// ファイル出力
-		newName := nameNoExt + "." + *toFmt
+		newName := img.name + "." + *toFmt
 		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
 
