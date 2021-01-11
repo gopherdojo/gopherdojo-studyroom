@@ -14,32 +14,31 @@ type imgConverter struct {
 	Image image.Image
 }
 
-func (c *imgConverter) decode(buf io.Reader, imgFmt string) error {
-	var err error
+func (ic *imgConverter) decode(r io.Reader, imgFmt string) (err error) {
 	switch imgFmt {
 	case "jpg":
-		c.Image, err = jpeg.Decode(buf)
+		ic.Image, err = jpeg.Decode(r)
 		break
 	case "png":
-		c.Image, err = png.Decode(buf)
+		ic.Image, err = png.Decode(r)
 		break
 	case "gif":
-		c.Image, err = gif.Decode(buf)
+		ic.Image, err = gif.Decode(r)
 	default:
 		err = errors.New("decode format is incorrect")
 	}
 	return err
 }
 
-func (c *imgConverter) encode(buf io.Writer, imgFmt string) error {
+func (ic *imgConverter) encode(w io.Writer, imgFmt string) (err error) {
 	// 変換
 	switch imgFmt {
 	case "png":
-		return png.Encode(buf, c.Image)
+		return png.Encode(w, ic.Image)
 	case "gif":
-		return gif.Encode(buf, c.Image, nil)
+		return gif.Encode(w, ic.Image, nil)
 	case "jpg":
-		return jpeg.Encode(buf, c.Image, nil)
+		return jpeg.Encode(w, ic.Image, nil)
 	default:
 		return errors.New("encode format is incorrect")
 	}
