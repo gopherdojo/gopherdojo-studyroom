@@ -34,5 +34,4 @@ func (ic *imgConverter) encode(w io.Writer, imgFmt string) (err error) {
 	default:
 		return errors.New("encode format is incorrect")
 	}
-	return
 }
