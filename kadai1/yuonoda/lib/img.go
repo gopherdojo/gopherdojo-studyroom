@@ -27,7 +27,7 @@ func (ic *imgConverter) decode(r io.Reader, imgFmt string) (err error) {
 	default:
 		err = errors.New("decode format is incorrect")
 	}
-	return err
+	return
 }
 
 func (ic *imgConverter) encode(w io.Writer, imgFmt string) (err error) {
@@ -42,5 +42,5 @@ func (ic *imgConverter) encode(w io.Writer, imgFmt string) (err error) {
 	default:
 		return errors.New("encode format is incorrect")
 	}
-	return nil
+	return
 }
