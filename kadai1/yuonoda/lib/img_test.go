@@ -134,7 +134,6 @@ func TestEncode(t *testing.T) {
 
 // インメモリイメージを作成する
 func testGenerateImage(t *testing.T) image.Image {
-	t.Log("generateImage")
 	t.Helper()
 	// 画像を作成
 	w := 200
