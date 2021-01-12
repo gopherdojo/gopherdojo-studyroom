@@ -31,7 +31,7 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 
 			// 対象の拡張子か査定
 			ext := filepath.Ext(path)
-			if ext == "" || ext[1:] != fmt { // TODO jpgの表記
+			if ext == "" || ext[1:] != fmt {
 				return nil
 			}
 			paths = append(paths, path)
