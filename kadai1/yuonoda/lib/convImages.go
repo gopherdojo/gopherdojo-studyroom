@@ -58,7 +58,7 @@ func Do() {
 
 	// 画像パスをループさせて一括変換
 	for _, path := range paths {
-		log.Printf("converting %s to %s", path, *toFmt)
+		log.Printf("converting %s to %s\n", path, *toFmt)
 
 		// 元画像を読み込み
 		imageBytes, err := ioutil.ReadFile(path)
@@ -68,22 +68,22 @@ func Do() {
 
 		// 画像をデコード
 		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
-		c := imgConverter{nameNoExt, nil}
+		ic := imgConverter{nameNoExt, nil}
 		buffer := bytes.NewReader(imageBytes)
-		err = c.decode(buffer, *fromFmt)
+		err = ic.decode(buffer, *fromFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// 画像のエンコード
 		newBuf := new(bytes.Buffer)
-		err = c.encode(newBuf, *toFmt)
+		err = ic.encode(newBuf, *toFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// ファイル出力
-		newName := c.name + "." + *toFmt
+		newName := ic.name + "." + *toFmt
 		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
 

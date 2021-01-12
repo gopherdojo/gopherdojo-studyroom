@@ -11,8 +11,11 @@ import (
 	"testing"
 )
 
+// Decodeメソッドのテスト
 func TestDecode(t *testing.T) {
 	t.Logf("TestDecode")
+
+	// テストケース
 	cases := []struct {
 		fmt string
 		err error
@@ -26,11 +29,13 @@ func TestDecode(t *testing.T) {
 
 	for _, c := range cases {
 
-		// テスト画像を生成しエンコード
+		// テスト画像ファイルを作成
 		testImage := testGenerateImage(t)
 		ic.Image = testImage
 		encodedBuf1 := bytes.NewBuffer([]byte{})
 		encodedBuf2 := bytes.NewBuffer([]byte{})
+
+		// テスト画像のエンコード
 		err := ic.encode(encodedBuf1, c.fmt)
 		if err != nil {
 			if err.Error() != c.err.Error() {
@@ -80,6 +85,7 @@ func TestDecode(t *testing.T) {
 
 }
 
+// エンコードのテスト
 func TestEncode(t *testing.T) {
 	t.Logf("TestEncode")
 
@@ -123,7 +129,7 @@ func TestEncode(t *testing.T) {
 			t.Errorf(err.Error())
 		}
 
-		// 双方のエンコード結果が一致するか検証
+		// 双方のバイト列が一致するか検証
 		if bytes.Compare(buff1.Bytes(), buff2.Bytes()) != 0 {
 			t.Errorf("encode result mismatch")
 		}
