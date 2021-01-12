@@ -14,8 +14,10 @@ var fromFmt = flag.String("from", "jpg", "Specify a format of your original imag
 var toFmt = flag.String("to", "png", "Specify a format which you want to convert the image to")
 var path = flag.String("path", ".", "Path to a directory in which images will be converted recursively")
 
+// ディレクトリ内を探索して、対象の画像パスの一覧を返す
 func getImagePaths(path string, fmt string) ([]string, error) {
 	log.Println("getImagePaths(path string, fmt string) ([]string, error) ")
+
 	// ディレクトリ内を再帰的に探索
 	var paths []string
 	err := filepath.Walk(path,
@@ -43,7 +45,7 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 	return paths, nil
 }
 
-// Convert images to specified format recursively.
+// 外部から実行される関数
 func Do() {
 	log.Println("Do()")
 	flag.Parse()
