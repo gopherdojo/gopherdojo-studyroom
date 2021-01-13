@@ -1,4 +1,4 @@
-package convImages
+package convImages_test
 
 import (
 	"flag"
@@ -7,6 +7,8 @@ import (
 	"image/png"
 	"os"
 	"testing"
+
+	"github.com/yuonoda/gopherdojo-studyroom/kadai1/yuonoda/lib"
 )
 
 func TestDo(t *testing.T) {
@@ -29,7 +31,7 @@ func TestDo(t *testing.T) {
 		flag.CommandLine.Set("path", c.path)
 		flag.CommandLine.Set("from", c.from)
 		flag.CommandLine.Set("to", c.to)
-		Do()
+		convImages.Do()
 
 		// ファイルが作成されているか確認
 		for _, e := range c.expected {

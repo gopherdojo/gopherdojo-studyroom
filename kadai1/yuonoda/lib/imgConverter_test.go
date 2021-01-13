@@ -1,4 +1,4 @@
-package convImages
+package convImages_test
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"image/jpeg"
 	"image/png"
 	"testing"
+
+	"github.com/yuonoda/gopherdojo-studyroom/kadai1/yuonoda/lib"
 )
 
 // Decodeメソッドのテスト
@@ -25,7 +27,7 @@ func TestDecode(t *testing.T) {
 		{"gif", nil},
 		{"docx", errors.New("encode format is incorrect")},
 	}
-	var ic imgConverter
+	var ic convImages.ImgConverter
 
 	for _, c := range cases {
 
@@ -36,14 +38,14 @@ func TestDecode(t *testing.T) {
 		encodedBuf2 := bytes.NewBuffer([]byte{})
 
 		// テスト画像のエンコード
-		err := ic.encode(encodedBuf1, c.fmt)
+		err := ic.Encode(encodedBuf1, c.fmt)
 		if err != nil {
 			if err.Error() != c.err.Error() {
 				t.Errorf(err.Error())
 			}
 			continue
 		}
-		err = ic.encode(encodedBuf2, c.fmt)
+		err = ic.Encode(encodedBuf2, c.fmt)
 		if err != nil && err.Error() != c.err.Error() {
 			if err.Error() != c.err.Error() {
 				t.Errorf(err.Error())
@@ -52,8 +54,8 @@ func TestDecode(t *testing.T) {
 		}
 
 		// imgConnverterでデコード
-		ic = imgConverter{}
-		err = ic.decode(encodedBuf1, c.fmt)
+		ic = convImages.ImgConverter{}
+		err = ic.Decode(encodedBuf1, c.fmt)
 		if err != nil {
 			t.Errorf("image decode error err: %v", err)
 		}
@@ -105,9 +107,9 @@ func TestEncode(t *testing.T) {
 	for _, c := range cases {
 
 		// エンコード
-		ic := imgConverter{"test", image}
+		ic := convImages.ImgConverter{"test", image}
 		buff1 := bytes.NewBuffer([]byte{})
-		err := ic.encode(buff1, c.fmt)
+		err := ic.Encode(buff1, c.fmt)
 		if err != nil && err.Error() != c.error.Error() {
 			t.Errorf(err.Error())
 		}

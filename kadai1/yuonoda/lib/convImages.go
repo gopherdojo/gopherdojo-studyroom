@@ -68,22 +68,22 @@ func Do() {
 
 		// 画像をデコード
 		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
-		ic := imgConverter{nameNoExt, nil}
+		ic := ImgConverter{nameNoExt, nil}
 		buffer := bytes.NewReader(imageBytes)
-		err = ic.decode(buffer, *fromFmt)
+		err = ic.Decode(buffer, *fromFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// 画像のエンコード
 		newBuf := new(bytes.Buffer)
-		err = ic.encode(newBuf, *toFmt)
+		err = ic.Encode(newBuf, *toFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// ファイル出力
-		newName := ic.name + "." + *toFmt
+		newName := ic.Name + "." + *toFmt
 		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
 
