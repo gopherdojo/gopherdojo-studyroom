@@ -11,7 +11,6 @@ import (
 
 // ディレクトリ内を探索して、対象の画像パスの一覧を返す
 func getImagePaths(path string, fmt string) ([]string, error) {
-	log.Println("getImagePaths(path string, fmt string) ([]string, error) ")
 
 	// ディレクトリ内を再帰的に探索
 	var paths []string
@@ -42,7 +41,6 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 
 // 外部から実行される関数
 func Run(fromFmt string, toFmt string, path string) {
-	log.Println("convert()")
 
 	// 指定フォーマットの画像の一覧を取得
 	paths, err := getImagePaths(path, fromFmt)
@@ -52,8 +50,6 @@ func Run(fromFmt string, toFmt string, path string) {
 
 	// 画像パスをループさせて一括変換
 	for _, path := range paths {
-		log.Printf("converting %s to %s\n", path, toFmt)
-
 		// 元画像を読み込み
 		imageBytes, err := ioutil.ReadFile(path)
 		if err != nil {

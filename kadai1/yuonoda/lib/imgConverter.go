@@ -7,7 +7,6 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
-	"log"
 )
 
 type ImgConverter struct {
@@ -16,13 +15,11 @@ type ImgConverter struct {
 }
 
 func (ic *ImgConverter) Decode(r io.Reader, imgFmt string) (err error) {
-	log.Println("(ic *imgConverter) decode(r io.Reader, imgFmt string) (err error) ")
 	ic.Image, _, err = image.Decode(r)
 	return
 }
 
 func (ic *ImgConverter) Encode(w io.Writer, imgFmt string) (err error) {
-	log.Println("(ic *imgConverter) encode(w io.Writer, imgFmt string) (err error) ")
 	// 変換
 	switch imgFmt {
 	case "png":
