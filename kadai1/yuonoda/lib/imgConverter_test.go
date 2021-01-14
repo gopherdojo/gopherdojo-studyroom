@@ -96,8 +96,8 @@ func TestEncode(t *testing.T) {
 
 	// サンプルデータでループ
 	cases := []struct {
-		fmt   string
-		error error
+		fmt string
+		err error
 	}{
 		{"png", nil},
 		{"jpg", nil},
@@ -110,7 +110,7 @@ func TestEncode(t *testing.T) {
 		ic := convImages.ImgConverter{"test", image}
 		buff1 := bytes.NewBuffer([]byte{})
 		err := ic.Encode(buff1, c.fmt)
-		if err != nil && err.Error() != c.error.Error() {
+		if err != nil && err.Error() != c.err.Error() {
 			t.Errorf(err.Error())
 		}
 
@@ -127,7 +127,7 @@ func TestEncode(t *testing.T) {
 			err = gif.Encode(buff2, image, nil)
 			break
 		}
-		if err != nil && err.Error() != c.error.Error() {
+		if err != nil && err.Error() != c.err.Error() {
 			t.Errorf(err.Error())
 		}
 
