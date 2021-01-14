@@ -5,7 +5,9 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -49,52 +51,95 @@ func TestRun(t *testing.T) {
 	}
 }
 
-func testBuiltTestDir(t *testing.T) {
-	t.Helper()
+//
+//func testBuiltTestDir(t *testing.T, images []string) {
+//	t.Helper()
+//
+//	// テストディレクトリの作成
+//	err := os.MkdirAll("test1/test2", 0777)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//
+//	// 作成する画像のリスト
+//	cases := []struct {
+//		name string
+//		fmt  string
+//		path string
+//	}{
+//		{"encodePng", "png", "test1/png.png"},
+//		{"encodeJpg", "jpg", "test1/gif.gif"},
+//		{"encodeGif", "gif", "test1/test2/jpg.jpg"},
+//	}
+//
+//	// テスト画像の作成
+//	testImage := testGenerateImage(t)
+//	for _, c := range cases {
+//
+//		// ファイルの作成
+//		file, err := os.Create(c.path)
+//		if err != nil {
+//			t.Error(err)
+//		}
+//
+//		// データのエンコードと格納
+//		switch c.fmt {
+//		case "png":
+//			err = png.Encode(file, testImage)
+//			break
+//		case "jpg":
+//			err = jpeg.Encode(file, testImage, nil)
+//			break
+//		case "gif":
+//			err = gif.Encode(file, testImage, nil)
+//			break
+//		}
+//		if err != nil {
+//			t.Error(err)
+//		}
+//	}
+//	return
+//
+//}
 
-	// テストディレクトリの作成
-	err := os.MkdirAll("test1/test2", 0777)
-	if err != nil {
-		t.Error(err)
+func buildTestDir() {
+	paths := []string{
+		"jpg.jpg",
+		"test1/png.png",
+		"test1/test2/png.png",
 	}
 
-	// 作成する画像のリスト
-	cases := []struct {
-		name string
-		fmt  string
-		path string
-	}{
-		{"encodePng", "png", "test1/png.png"},
-		{"encodeJpg", "jpg", "test1/gif.gif"},
-		{"encodeGif", "gif", "test1/test2/jpg.jpg"},
-	}
-
-	// テスト画像の作成
-	testImage := testGenerateImage(t)
-	for _, c := range cases {
-
-		// ファイルの作成
-		file, err := os.Create(c.path)
+	for _, p := range paths {
+		dir, _ := filepath.Split(p)
+		log.Printf("p:%v", p)
+		err := buildDirIfNotExist(dir)
 		if err != nil {
-			t.Error(err)
+			log.Fatal(err)
 		}
 
-		// データのエンコードと格納
-		switch c.fmt {
-		case "png":
-			err = png.Encode(file, testImage)
-			break
-		case "jpg":
-			err = jpeg.Encode(file, testImage, nil)
-			break
-		case "gif":
-			err = gif.Encode(file, testImage, nil)
-			break
-		}
+		_, err = os.Create(p)
 		if err != nil {
-			t.Error(err)
+			log.Fatal(err)
 		}
+
 	}
 	return
+}
 
+func buildDirIfNotExist(dir string) error {
+	if dir == "" {
+		return nil
+	}
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		err = nil
+		log.Println("dir:", dir)
+		err = os.MkdirAll(dir, 0777)
+		if err != nil {
+			return err
+		}
+	} else {
+		return err
+	}
+	return nil
 }
