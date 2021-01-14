@@ -2,17 +2,12 @@ package convImages
 
 import (
 	"bytes"
-	"flag"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
-
-var fromFmt = flag.String("from", "jpg", "Specify a format of your original image")
-var toFmt = flag.String("to", "png", "Specify a format which you want to convert the image to")
-var path = flag.String("path", ".", "Path to a directory in which images will be converted recursively")
 
 // ディレクトリ内を探索して、対象の画像パスの一覧を返す
 func getImagePaths(path string, fmt string) ([]string, error) {
@@ -46,19 +41,18 @@ func getImagePaths(path string, fmt string) ([]string, error) {
 }
 
 // 外部から実行される関数
-func Do() {
-	log.Println("Do()")
-	flag.Parse()
+func Run(fromFmt string, toFmt string, path string) {
+	log.Println("convert()")
 
 	// 指定フォーマットの画像の一覧を取得
-	paths, err := getImagePaths(*path, *fromFmt)
+	paths, err := getImagePaths(path, fromFmt)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// 画像パスをループさせて一括変換
 	for _, path := range paths {
-		log.Printf("converting %s to %s\n", path, *toFmt)
+		log.Printf("converting %s to %s\n", path, toFmt)
 
 		// 元画像を読み込み
 		imageBytes, err := ioutil.ReadFile(path)
@@ -70,20 +64,20 @@ func Do() {
 		nameNoExt := strings.TrimSuffix(path, filepath.Ext(path))
 		ic := ImgConverter{nameNoExt, nil}
 		buffer := bytes.NewReader(imageBytes)
-		err = ic.Decode(buffer, *fromFmt)
+		err = ic.Decode(buffer, fromFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// 画像のエンコード
 		newBuf := new(bytes.Buffer)
-		err = ic.Encode(newBuf, *toFmt)
+		err = ic.Encode(newBuf, toFmt)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// ファイル出力
-		newName := ic.Name + "." + *toFmt
+		newName := ic.Name + "." + toFmt
 		ioutil.WriteFile(newName, newBuf.Bytes(), 0644)
 	}
 

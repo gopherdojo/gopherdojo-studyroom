@@ -1,7 +1,6 @@
 package convImages_test
 
 import (
-	"flag"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -11,7 +10,7 @@ import (
 	"github.com/yuonoda/gopherdojo-studyroom/kadai1/yuonoda/lib"
 )
 
-func TestDo(t *testing.T) {
+func TestRun(t *testing.T) {
 	cases := []struct {
 		path     string
 		from     string
@@ -28,10 +27,7 @@ func TestDo(t *testing.T) {
 		testBuiltTestDir(t)
 
 		// オプションを指定して実行
-		flag.CommandLine.Set("path", c.path)
-		flag.CommandLine.Set("from", c.from)
-		flag.CommandLine.Set("to", c.to)
-		convImages.Do()
+		convImages.Run(c.from, c.to, c.path)
 
 		// ファイルが作成されているか確認
 		for _, e := range c.expected {
