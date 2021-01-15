@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/yuonoda/gopherdojo-studyroom/kadai3-1/yuonoda/lib/typeGame"
+	"github.com/yuonoda/typeGame"
 )
 
 func main() {
-
+	typeGame.Start()
 }
