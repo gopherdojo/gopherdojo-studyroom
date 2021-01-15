@@ -1,4 +1,4 @@
-package convImages
+package convImages_test
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"image/jpeg"
 	"image/png"
 	"testing"
+
+	"github.com/yuonoda/gopherdojo-studyroom/kadai1/yuonoda/lib"
 )
 
 // Decodeメソッドのテスト
@@ -17,69 +19,73 @@ func TestDecode(t *testing.T) {
 
 	// テストケース
 	cases := []struct {
-		fmt string
-		err error
+		name string
+		fmt  string
+		err  error
 	}{
-		{"png", nil},
-		{"jpg", nil},
-		{"gif", nil},
-		{"docx", errors.New("encode format is incorrect")},
+		{"decodePng", "png", nil},
+		{"decodeJpg", "jpg", nil},
+		{"decodeGif", "gif", nil},
+		{"decodeDocx", "docx", errors.New("encode format is incorrect")},
 	}
-	var ic imgConverter
+	var ic convImages.ImgConverter
 
 	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
 
-		// テスト画像ファイルを作成
-		testImage := testGenerateImage(t)
-		ic.Image = testImage
-		encodedBuf1 := bytes.NewBuffer([]byte{})
-		encodedBuf2 := bytes.NewBuffer([]byte{})
+			// テスト画像ファイルを作成
+			testImage := testGenerateImage(t)
+			ic.Image = testImage
+			encodedBuf1 := bytes.NewBuffer([]byte{})
+			encodedBuf2 := bytes.NewBuffer([]byte{})
 
-		// テスト画像のエンコード
-		err := ic.encode(encodedBuf1, c.fmt)
-		if err != nil {
-			if err.Error() != c.err.Error() {
-				t.Errorf(err.Error())
+			// テスト画像のエンコード
+			err := ic.Encode(encodedBuf1, c.fmt)
+			if err != nil {
+				if err.Error() != c.err.Error() {
+					t.Errorf(err.Error())
+				}
+				return
 			}
-			continue
-		}
-		err = ic.encode(encodedBuf2, c.fmt)
-		if err != nil && err.Error() != c.err.Error() {
-			if err.Error() != c.err.Error() {
-				t.Errorf(err.Error())
+			err = ic.Encode(encodedBuf2, c.fmt)
+			if err != nil && err.Error() != c.err.Error() {
+				if err.Error() != c.err.Error() {
+					t.Errorf(err.Error())
+				}
+				return
 			}
-			continue
-		}
 
-		// imgConnverterでデコード
-		ic = imgConverter{}
-		err = ic.decode(encodedBuf1, c.fmt)
-		if err != nil {
-			t.Errorf("image decode error err: %v", err)
-		}
-		image1 := ic.Image
+			// imgConnverterでデコード
+			ic = convImages.ImgConverter{}
+			err = ic.Decode(encodedBuf1, c.fmt)
+			if err != nil {
+				t.Errorf("image decode error err: %v", err)
+			}
+			image1 := ic.Image
 
-		// imgConverterを使わずにデコード
-		image2, _, err := image.Decode(encodedBuf2)
-		if err != nil {
-			t.Errorf("image test decode error err:%v", err)
-		}
+			// imgConverterを使わずにデコード
+			image2, _, err := image.Decode(encodedBuf2)
+			if err != nil {
+				t.Errorf("image test decode error err:%v", err)
+			}
 
-		// サイズの比較
-		if image1.Bounds() != image2.Bounds() {
-			t.Errorf("image size doesn't match")
-		}
+			// サイズの比較
+			if image1.Bounds() != image2.Bounds() {
+				t.Errorf("image size doesn't match")
+			}
 
-		// 色の比較
-		for x := 0; x < image1.Bounds().Max.X; x++ {
-			for y := 0; y < image1.Bounds().Max.Y; y++ {
-				color1 := image1.At(x, y)
-				color2 := image2.At(x, y)
-				if color1 != color2 {
-					t.Errorf("color doesn't match")
+			// 色の比較
+			for x := 0; x < image1.Bounds().Max.X; x++ {
+				for y := 0; y < image1.Bounds().Max.Y; y++ {
+					color1 := image1.At(x, y)
+					color2 := image2.At(x, y)
+					if color1 != color2 {
+						t.Errorf("color doesn't match")
+					}
 				}
 			}
-		}
+		})
+
 	}
 	return
 
@@ -87,52 +93,54 @@ func TestDecode(t *testing.T) {
 
 // エンコードのテスト
 func TestEncode(t *testing.T) {
-	t.Logf("TestEncode")
-
 	// 生画像を生成
 	image := testGenerateImage(t)
 
 	// サンプルデータでループ
 	cases := []struct {
-		fmt   string
-		error error
+		name          string
+		fmt           string
+		isErrExpected bool
 	}{
-		{"png", nil},
-		{"jpg", nil},
-		{"gif", nil},
-		{"docx", errors.New("encode format is incorrect")},
+		{"encodePng", "png", false},
+		{"encodeJpg", "jpg", false},
+		{"encodeGif", "gif", false},
+		{"encodeDocx", "docx", true},
 	}
 	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
 
-		// エンコード
-		ic := imgConverter{"test", image}
-		buff1 := bytes.NewBuffer([]byte{})
-		err := ic.encode(buff1, c.fmt)
-		if err != nil && err.Error() != c.error.Error() {
-			t.Errorf(err.Error())
-		}
+			// エンコード
+			ic := convImages.ImgConverter{"test", image}
+			buff1 := bytes.NewBuffer([]byte{})
+			err := ic.Encode(buff1, c.fmt)
+			if err != nil && !c.isErrExpected {
+				t.Errorf(err.Error())
+			}
 
-		// imgConverterを使わずにエンコード
-		buff2 := bytes.NewBuffer([]byte{})
-		switch c.fmt {
-		case "png":
-			err = png.Encode(buff2, image)
-			break
-		case "jpg":
-			err = jpeg.Encode(buff2, image, nil)
-			break
-		case "gif":
-			err = gif.Encode(buff2, image, nil)
-			break
-		}
-		if err != nil && err.Error() != c.error.Error() {
-			t.Errorf(err.Error())
-		}
+			// imgConverterを使わずにエンコード
+			buff2 := bytes.NewBuffer([]byte{})
+			switch c.fmt {
+			case "png":
+				err = png.Encode(buff2, image)
+				break
+			case "jpg":
+				err = jpeg.Encode(buff2, image, nil)
+				break
+			case "gif":
+				err = gif.Encode(buff2, image, nil)
+				break
+			}
+			if err != nil && !c.isErrExpected {
+				t.Errorf(err.Error())
+			}
 
-		// 双方のバイト列が一致するか検証
-		if bytes.Compare(buff1.Bytes(), buff2.Bytes()) != 0 {
-			t.Errorf("encode result mismatch")
-		}
+			// 双方のバイト列が一致するか検証
+			if bytes.Compare(buff1.Bytes(), buff2.Bytes()) != 0 {
+				t.Errorf("encode result mismatch")
+			}
+		})
+
 	}
 
 	return

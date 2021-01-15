@@ -1,96 +1,115 @@
-package convImages
+package convImages_test
 
 import (
-	"flag"
+	convImages "github.com/yuonoda/gopherdojo-studyroom/kadai1/yuonoda/lib"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
-func TestDo(t *testing.T) {
+func TestRun(t *testing.T) {
+
 	cases := []struct {
+		name     string
 		path     string
 		from     string
 		to       string
+		testImgs []string
 		expected []string
 	}{
-		{"test1", "png", "jpg", []string{"test1/png.jpg"}},
-		{"test1", "jpg", "gif", []string{"test2/jpg.gif"}},
-		{"test1", "gif", "png", []string{"test1/gif.png"}},
+		{"pngToJpg", "test", "png", "jpg", []string{"png.png"}, []string{"png.jpg"}},
+		{"jpgToGif", "test", "jpg", "gif", []string{"jpg.jpg", "test2/jpg.jpg"}, []string{"jpg.gif", "test2/jpg.gif"}},
+		{"gifToPng", "test", "gif", "png", []string{"png.png"}, []string{"gif.png"}},
 	}
 
 	for _, c := range cases {
-		// テスト用のディレクトリを作成
-		testBuiltTestDir(t)
 
-		// オプションを指定して実行
-		flag.CommandLine.Set("path", c.path)
-		flag.CommandLine.Set("from", c.from)
-		flag.CommandLine.Set("to", c.to)
-		Do()
+		t.Run(c.name, func(t *testing.T) {
 
-		// ファイルが作成されているか確認
-		for _, e := range c.expected {
-			if _, err := os.Stat(e); os.IsExist(err) {
+			// テスト用のディレクトリを作成
+			testBuiltTestDir(t, c.testImgs)
+
+			// オプションを指定して実行
+			convImages.Run(c.from, c.to, c.path)
+
+			// ファイルが作成されているか確認
+			for _, e := range c.expected {
+				if _, err := os.Stat("test/" + e); os.IsExist(err) {
+					t.Error(err)
+				}
+			}
+
+			// テストディレクトリの削除
+			err := os.RemoveAll("test")
+			if err != nil {
 				t.Error(err)
 			}
-		}
+		})
 
-		// テストディレクトリの削除
-		err := os.RemoveAll("test1")
-		if err != nil {
-			t.Error(err)
-		}
 	}
 }
 
-func testBuiltTestDir(t *testing.T) {
-	t.Helper()
+func testBuiltTestDir(t *testing.T, paths []string) {
+	//t.Helper()
+	for _, p := range paths {
+		// ディレクトリがなければつくる
+		p = "test/" + p
+		dir, _ := filepath.Split(p)
+		buildDirIfNotExist(t, dir)
 
-	// テストディレクトリの作成
-	err := os.MkdirAll("test1/test2", 0777)
-	if err != nil {
-		t.Error(err)
-	}
-
-	// 作成する画像のリスト
-	testImages := []struct {
-		fmt  string
-		path string
-	}{
-		{"png", "test1/png.png"},
-		{"jpg", "test1/gif.gif"},
-		{"gif", "test1/test2/jpg.jpg"},
-	}
-
-	// テスト画像の作成
-	testImage := testGenerateImage(t)
-	for _, i := range testImages {
-
-		// ファイルの作成
-		file, err := os.Create(i.path)
+		// ファイルをつくる
+		file, err := os.Create(p)
 		if err != nil {
 			t.Error(err)
 		}
+
+		// 拡張子を判定
+		allowedExt := map[string]bool{
+			"png": true,
+			"jpg": true,
+			"gif": true,
+		}
+		ext := filepath.Ext(p)
+		if ext == "" || !allowedExt[ext[1:]] {
+			continue
+		}
+		fmt := ext[1:]
 
 		// データのエンコードと格納
-		switch i.fmt {
+		img := testGenerateImage(t)
+		switch fmt {
 		case "png":
-			err = png.Encode(file, testImage)
+			err = png.Encode(file, img)
 			break
 		case "jpg":
-			err = jpeg.Encode(file, testImage, nil)
+			err = jpeg.Encode(file, img, nil)
 			break
 		case "gif":
-			err = gif.Encode(file, testImage, nil)
+			err = gif.Encode(file, img, nil)
 			break
 		}
 		if err != nil {
 			t.Error(err)
 		}
+
 	}
 	return
+}
 
+// ディレクトリが存在しなければつくる
+func buildDirIfNotExist(t *testing.T, dir string) {
+	if dir == "" {
+		return
+	}
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		err = nil
+		err = os.MkdirAll(dir, 0777)
+		if err != nil {
+			t.Error(err)
+		}
+	}
 }
