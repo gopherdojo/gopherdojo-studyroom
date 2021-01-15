@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"fmt"
@@ -9,17 +9,14 @@ import (
 
 func takeRandomWord(l []string) string {
 	log.Println("takeRandomWord")
-	//var rand rand.Rand
-	//rand.Seed(time.Now().UnixNano())
 	rand.Seed(time.Now().UnixNano())
 	log.Println("len(l):", len(l))
 	i := rand.Intn(len(l))
 	log.Println("i:", i)
 	return l[i]
-
 }
 
-func main() {
+func Start() {
 	var words = []string{
 		"apple",
 		"orange",
