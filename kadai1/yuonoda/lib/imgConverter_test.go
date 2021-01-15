@@ -98,14 +98,14 @@ func TestEncode(t *testing.T) {
 
 	// サンプルデータでループ
 	cases := []struct {
-		name string
-		fmt  string
-		err  error
+		name          string
+		fmt           string
+		isErrExpected bool
 	}{
-		{"encodePng", "png", nil},
-		{"encodeJpg", "jpg", nil},
-		{"encodeGif", "gif", nil},
-		{"encodeDocx", "docx", errors.New("encode format is incorrect")},
+		{"encodePng", "png", false},
+		{"encodeJpg", "jpg", false},
+		{"encodeGif", "gif", false},
+		{"encodeDocx", "docx", true},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -114,7 +114,7 @@ func TestEncode(t *testing.T) {
 			ic := convImages.ImgConverter{"test", image}
 			buff1 := bytes.NewBuffer([]byte{})
 			err := ic.Encode(buff1, c.fmt)
-			if err != nil && err.Error() != c.err.Error() {
+			if err != nil && !c.isErrExpected {
 				t.Errorf(err.Error())
 			}
 
@@ -131,7 +131,7 @@ func TestEncode(t *testing.T) {
 				err = gif.Encode(buff2, image, nil)
 				break
 			}
-			if err != nil && err.Error() != c.err.Error() {
+			if err != nil && !c.isErrExpected {
 				t.Errorf(err.Error())
 			}
 
