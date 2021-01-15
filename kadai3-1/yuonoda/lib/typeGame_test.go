@@ -1,1 +1,1 @@
-package lib_test
+package typeGame_test
