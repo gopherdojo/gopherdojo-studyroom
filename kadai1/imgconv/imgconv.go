@@ -1,7 +1,6 @@
 package imgconv
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"image"
@@ -99,61 +98,27 @@ func filter(targets map[string][]string, from Format) map[string][]string {
 				continue
 			}
 
-			ok := check(file, from)
-			if ok {
-				maps[k] = append(maps[k], v)
+			if _, err := decodeConfig(file, from); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				continue
 			}
 		}
 	}
 	return maps
 }
 
-// 画像形式をチェックする
-func check(r io.Reader, from Format) bool {
+// decodeConfig エンコードされた画像のカラーモデルと寸法をデコードする
+func decodeConfig(r io.Reader, from Format) (image.Config, error) {
 	switch from {
 	case _jpg:
-		return isJpg(r)
+		return jpeg.DecodeConfig(r)
 	case _png:
-		return isPng(r)
+		return png.DecodeConfig(r)
 	case _gif:
-		return isGif(r)
+		return gif.DecodeConfig(r)
 	default:
-		return false
+		return image.Config{}, errors.New("decode config failed")
 	}
-}
-
-// isJpg Jpgか確認する
-func isJpg(r io.Reader) bool {
-	magicnum := []byte{255, 216}
-	buf := make([]byte, len(magicnum))
-
-	return isEqual(r, magicnum, buf)
-}
-
-// isPng Pngか確認する
-func isPng(r io.Reader) bool {
-	magicnum := []byte{137, 80, 78, 71}
-	buf := make([]byte, len(magicnum))
-
-	return isEqual(r, magicnum, buf)
-}
-
-// isGif Gifか確認する
-func isGif(r io.Reader) bool {
-	magicnum := []byte{71, 73, 70, 56}
-	buf := make([]byte, len(magicnum))
-
-	return isEqual(r, magicnum, buf)
-}
-
-// isEqual マジックナンバーが同じか確認する
-func isEqual(r io.Reader, magicnum []byte, buf []byte) bool {
-	_, err := io.ReadAtLeast(r, buf, len(buf))
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		return false
-	}
-	return bytes.Equal(magicnum, buf)
 }
 
 // convert 画像形式を変換する
