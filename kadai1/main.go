@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/sorakoro/gopherdojo-studyroom/kadai1/imgconv"
-	_ "github.com/sorakoro/gopherdojo-studyroom/kadai1/imgconv"
 )
 
 var (
