@@ -91,6 +91,7 @@ func makeFileContainers(dirPaths []string) []fileContainer {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
+
 		fileContainer := fileContainer{dirPath, files}
 		fileContainers = append(fileContainers, fileContainer)
 	}
@@ -103,6 +104,7 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 	filterdFileContainer := []fileContainer{}
 	fmt.Println("##### list of files that could not be opened or could not be decode config #####")
 	for _, t := range targets {
+		files := []string{}
 		for _, v := range t.filesName {
 			file, err := os.Open(filepath.Join(t.dirPath, v))
 			if err != nil {
@@ -114,7 +116,10 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 				fmt.Fprintln(os.Stderr, v+" could not be decode config")
 				continue
 			}
+			files = append(files, v)
 		}
+		fileContainer := fileContainer{t.dirPath, files}
+		filterdFileContainer = append(filterdFileContainer, fileContainer)
 	}
 	fmt.Println("")
 	return filterdFileContainer
