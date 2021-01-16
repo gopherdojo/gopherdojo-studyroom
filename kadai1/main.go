@@ -45,7 +45,9 @@ func main() {
 		imgconv.GetFormatEnum(*from),
 		imgconv.GetFormatEnum(*to),
 	)
-	converter.Exec()
+	if err := converter.Exec(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 }
 
 // checkFormat 引数で渡された画像フォーマットをサポートしているかチェック

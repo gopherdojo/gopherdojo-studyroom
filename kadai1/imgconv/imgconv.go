@@ -28,18 +28,24 @@ func NewImageConverter(path string, dist string, from Format, to Format) ImageCo
 }
 
 // Exec 画像の変換を実行する
-func (i ImageConverter) Exec() {
-	dirPaths := collectDirPaths(i.path)
+func (i ImageConverter) Exec() error {
+	dirPaths, err := collectDirPaths(i.path)
+	if err != nil {
+		return err
+	}
+
 	dirAndFileNameMap := makeDirAndFileNameMap(dirPaths)
 	filteredMap := filter(dirAndFileNameMap, i.from)
 
 	for dirPath, files := range filteredMap {
 		convert(dirPath, files, i.dist, i.from, i.to)
 	}
+
+	return nil
 }
 
 // collectDirPaths 指定されたパス配下にあるディレクトリを再帰的に取得する
-func collectDirPaths(path string) []string {
+func collectDirPaths(path string) ([]string, error) {
 	var dirPaths []string
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -51,10 +57,9 @@ func collectDirPaths(path string) []string {
 		return nil
 	})
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return nil, err
 	}
-	return dirPaths
+	return dirPaths, nil
 }
 
 // collectFilesOfDir ディレクトリ配下のファイルを取得する
