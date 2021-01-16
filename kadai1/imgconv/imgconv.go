@@ -34,12 +34,9 @@ func (i ImageConverter) Exec() error {
 		return err
 	}
 
-	dirAndFileNameMap := makeDirAndFileNameMap(dirPaths)
-	filteredMap := filter(dirAndFileNameMap, i.from)
-
-	for dirPath, files := range filteredMap {
-		convert(dirPath, files, i.dist, i.from, i.to)
-	}
+	fileContainers := makeFileContainers(dirPaths)
+	filteredFileContainers := filterFileContainers(fileContainers, i.from)
+	convert(filteredFileContainers, i.dist, i.from, i.to)
 
 	return nil
 }
@@ -66,7 +63,7 @@ func collectDirPaths(path string) ([]string, error) {
 func collectFilesOfDir(path string) ([]string, error) {
 	filesOfDir, err := ioutil.ReadDir(path)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("could not read " + path)
 	}
 
 	var files []string
@@ -78,38 +75,49 @@ func collectFilesOfDir(path string) ([]string, error) {
 	return files, nil
 }
 
-// makeDirAndFileNameMaps ディレクトとファイルの連想配列を生成する
-func makeDirAndFileNameMap(dirPaths []string) map[string][]string {
-	dirAndFileMap := map[string][]string{}
+// fileContainer ディレクトリパスと配下のファイルを管理する
+type fileContainer struct {
+	dirPath   string
+	filesName []string
+}
+
+// makeFileContainers ディレクトとファイルの連想配列を生成する
+func makeFileContainers(dirPaths []string) []fileContainer {
+	fileContainers := []fileContainer{}
+	fmt.Println("##### list of files that failed to read #####")
 	for _, dirPath := range dirPaths {
 		files, err := collectFilesOfDir(dirPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
-		dirAndFileMap[dirPath] = files
+		fileContainer := fileContainer{dirPath, files}
+		fileContainers = append(fileContainers, fileContainer)
 	}
-	return dirAndFileMap
+	fmt.Println("")
+	return fileContainers
 }
 
-// filter fromで指定されたフォーマットに絞り込む
-func filter(targets map[string][]string, from Format) map[string][]string {
-	maps := map[string][]string{}
-	for k, val := range targets {
-		for _, v := range val {
-			file, err := os.Open(filepath.Join(k, v))
+// filterFileContainers fromで指定されたフォーマットに絞り込む
+func filterFileContainers(targets []fileContainer, from Format) []fileContainer {
+	filterdFileContainer := []fileContainer{}
+	fmt.Println("##### list of files that could not be opened or could not be decode config #####")
+	for _, t := range targets {
+		for _, v := range t.filesName {
+			file, err := os.Open(filepath.Join(t.dirPath, v))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				fmt.Fprintln(os.Stderr, v+" reason: could not open the file")
 				continue
 			}
 
 			if _, err := decodeConfig(file, from); err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				fmt.Fprintln(os.Stderr, v+"could not be decode config")
 				continue
 			}
 		}
 	}
-	return maps
+	fmt.Println("")
+	return filterdFileContainer
 }
 
 // decodeConfig エンコードされた画像のカラーモデルと寸法をデコードする
@@ -127,19 +135,23 @@ func decodeConfig(r io.Reader, from Format) (image.Config, error) {
 }
 
 // convert 画像形式を変換する
-func convert(dirPath string, fileNames []string, dist string, from Format, to Format) {
-	for _, fn := range fileNames {
-		img, err := decode(filepath.Join(dirPath, fn), from)
-		if err != nil {
-			fmt.Fprint(os.Stderr, err)
-			continue
-		}
+func convert(targets []fileContainer, dist string, from Format, to Format) {
+	fmt.Println("##### list of files that failed to convert #####")
+	for _, t := range targets {
+		for _, fn := range t.filesName {
+			img, err := decode(filepath.Join(t.dirPath, fn), from)
+			if err != nil {
+				fmt.Fprint(os.Stderr, fn+"reason: decoding failed")
+				continue
+			}
 
-		if err := encode(img, dist, fn, from, to); err != nil {
-			fmt.Fprint(os.Stderr, err)
-			continue
+			if err := encode(img, dist, fn, from, to); err != nil {
+				fmt.Fprint(os.Stderr, fn+"reason: encoding failed")
+				continue
+			}
 		}
 	}
+	fmt.Println("")
 }
 
 // decode ファイルを画像オブジェクトに変換する
