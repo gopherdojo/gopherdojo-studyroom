@@ -111,7 +111,7 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 			}
 
 			if _, err := decodeConfig(file, from); err != nil {
-				fmt.Fprintln(os.Stderr, v+"could not be decode config")
+				fmt.Fprintln(os.Stderr, v+" could not be decode config")
 				continue
 			}
 		}
@@ -141,12 +141,12 @@ func convert(targets []fileContainer, dist string, from Format, to Format) {
 		for _, fn := range t.filesName {
 			img, err := decode(filepath.Join(t.dirPath, fn), from)
 			if err != nil {
-				fmt.Fprint(os.Stderr, fn+"reason: decoding failed")
+				fmt.Fprint(os.Stderr, fn+" reason: decoding failed")
 				continue
 			}
 
 			if err := encode(img, dist, fn, from, to); err != nil {
-				fmt.Fprint(os.Stderr, fn+"reason: encoding failed")
+				fmt.Fprint(os.Stderr, fn+" reason: encoding failed")
 				continue
 			}
 		}
