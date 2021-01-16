@@ -38,6 +38,8 @@ func (i ImageConverter) Exec() error {
 	filteredFileContainers := filterFileContainers(fileContainers, i.from)
 	convert(filteredFileContainers, i.dist, i.from, i.to)
 
+	fmt.Println("the image conversion to " + i.from.string() + " + => " + i.to.string() + " was successful!!")
+
 	return nil
 }
 
@@ -95,7 +97,7 @@ func makeFileContainers(dirPaths []string) []fileContainer {
 		fileContainer := fileContainer{dirPath, files}
 		fileContainers = append(fileContainers, fileContainer)
 	}
-	fmt.Println("")
+	fmt.Print("\n\n")
 	return fileContainers
 }
 
@@ -108,12 +110,12 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 		for _, v := range t.filesName {
 			file, err := os.Open(filepath.Join(t.dirPath, v))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, v+" reason: could not open the file")
+				fmt.Fprintln(os.Stderr, v+": reason: could not open the file")
 				continue
 			}
 
 			if _, err := decodeConfig(file, from); err != nil {
-				fmt.Fprintln(os.Stderr, v+" could not be decode config")
+				fmt.Fprintln(os.Stderr, v+": reason could not be decode config")
 				continue
 			}
 			files = append(files, v)
@@ -121,7 +123,7 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 		fileContainer := fileContainer{t.dirPath, files}
 		filterdFileContainer = append(filterdFileContainer, fileContainer)
 	}
-	fmt.Println("")
+	fmt.Print("\n\n")
 	return filterdFileContainer
 }
 
@@ -146,17 +148,17 @@ func convert(targets []fileContainer, dist string, from Format, to Format) {
 		for _, fn := range t.filesName {
 			img, err := decode(filepath.Join(t.dirPath, fn), from)
 			if err != nil {
-				fmt.Fprint(os.Stderr, fn+" reason: decoding failed")
+				fmt.Fprint(os.Stderr, fn+": reason: decoding failed")
 				continue
 			}
 
 			if err := encode(img, dist, fn, from, to); err != nil {
-				fmt.Fprint(os.Stderr, fn+" reason: encoding failed")
+				fmt.Fprint(os.Stderr, fn+": reason: encoding failed")
 				continue
 			}
 		}
 	}
-	fmt.Println("")
+	fmt.Print("\n\n")
 }
 
 // decode ファイルを画像オブジェクトに変換する
@@ -164,7 +166,6 @@ func decode(path string, from Format) (image.Image, error) {
 	file, err := os.Open(path)
 	defer file.Close()
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
 		return nil, err
 	}
 
