@@ -204,8 +204,8 @@ func (f Format) string() string {
 }
 
 // GetFormatEnum 画像フォーマット用の列挙子を取得する
-func GetFormatEnum(with string) Format {
-	switch with {
+func GetFormatEnum(ext string) Format {
+	switch ext {
 	case "jpg":
 		return _jpg
 	case "png":
