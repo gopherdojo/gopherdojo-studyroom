@@ -8,10 +8,9 @@ import (
 )
 
 // 別ルーチンで入力値を受け付ける
-func input(r io.Reader) <-chan string {
+func receiveInput(s *bufio.Scanner) <-chan string {
 	inputChan := make(chan string, 3)
 	go func() {
-		s := bufio.NewScanner(r)
 		s.Scan()
 		inputChan <- s.Text()
 		close(inputChan)
@@ -24,6 +23,7 @@ func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 	var score int
 	timeLimit := time.After(time.Duration(limitSeconds) * time.Second)
 	isTimedUp := false
+	scanner := bufio.NewScanner(r)
 
 	for _, word := range words {
 
@@ -32,7 +32,7 @@ func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 
 		select {
 		//　入力を受けたとき
-		case inputWord := <-input(r):
+		case inputWord := <-receiveInput(scanner):
 			if word == inputWord {
 				fmt.Fprintf(w, "correct!\n")
 				score++
@@ -55,6 +55,6 @@ func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 		}
 	}
 
-	fmt.Printf("game finished! your score is %d / %d \n", score, len(words))
+	fmt.Fprintf(w, "game finished! your score is %d / %d \n", score, len(words))
 	return score
 }
