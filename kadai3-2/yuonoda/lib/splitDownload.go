@@ -1,5 +1,7 @@
 package splitDownload
 
-func Run()  {
-	
+import "log"
+
+func Run() {
+	log.Println("Run")
 }
