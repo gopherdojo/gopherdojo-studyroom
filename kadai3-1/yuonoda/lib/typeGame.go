@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"time"
 )
 
 func input(r io.Reader) <-chan string {
-	log.Println("input")
 	inputChan := make(chan string, 1)
 	go func() {
 		s := bufio.NewScanner(r)
@@ -28,20 +26,19 @@ func Start(limitSeconds int, words []string) {
 	timeLimit := time.After(time.Duration(limitSeconds) * time.Second)
 	isTimedUp := false
 
-	for {
+	for _, w := range words {
+
 		// 問題を出題
-		expectedWord := words[0]
-		words = words[1:]
-		fmt.Printf("Type '%s'\n", expectedWord)
+		fmt.Printf("Type '%s'\n", w)
 
 		select {
 		//　入力を受けたとき
 		case inputWord := <-input(os.Stdin):
-			if expectedWord == inputWord {
+			if w == inputWord {
 				fmt.Printf("correct!\n")
 				score++
 			} else {
-				fmt.Printf("incorrect! got \"%s\", expected \"%s\"\n", inputWord, expectedWord)
+				fmt.Printf("incorrect! got \"%s\", expected \"%s\"\n", inputWord, w)
 			}
 			break
 
@@ -55,9 +52,9 @@ func Start(limitSeconds int, words []string) {
 
 		// 制限時間になったら、ループを終了
 		if isTimedUp {
-			fmt.Printf("game finished! your score is %d\n", score)
 			break
 		}
-
 	}
+
+	fmt.Printf("game finished! your score is %d / %d \n", score, len(words))
 }
