@@ -7,4 +7,35 @@ import (
 
 func TestStart(t *testing.T) {
 	typeGame.Start()
+
+	cases := []struct {
+		name string
+		//question []string
+		answer []string
+		score  int
+	}{
+		{
+			name: "basic",
+			//question: []string{"peach", "orange", "apple"},
+			//answer: []string{"peach", "orange", "apple"},
+			answer: []string{
+				"peach",
+				"orange",
+				"apple",
+				"grape",
+				"pineapple",
+				"mandarin",
+				"lemon",
+				"kiwi",
+				"grapefruit",
+			},
+			score: 10,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+
+		})
+	}
 }
