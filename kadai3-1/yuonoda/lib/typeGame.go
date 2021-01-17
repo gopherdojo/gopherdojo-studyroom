@@ -4,51 +4,50 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"time"
 )
 
+// 別ルーチンで入力値を受け付ける
 func input(r io.Reader) <-chan string {
-	inputChan := make(chan string, 1)
+	inputChan := make(chan string, 3)
 	go func() {
 		s := bufio.NewScanner(r)
-		for s.Scan() {
-			inputChan <- s.Text()
-		}
+		s.Scan()
+		inputChan <- s.Text()
 		close(inputChan)
 	}()
 	return inputChan
 }
 
-func Start(limitSeconds int, words []string) {
+func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 	// 変数を宣言
-	var score uint
+	var score int
 	timeLimit := time.After(time.Duration(limitSeconds) * time.Second)
 	isTimedUp := false
 
-	for _, w := range words {
+	for _, word := range words {
 
 		// 問題を出題
-		fmt.Printf("Type '%s'\n", w)
+		fmt.Fprintf(w, "type '%s'\n", word)
 
 		select {
 		//　入力を受けたとき
-		case inputWord := <-input(os.Stdin):
-			if w == inputWord {
-				fmt.Printf("correct!\n")
+		case inputWord := <-input(r):
+			if word == inputWord {
+				fmt.Fprintf(w, "correct!\n")
 				score++
 			} else {
-				fmt.Printf("incorrect! got \"%s\", expected \"%s\"\n", inputWord, w)
+				fmt.Fprintf(w, "incorrect! got \"%s\", expected \"%s\"\n", inputWord, word)
 			}
 			break
 
 		// 制限時間に達したとき
 		case <-timeLimit:
-			fmt.Println("time up!")
+			fmt.Fprintln(w, "time up!")
 			isTimedUp = true
 			break
 		}
-		fmt.Println()
+		fmt.Fprintln(w)
 
 		// 制限時間になったら、ループを終了
 		if isTimedUp {
@@ -57,4 +56,5 @@ func Start(limitSeconds int, words []string) {
 	}
 
 	fmt.Printf("game finished! your score is %d / %d \n", score, len(words))
+	return score
 }

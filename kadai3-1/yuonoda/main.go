@@ -1,6 +1,9 @@
 package main
 
-import typeGame "github.com/yuonoda/ggopherdojo-studyroom/kadai3-1/yuonoda/lib/typeGame/lib"
+import (
+	typeGame "github.com/yuonoda/ggopherdojo-studyroom/kadai3-1/yuonoda/lib/typeGame/lib"
+	"os"
+)
 
 var words = []string{
 	"peach",
@@ -15,5 +18,5 @@ var words = []string{
 }
 
 func main() {
-	typeGame.Start(10, words)
+	typeGame.Start(30, words, os.Stdin, os.Stdout)
 }
