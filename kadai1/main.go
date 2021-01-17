@@ -57,5 +57,5 @@ func checkFormat(format string) (bool, error) {
 			return true, nil
 		}
 	}
-	return false, errors.New("not a supported format " + format)
+	return false, errors.New("Not a supported format " + format)
 }

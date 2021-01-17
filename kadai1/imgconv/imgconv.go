@@ -38,7 +38,7 @@ func (i ImageConverter) Exec() error {
 	filteredFileContainers := filterFileContainers(fileContainers, i.from)
 	convert(filteredFileContainers, i.dist, i.from, i.to)
 
-	fmt.Println("the image conversion to " + i.from.string() + " + => " + i.to.string() + " was successful!!")
+	fmt.Println("Successful image conversion!")
 
 	return nil
 }
@@ -65,7 +65,7 @@ func collectDirPaths(path string) ([]string, error) {
 func collectFilesOfDir(path string) ([]string, error) {
 	filesOfDir, err := ioutil.ReadDir(path)
 	if err != nil {
-		return nil, errors.New("could not read " + path)
+		return nil, errors.New("Could not read " + path)
 	}
 
 	var files []string
@@ -86,36 +86,42 @@ type fileContainer struct {
 // makeFileContainers ディレクトとファイルの連想配列を生成する
 func makeFileContainers(dirPaths []string) []fileContainer {
 	fileContainers := []fileContainer{}
-	fmt.Println("##### list of files that failed to read #####")
+	errs := []error{}
 	for _, dirPath := range dirPaths {
 		files, err := collectFilesOfDir(dirPath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			errs = append(errs, err)
 			continue
 		}
-
 		fileContainer := fileContainer{dirPath, files}
 		fileContainers = append(fileContainers, fileContainer)
 	}
-	fmt.Print("\n\n")
+
+	if len(errs) > 0 {
+		fmt.Println("##### List of files that failed to read #####")
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		fmt.Println("")
+	}
 	return fileContainers
 }
 
 // filterFileContainers fromで指定されたフォーマットに絞り込む
 func filterFileContainers(targets []fileContainer, from Format) []fileContainer {
 	filterdFileContainer := []fileContainer{}
-	fmt.Println("##### list of files that could not be opened or could not be decode config #####")
+	errs := []error{}
 	for _, t := range targets {
 		files := []string{}
 		for _, v := range t.filesName {
 			file, err := os.Open(filepath.Join(t.dirPath, v))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, v+": reason: could not open the file")
+				errs = append(errs, errors.New(v+" reason: Could not open the file"))
 				continue
 			}
 
 			if _, err := decodeConfig(file, from); err != nil {
-				fmt.Fprintln(os.Stderr, v+": reason could not be decode config")
+				errs = append(errs, errors.New(v+" reason: The image format is incorrect"))
 				continue
 			}
 			files = append(files, v)
@@ -123,7 +129,14 @@ func filterFileContainers(targets []fileContainer, from Format) []fileContainer 
 		fileContainer := fileContainer{t.dirPath, files}
 		filterdFileContainer = append(filterdFileContainer, fileContainer)
 	}
-	fmt.Print("\n\n")
+
+	if len(errs) > 0 {
+		fmt.Println("##### List of files that could not be opened or could not be decode config #####")
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		fmt.Println("")
+	}
 	return filterdFileContainer
 }
 
@@ -137,28 +150,35 @@ func decodeConfig(r io.Reader, from Format) (image.Config, error) {
 	case _gif:
 		return gif.DecodeConfig(r)
 	default:
-		return image.Config{}, errors.New("decode config failed")
+		return image.Config{}, errors.New("Decode config failed")
 	}
 }
 
 // convert 画像形式を変換する
 func convert(targets []fileContainer, dist string, from Format, to Format) {
-	fmt.Println("##### list of files that failed to convert #####")
+	errs := []error{}
 	for _, t := range targets {
 		for _, fn := range t.filesName {
 			img, err := decode(filepath.Join(t.dirPath, fn), from)
 			if err != nil {
-				fmt.Fprint(os.Stderr, fn+": reason: decoding failed")
+				errs = append(errs, errors.New(fn+" reason: Decoding failed"))
 				continue
 			}
 
 			if err := encode(img, dist, fn, from, to); err != nil {
-				fmt.Fprint(os.Stderr, fn+": reason: encoding failed")
+				errs = append(errs, errors.New(fn+" reason: Encoding failed"))
 				continue
 			}
 		}
 	}
-	fmt.Print("\n\n")
+
+	if len(errs) > 0 {
+		fmt.Println("##### List of files that failed to convert #####")
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		fmt.Println("")
+	}
 }
 
 // decode ファイルを画像オブジェクトに変換する
@@ -177,7 +197,7 @@ func decode(path string, from Format) (image.Image, error) {
 	case _gif:
 		return gif.Decode(file)
 	default:
-		return nil, errors.New("decoding failed")
+		return nil, errors.New("Decoding failed")
 	}
 }
 
@@ -197,7 +217,7 @@ func encode(img image.Image, dist string, fileName string, from Format, to Forma
 	case _gif:
 		return gif.Encode(file, img, nil)
 	default:
-		return errors.New("encoding failed")
+		return errors.New("Encoding failed")
 	}
 }
 
