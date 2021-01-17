@@ -1,47 +1,63 @@
 package typeGame
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"time"
 )
 
-//func takeRandomWord(l []string) string {
-//	log.Println("takeRandomWord")
-//	rand.Seed(time.Now().UnixNano())
-//	log.Println("len(l):", len(l))
-//	i := rand.Intn(len(l))
-//	log.Println("i:", i)
-//	return l[i]
-//}
+func input(r io.Reader) <-chan string {
+	log.Println("input")
+	inputChan := make(chan string, 1)
+	go func() {
+		s := bufio.NewScanner(r)
+		for s.Scan() {
+			inputChan <- s.Text()
+		}
+		close(inputChan)
+	}()
+	return inputChan
+}
 
-func Start() {
-	var input string
+func Start(limitSeconds int, words []string) {
+	// 変数を宣言
 	var score uint
-	words := []string{
-		"peach",
-		"orange",
-		"apple",
-		"grape",
-		"pineapple",
-		"mandarin",
-		"lemon",
-		"kiwi",
-		"grapefruit",
-	}
+	timeLimit := time.After(time.Duration(limitSeconds) * time.Second)
+	isTimedUp := false
 
 	for {
-		// 単語を表示して、入力を受ける
-		//word := takeRandomWord(words)
-		word := words[0]
+		// 問題を出題
+		expectedWord := words[0]
 		words = words[1:]
-		fmt.Printf("Type '%s'\n", word)
-		fmt.Scan(&input)
-		if input == word {
-			fmt.Println("Correct!")
-			score++
-		} else {
-			fmt.Printf("Incorrect! got \"%s\", expected \"%s\"\n", input, word)
+		fmt.Printf("Type '%s'\n", expectedWord)
+
+		select {
+		//　入力を受けたとき
+		case inputWord := <-input(os.Stdin):
+			if expectedWord == inputWord {
+				fmt.Printf("correct!\n")
+				score++
+			} else {
+				fmt.Printf("incorrect! got \"%s\", expected \"%s\"\n", inputWord, expectedWord)
+			}
+			break
+
+		// 制限時間に達したとき
+		case <-timeLimit:
+			fmt.Println("time up!")
+			isTimedUp = true
+			break
 		}
-		fmt.Println("score:", score)
-		fmt.Println("")
+		fmt.Println()
+
+		// 制限時間になったら、ループを終了
+		if isTimedUp {
+			fmt.Printf("game finished! your score is %d\n", score)
+			break
+		}
+
 	}
 }
