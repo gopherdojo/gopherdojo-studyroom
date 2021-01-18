@@ -5,13 +5,15 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func Run() {
 	log.Println("Run")
 
 	// リクエストとクライアントの作成
-	url := "https://yahoo.co.jp"
+	url := "https://dumps.wikimedia.org/jawiki/20210101/jawiki-20210101-pages-articles-multistream-index.txt.bz2"
 	r := bytes.NewReader([]byte{})
 	req, err := http.NewRequest("GET", url, r)
 	if err != nil {
@@ -29,5 +31,17 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("body:%s", body)
+
+	// ファイルの作成
+	_, filename := filepath.Split(url)
+	file, err := os.Create(filename + ".download")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// データの書き込み
+	_, err = file.Write(body)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
