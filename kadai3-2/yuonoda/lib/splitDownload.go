@@ -63,8 +63,8 @@ func Run() {
 	for i := 0; i < count; i++ {
 
 		// 担当する範囲を決定
-		startByte := singleSize*i + 1
-		endByte := singleSize * (i + 1)
+		startByte := singleSize * i
+		endByte := singleSize*(i+1) - 1
 		rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
 		log.Println("rangeVal:", rangeVal)
 
@@ -90,7 +90,7 @@ func Run() {
 			log.Fatal(err)
 		}
 		fileData = append(fileData, body...)
-		log.Printf("len(fileData)(MB) : %d", len(fileData)/singleSize)
+		log.Printf("len(fileData)(MB) : %d", len(fileData)/1000000)
 	}
 
 	// データの書き込み
