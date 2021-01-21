@@ -31,6 +31,38 @@ func getContentSize(url string) (size int, err error) {
 	return
 }
 
+func getPartialContent(url string, startByte int, endByte int) ([]byte, error) {
+	// Rangeヘッダーを作成
+	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
+	log.Println("rangeVal:", rangeVal)
+
+	// リクエストとクライアントの作成
+	r := bytes.NewReader([]byte{})
+	req, err := http.NewRequest("GET", url, r)
+	if err != nil {
+		//log.Fatal(err)
+		return nil, err
+	}
+	req.Header.Set("Range", rangeVal)
+	client := &http.Client{}
+
+	// リクエストの実行
+	res, err := client.Do(req)
+	if err != nil {
+		//log.Fatal(err)
+		return nil, err
+	}
+
+	// bodyの取得
+	body, err := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+	if err != nil {
+		//log.Fatal(err)
+		return nil, err
+	}
+	return body, nil
+}
+
 func Run() {
 	log.Println("Run")
 
@@ -58,39 +90,19 @@ func Run() {
 	// 1MBごとにアクセス
 	singleSize := 1000000
 	count := int(math.Ceil(float64(size) / float64(singleSize)))
-	var fileData []byte
 	log.Printf("count: %d\n", count)
+	var fileData []byte
 	for i := 0; i < count; i++ {
-
 		// 担当する範囲を決定
 		startByte := singleSize * i
 		endByte := singleSize*(i+1) - 1
-		rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
-		log.Println("rangeVal:", rangeVal)
 
-		// リクエストとクライアントの作成
-		r := bytes.NewReader([]byte{})
-		req, err := http.NewRequest("GET", url, r)
+		// レンジごとにリクエスト
+		content, err := getPartialContent(url, startByte, endByte)
 		if err != nil {
 			log.Fatal(err)
 		}
-		req.Header.Set("Range", rangeVal)
-		client := &http.Client{}
-
-		// リクエストの実行
-		res, err := client.Do(req)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// bodyの取得
-		body, err := ioutil.ReadAll(res.Body)
-		defer res.Body.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fileData = append(fileData, body...)
-		log.Printf("len(fileData)(MB) : %d", len(fileData)/1000000)
+		fileData = append(fileData, content...)
 	}
 
 	// データの書き込み
