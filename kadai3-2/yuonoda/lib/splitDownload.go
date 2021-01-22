@@ -46,8 +46,7 @@ func fillByteArr(arr []byte, startAt int, partArr []byte) {
 }
 
 // 指定範囲のデータを取得する
-func getPartialContent(url string, startByte int, endByte int) ([]byte, error) {
-	//func getPartialContent(url string, startByte int, endByte int, fileDataCh chan partialContent)  {
+func getPartialContent(url string, startByte int, endByte int, fileDataCh chan partialContent) {
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
 	log.Println("rangeVal:", rangeVal)
@@ -92,24 +91,23 @@ func Run() {
 	}
 	log.Printf("size: %d\n", size)
 
-	//// ファイルの作成
-	//_, filename := filepath.Split(url)
-	//homedir, err := os.UserHomeDir()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//filePath := homedir + "/Downloads/" + filename
-	//log.Println(filePath)
-	//file, err := os.Create(filePath)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	// ファイルの作成
+	_, filename := filepath.Split(url)
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	filePath := homedir + "/Downloads/" + filename
+	log.Println(filePath)
+	file, err := os.Create(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// 1MBごとにアクセス
 	singleSize := 1000000
 	count := int(math.Ceil(float64(size) / float64(singleSize)))
 	log.Printf("count: %d\n", count)
-	//var fileData []byte
 	pcch := make(chan partialContent, count)
 	for i := 0; i < count; i++ {
 		// 担当する範囲を決定
@@ -118,17 +116,18 @@ func Run() {
 
 		// レンジごとにリクエスト
 		go getPartialContent(url, startByte, endByte, pcch)
-		//content, err := getPartialContent(url, startByte, endByte)
-		//if err != nil {
-		//	log.Fatal(err)
-		//}
-		//fileData = append(fileData, content...)
 	}
 
-	//var fileData []byte
+	// 一つのバイト列にマージ
+	fileData := make([]byte, size)
 	for i := 0; i < count; i++ {
 		pc := <-pcch
-		log.Printf("pc.startByte: %d", pc.startByte)
-		log.Printf("pc.endByte: %d", pc.endByte)
+		fillByteArr(fileData[:], pc.startByte, pc.body)
+	}
+
+	// データの書き込み
+	_, err = file.Write(fileData)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
