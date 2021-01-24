@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"log"
 	"math"
@@ -47,7 +48,7 @@ func fillByteArr(arr []byte, startAt int, partArr []byte) {
 }
 
 // 指定範囲のデータを取得する
-func getPartialContent(url string, startByte int, endByte int, fileDataCh chan partialContent) {
+func getPartialContent(url string, startByte int, endByte int, fileDataCh chan partialContent) error {
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
 
@@ -55,8 +56,7 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 	r := bytes.NewReader([]byte{})
 	req, err := http.NewRequest("GET", url, r)
 	if err != nil {
-		log.Fatal(err)
-		//return nil, err
+		return err
 	}
 	req.Header.Set("Range", rangeVal)
 	client := &http.Client{}
@@ -68,8 +68,7 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 		log.Printf("rangeVal[%d]:%s", i, rangeVal)
 		res, err = client.Do(req)
 		if err != nil {
-			log.Fatal(err)
-			//return nil, err
+			return err
 		}
 		log.Printf("res.StatusCode:%d\n", res.StatusCode)
 		if res.StatusCode >= 200 && res.StatusCode <= 299 {
@@ -82,19 +81,18 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 
 	// 正常系レスポンスでないとき
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		log.Fatal(errors.New("status code is not 2xx, got " + res.Status))
+		return errors.New("status code is not 2xx, got " + res.Status)
 	}
 
 	// bodyの取得
 	body, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 	if err != nil {
-		log.Fatal(err)
-		//return nil, err
+		return err
 	}
 	pc := partialContent{body: body, startByte: startByte, endByte: endByte}
 	fileDataCh <- pc
-	return
+	return nil
 }
 
 func Run(url string, splitCount int) {
@@ -113,7 +111,7 @@ func Run(url string, splitCount int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	filePath := homedir + "/Downloads/" + filename
+	filePath := homedir + "/Downloads/" + filename + ".download"
 	log.Println(filePath)
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -121,11 +119,11 @@ func Run(url string, splitCount int) {
 	}
 
 	// 1MBごとにアクセス
-	//singleSize := 1000000
 	singleSize := int(math.Ceil(float64(size) / float64(splitCount)))
 	count := int(math.Ceil(float64(size) / float64(singleSize)))
 	log.Printf("count: %d\n", count)
 	pcch := make(chan partialContent, count)
+	var eg errgroup.Group
 	for i := 0; i < count; i++ {
 		// 担当する範囲を決定
 		startByte := singleSize * i
@@ -135,7 +133,14 @@ func Run(url string, splitCount int) {
 		}
 
 		// レンジごとにリクエスト
-		go getPartialContent(url, startByte, endByte, pcch)
+		eg.Go(func() error {
+			return getPartialContent(url, startByte, endByte, pcch)
+		})
+	}
+
+	// １リクエストでも失敗すれば終了
+	if err := eg.Wait(); err != nil {
+		log.Fatal(err)
 	}
 
 	// 一つのバイト列にマージ
@@ -150,4 +155,6 @@ func Run(url string, splitCount int) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("download succeeded!")
 }
