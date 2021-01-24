@@ -41,7 +41,7 @@ func getContentSize(url string) (size int, err error) {
 	return
 }
 
-//
+// 配列の一部を別配列に置き換える
 func fillByteArr(arr []byte, startAt int, partArr []byte) {
 	for i := 0; i < len(partArr); i++ {
 		globalIndex := i + startAt
