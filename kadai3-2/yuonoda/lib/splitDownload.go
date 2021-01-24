@@ -113,6 +113,9 @@ func Run(url string, singleSize int) {
 		// 担当する範囲を決定
 		startByte := singleSize * i
 		endByte := singleSize*(i+1) - 1
+		if endByte > size {
+			endByte = size
+		}
 
 		// レンジごとにリクエスト
 		go getPartialContent(url, startByte, endByte, pcch)
