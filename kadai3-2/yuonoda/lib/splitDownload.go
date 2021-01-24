@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 )
 
 type partialContent struct {
@@ -49,7 +50,6 @@ func fillByteArr(arr []byte, startAt int, partArr []byte) {
 func getPartialContent(url string, startByte int, endByte int, fileDataCh chan partialContent) {
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
-	log.Println("rangeVal:", rangeVal)
 
 	// リクエストとクライアントの作成
 	r := bytes.NewReader([]byte{})
@@ -61,12 +61,26 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 	req.Header.Set("Range", rangeVal)
 	client := &http.Client{}
 
-	// リクエストの実行
-	res, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-		//return nil, err
+	// 3回までリトライする
+	res := &http.Response{}
+	for i := 0; i < 3; i++ {
+		// リクエストの実行
+		log.Printf("rangeVal[%d]:%s", i, rangeVal)
+		res, err = client.Do(req)
+		if err != nil {
+			log.Fatal(err)
+			//return nil, err
+		}
+		log.Printf("res.StatusCode:%d\n", res.StatusCode)
+		if res.StatusCode >= 200 && res.StatusCode <= 299 {
+			break
+		}
+		sleepTime := time.Duration(math.Pow(3, float64(i))) * time.Second
+		log.Println("sleepTime:", sleepTime)
+		time.Sleep(sleepTime)
 	}
+
+	// 正常系レスポンスでないとき
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		log.Fatal(errors.New("status code is not 2xx, got " + res.Status))
 	}
@@ -83,7 +97,7 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 	return
 }
 
-func Run(url string, singleSize int) {
+func Run(url string, splitCount int) {
 	log.Println("Run")
 
 	// コンテンツのデータサイズを取得
@@ -108,7 +122,7 @@ func Run(url string, singleSize int) {
 
 	// 1MBごとにアクセス
 	//singleSize := 1000000
-	//singleSize = size / 2
+	singleSize := int(math.Ceil(float64(size) / float64(splitCount)))
 	count := int(math.Ceil(float64(size) / float64(singleSize)))
 	log.Printf("count: %d\n", count)
 	pcch := make(chan partialContent, count)
