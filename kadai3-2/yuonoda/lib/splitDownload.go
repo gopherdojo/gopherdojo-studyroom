@@ -40,8 +40,8 @@ func getContentSize(url string) (size int, err error) {
 //
 func fillByteArr(arr []byte, startAt int, partArr []byte) {
 	for i := 0; i < len(partArr); i++ {
-		b := partArr[i]
-		arr[i+startAt] = b
+		globalIndex := i + startAt
+		arr[globalIndex] = partArr[i]
 	}
 }
 
@@ -66,6 +66,9 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 	if err != nil {
 		log.Fatal(err)
 		//return nil, err
+	}
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		log.Fatal(errors.New("status code is not 2xx, got " + res.Status))
 	}
 
 	// bodyの取得
