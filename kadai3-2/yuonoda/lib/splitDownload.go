@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -71,12 +72,18 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 		if err != nil {
 			return err
 		}
+
+		// ステータスが200系ならループを抜ける
 		log.Printf("res.StatusCode:%d\n", res.StatusCode)
 		if res.StatusCode >= 200 && res.StatusCode <= 299 {
 			break
 		}
-		sleepTime := time.Duration(math.Pow(3, float64(i))) * time.Second
-		log.Println("sleepTime:", sleepTime)
+
+		// 乱数分スリープ
+		rand.Seed(time.Now().UnixNano())
+		randFloat := rand.Float64() + 1
+		randMs := math.Pow(randFloat, float64(i+1)) * 1000
+		sleepTime := time.Duration(randMs) * time.Millisecond
 		time.Sleep(sleepTime)
 	}
 
