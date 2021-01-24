@@ -80,11 +80,10 @@ func getPartialContent(url string, startByte int, endByte int, fileDataCh chan p
 	return
 }
 
-func Run() {
+func Run(url string, singleSize int) {
 	log.Println("Run")
 
 	// コンテンツのデータサイズを取得
-	url := "https://dumps.wikimedia.org/jawiki/20210101/jawiki-20210101-pages-articles-multistream-index.txt.bz2"
 	size, err := getContentSize(url)
 	if err != nil {
 		log.Fatal(err)
@@ -105,7 +104,8 @@ func Run() {
 	}
 
 	// 1MBごとにアクセス
-	singleSize := 1000000
+	//singleSize := 1000000
+	//singleSize = size / 2
 	count := int(math.Ceil(float64(size) / float64(singleSize)))
 	log.Printf("count: %d\n", count)
 	pcch := make(chan partialContent, count)
