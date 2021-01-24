@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -111,10 +112,11 @@ func Run(url string, splitCount int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	filePath := homedir + "/Downloads/" + filename + ".download"
-	log.Println(filePath)
-	file, err := os.Create(filePath)
+	dwFilePath := homedir + "/Downloads/" + filename + ".download"
+	log.Println(dwFilePath)
+	dwFile, err := os.Create(dwFilePath)
 	if err != nil {
+		os.Remove(dwFilePath)
 		log.Fatal(err)
 	}
 
@@ -125,6 +127,7 @@ func Run(url string, splitCount int) {
 	pcch := make(chan partialContent, count)
 	var eg errgroup.Group
 	for i := 0; i < count; i++ {
+
 		// 担当する範囲を決定
 		startByte := singleSize * i
 		endByte := singleSize*(i+1) - 1
@@ -140,6 +143,7 @@ func Run(url string, splitCount int) {
 
 	// １リクエストでも失敗すれば終了
 	if err := eg.Wait(); err != nil {
+		os.Remove(dwFilePath)
 		log.Fatal(err)
 	}
 
@@ -151,10 +155,12 @@ func Run(url string, splitCount int) {
 	}
 
 	// データの書き込み
-	_, err = file.Write(fileData)
+	_, err = dwFile.Write(fileData)
 	if err != nil {
+		os.Remove(dwFilePath)
 		log.Fatal(err)
 	}
+	os.Rename(dwFilePath, strings.Trim(dwFilePath, ".download"))
 
 	log.Println("download succeeded!")
 }
