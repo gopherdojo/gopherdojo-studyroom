@@ -6,9 +6,9 @@ import (
 )
 
 var url = flag.String("url", "https://dumps.wikimedia.org/jawiki/20210101/jawiki-20210101-pages-articles-multistream-index.txt.bz2", "URL to download")
-var splitCount = flag.Int("c", 1, "how many times you split content")
+var batchCount = flag.Int("c", 1, "how many times you request content")
 
 func main() {
 	flag.Parse()
-	splitDownload.Run(*url, *splitCount)
+	splitDownload.Run(*url, *batchCount)
 }
