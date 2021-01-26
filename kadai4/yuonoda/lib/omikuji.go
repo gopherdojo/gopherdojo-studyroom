@@ -17,7 +17,13 @@ type Omikuji struct {
 }
 
 func pickResult() string {
-	i := rand.Intn(len(results))
+	_, m, d := time.Now().Date()
+	var i int
+	if m == 1 && d > 0 && d < 4 {
+		i = len(results) - 1
+	} else {
+		i = rand.Intn(len(results))
+	}
 	return results[i]
 }
 
