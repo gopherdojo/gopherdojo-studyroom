@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func Run(url string, batchCount int) {
+func Run(url string, batchCount int, dwDirPath string) string {
 	log.Println("Run")
 
 	// ファイルの作成
@@ -16,7 +16,10 @@ func Run(url string, batchCount int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dwFilePath := homedir + "/Downloads/" + filename + ".download"
+	if dwDirPath == "" {
+		dwDirPath = homedir + "/Downloads"
+	}
+	dwFilePath := dwDirPath + "/" + filename + ".download"
 	log.Println(dwFilePath)
 	dwFile, err := os.Create(dwFilePath)
 	if err != nil {
@@ -25,19 +28,21 @@ func Run(url string, batchCount int) {
 	}
 
 	// ダウンロード実行
-	r := &resource{url: url}
-	err = r.getContent(batchCount)
+	r := &resource{Url: url}
+	err = r.GetContent(batchCount)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// データの書き込み
-	_, err = dwFile.Write(r.content)
+	_, err = dwFile.Write(r.Content)
 	if err != nil {
 		os.Remove(dwFilePath)
 		log.Fatal(err)
 	}
-	os.Rename(dwFilePath, strings.Trim(dwFilePath, ".download"))
+	finishedFilePath := strings.Trim(dwFilePath, ".download")
+	os.Rename(dwFilePath, finishedFilePath)
 
 	log.Println("download succeeded!")
+	return finishedFilePath
 }
