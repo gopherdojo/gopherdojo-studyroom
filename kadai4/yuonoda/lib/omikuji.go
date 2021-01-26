@@ -1,18 +1,44 @@
 package omikuji
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"time"
 )
 
-var pattens = []string{"凶", "吉", "中吉", "大吉"}
+var results = []string{"凶", "吉", "中吉", "大吉"}
+
+type Omikuji struct {
+	Result string `json:"result"`
+}
+
+func pickResult() string {
+	i := rand.Intn(len(results))
+	return results[i]
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	result := pickResult()
+	o := &Omikuji{Result: result}
+
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	if err := enc.Encode(o); err != nil {
+		log.Fatal(err)
+	}
+	str := buf.String()
+	log.Println(str)
+	fmt.Fprintf(w, "%s", str)
+}
 
 func Run() {
-	log.Print("Run")
 	rand.Seed(time.Now().UnixNano())
-	i := rand.Intn(len(pattens))
-	log.Println(i)
-	result := pattens[i]
-	log.Println(result)
+	http.HandleFunc("/", handler)
+	log.Printf("omikuji api is listiing port 8080...\n")
+	http.ListenAndServe(":8080", nil)
 }
