@@ -68,7 +68,8 @@ func (r *resource) GetPartialContent(startByte int, endByte int) error {
 	client := &http.Client{}
 
 	res := &http.Response{}
-	for i := 0; i < 3; i++ {
+	const retryCount = 3
+	for i := 0; i < retryCount; i++ {
 		// リクエストの実行
 		log.Printf("rangeVal[%d]:%s", i, rangeVal)
 		res, err = client.Do(req)
