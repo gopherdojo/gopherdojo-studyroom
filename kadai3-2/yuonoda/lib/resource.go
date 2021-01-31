@@ -114,7 +114,7 @@ func (r *resource) GetContent(batchCount int) error {
 	// コンテンツのデータサイズを取得
 	err := r.GetSize()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	log.Printf("r.size: %d\n", r.Size)
 
