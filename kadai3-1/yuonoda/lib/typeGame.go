@@ -9,7 +9,7 @@ import (
 
 // 別ルーチンで入力値を受け付ける
 func receiveInput(s *bufio.Scanner) <-chan string {
-	inputChan := make(chan string, 3)
+	inputChan := make(chan string)
 	go func() {
 		s.Scan()
 		inputChan <- s.Text()
