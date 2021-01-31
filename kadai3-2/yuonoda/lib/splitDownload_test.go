@@ -1,7 +1,6 @@
 package splitDownload_test
 
 import (
-	"log"
 	"os"
 	"reflect"
 	"testing"
@@ -29,7 +28,7 @@ func TestRun(t *testing.T) {
 			// ダウンロードパスを指定
 			homedir, err := os.UserHomeDir()
 			if err != nil {
-				log.Fatal(err)
+				t.Error(err)
 			}
 			dwDirPath := homedir + "/Downloads"
 
