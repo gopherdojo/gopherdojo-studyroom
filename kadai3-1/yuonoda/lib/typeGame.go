@@ -9,13 +9,14 @@ import (
 
 // 別ルーチンで入力値を受け付ける
 func receiveInput(s *bufio.Scanner) <-chan string {
-	inputChan := make(chan string)
+	ch := make(chan string)
 	go func() {
-		s.Scan()
-		inputChan <- s.Text()
-		close(inputChan)
+		for s.Scan() {
+			ch <- s.Text()
+		}
+		close(ch)
 	}()
-	return inputChan
+	return ch
 }
 
 func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
@@ -24,6 +25,7 @@ func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 	timeLimit := time.After(time.Duration(limitSeconds) * time.Second)
 	isTimedUp := false
 	scanner := bufio.NewScanner(r)
+	inputCh := receiveInput(scanner)
 
 	for _, word := range words {
 
@@ -31,8 +33,9 @@ func Start(limitSeconds int, words []string, r io.Reader, w io.Writer) int {
 		fmt.Fprintf(w, "type '%s'\n", word)
 
 		select {
+
 		//　入力を受けたとき
-		case inputWord := <-receiveInput(scanner):
+		case inputWord := <-inputCh:
 			if word == inputWord {
 				fmt.Fprintf(w, "correct!\n")
 				score++
