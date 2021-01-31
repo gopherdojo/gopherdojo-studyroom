@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func Run(url string, batchCount int, dwDirPath string) string {
@@ -12,15 +11,8 @@ func Run(url string, batchCount int, dwDirPath string) string {
 
 	// ファイルの作成
 	_, filename := filepath.Split(url)
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if dwDirPath == "" {
-		dwDirPath = homedir + "/Downloads"
-	}
 	dwFilePath := dwDirPath + "/" + filename + ".download"
-	log.Println(dwFilePath)
+	finishedFilePath := dwDirPath + "/" + filename
 	dwFile, err := os.Create(dwFilePath)
 	if err != nil {
 		os.Remove(dwFilePath)
@@ -40,9 +32,7 @@ func Run(url string, batchCount int, dwDirPath string) string {
 		os.Remove(dwFilePath)
 		log.Fatal(err)
 	}
-	finishedFilePath := strings.Trim(dwFilePath, ".download")
 	os.Rename(dwFilePath, finishedFilePath)
-
 	log.Println("download succeeded!")
 	return finishedFilePath
 }
