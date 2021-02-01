@@ -2,6 +2,7 @@ package splitDownload
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"golang.org/x/sync/errgroup"
@@ -53,7 +54,7 @@ func (r *resource) GetSize() error {
 
 }
 
-func (r *resource) GetPartialContent(startByte int, endByte int) error {
+func (r *resource) GetPartialContent(startByte int, endByte int, ctx context.Context) error {
 	log.Printf("resource.getPartialContent(%d, %d)\n", startByte, endByte)
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
@@ -70,6 +71,7 @@ func (r *resource) GetPartialContent(startByte int, endByte int) error {
 	res := &http.Response{}
 	const retryCount = 3
 	for i := 0; i < retryCount; i++ {
+
 		// リクエストの実行
 		log.Printf("rangeVal[%d]:%s", i, rangeVal)
 		res, err = client.Do(req)
@@ -98,7 +100,23 @@ func (r *resource) GetPartialContent(startByte int, endByte int) error {
 	}
 
 	// bodyの取得
-	body, err := ioutil.ReadAll(res.Body)
+	log.Println("start reading")
+	bodyCh := make(chan []byte)
+	go func() {
+		body, _ := ioutil.ReadAll(res.Body)
+		bodyCh <- body
+	}()
+
+	// 中止になったらBodyの読み込みを中止
+	var body []byte
+	select {
+	case <-ctx.Done():
+		log.Println("canceled reading body")
+		return ctx.Err()
+	case body = <-bodyCh:
+		log.Println("finished reading body")
+	}
+
 	defer res.Body.Close()
 	if err != nil {
 		return err
@@ -109,7 +127,7 @@ func (r *resource) GetPartialContent(startByte int, endByte int) error {
 	return nil
 }
 
-func (r *resource) GetContent(batchCount int) error {
+func (r *resource) GetContent(batchCount int, ctx context.Context) error {
 	log.Println("resource.getContent()")
 
 	// コンテンツのデータサイズを取得
@@ -123,7 +141,8 @@ func (r *resource) GetContent(batchCount int) error {
 	r.BatchCount = batchCount
 	r.BatchSize = int(math.Ceil(float64(r.Size) / float64(r.BatchCount)))
 	r.Content = make([]byte, r.Size)
-	var eg errgroup.Group
+	var eg *errgroup.Group
+	eg, ctx = errgroup.WithContext(ctx)
 	r.PartialContentCh = make(chan partialContent, r.BatchCount)
 	for i := 0; i < r.BatchCount; i++ {
 
@@ -136,7 +155,7 @@ func (r *resource) GetContent(batchCount int) error {
 
 		// レンジごとにリクエスト
 		eg.Go(func() error {
-			return r.GetPartialContent(startByte, endByte)
+			return r.GetPartialContent(startByte, endByte, ctx)
 		})
 	}
 

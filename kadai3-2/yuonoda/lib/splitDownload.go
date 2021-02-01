@@ -40,7 +40,7 @@ func Run(url string, batchCount int, dwDirPath string) string {
 
 	// ダウンロード実行
 	r := &resource{Url: url}
-	err = r.GetContent(batchCount)
+	err = r.GetContent(batchCount, cancelCtx)
 	if err != nil {
 		log.Fatal(err)
 	}
