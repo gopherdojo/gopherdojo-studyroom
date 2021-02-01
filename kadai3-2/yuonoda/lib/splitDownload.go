@@ -1,13 +1,32 @@
 package splitDownload
 
 import (
+	"context"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 )
 
 func Run(url string, batchCount int, dwDirPath string) string {
 	log.Println("Run")
+
+	//　キャンセルコンテクストを定義
+	ctx := context.Background()
+	cancelCtx, cancel := context.WithCancel(ctx)
+	defer cancel() // 何もなければコンテクストを開放
+
+	// 中断シグナルがきたらキャンセル処理
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		select {
+		case <-c:
+			log.Println("interrupted")
+			cancel()
+		}
+	}()
 
 	// ファイルの作成
 	_, filename := filepath.Split(url)
