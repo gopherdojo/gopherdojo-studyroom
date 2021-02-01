@@ -153,6 +153,7 @@ func (r *resource) GetContent(batchCount int, ctx context.Context) error {
 			endByte = r.Size
 		}
 
+		// TODO Channelを返すようにして、中断時に終了できるようにする
 		// レンジごとにリクエスト
 		eg.Go(func() error {
 			return r.GetPartialContent(startByte, endByte, ctx)

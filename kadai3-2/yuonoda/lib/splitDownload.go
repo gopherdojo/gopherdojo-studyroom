@@ -11,6 +11,7 @@ import (
 
 func Run(url string, batchCount int, dwDirPath string) string {
 	log.Println("Run")
+	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
 
 	//　キャンセルコンテクストを定義
 	ctx := context.Background()
