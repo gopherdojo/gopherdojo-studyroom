@@ -182,6 +182,8 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	return nil
 }
 
+// TODO 終了処理を別パッケージにする
+// TODO ファイルの作成までDownloaderの責任範囲として、以下もメソッドにする
 func Run(url string, batchCount int, dwDirPath string) string {
 	log.Println("Run")
 	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
