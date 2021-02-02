@@ -1,11 +1,11 @@
-package splitDownload_test
+package downloader_test
 
 import (
 	"os"
 	"reflect"
 	"testing"
 
-	splitDownload "github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/lib"
+	downloader "github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/downloader"
 )
 
 func TestRun(t *testing.T) {
@@ -33,7 +33,7 @@ func TestRun(t *testing.T) {
 			dwDirPath := homedir + "/Downloads"
 
 			// ダウンロード
-			filePath := splitDownload.Run(c.url, c.concurrency, dwDirPath)
+			filePath := downloader.Run(c.url, c.concurrency, dwDirPath)
 			file, err := os.Open(filePath)
 			if err != nil {
 				t.Error(err)
@@ -87,7 +87,7 @@ func TestFillByteArr(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			splitDownload.ExportedFillByteArr(c.arr[:], c.startAt, c.partArr)
+			downloader.ExportedFillByteArr(c.arr[:], c.startAt, c.partArr)
 			if !reflect.DeepEqual(c.expectedArr, c.arr) {
 				t.Error("Array does not match")
 			}

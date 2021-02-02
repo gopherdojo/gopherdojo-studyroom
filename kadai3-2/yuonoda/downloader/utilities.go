@@ -1,4 +1,4 @@
-package splitDownload
+package downloader
 
 // 配列の一部を別配列に置き換える
 func fillByteArr(arr []byte, startAt int, partArr []byte) {

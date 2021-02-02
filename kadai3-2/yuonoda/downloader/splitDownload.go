@@ -1,4 +1,4 @@
-package splitDownload
+package downloader
 
 import (
 	"context"
@@ -40,14 +40,14 @@ func Run(url string, batchCount int, dwDirPath string) string {
 	}
 
 	// ダウンロード実行
-	r := &resource{Url: url}
-	err = r.GetContent(batchCount, cancelCtx)
+	d := &Downloader{Url: url}
+	err = d.GetContent(batchCount, cancelCtx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// データの書き込み
-	_, err = dwFile.Write(r.Content)
+	_, err = dwFile.Write(d.Content)
 	if err != nil {
 		os.Remove(dwFilePath)
 		log.Fatal(err)

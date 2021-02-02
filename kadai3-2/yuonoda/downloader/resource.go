@@ -1,4 +1,4 @@
-package splitDownload
+package downloader
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ type partialContent struct {
 	Body      []byte
 }
 
-type resource struct {
+type Downloader struct {
 	Url              string
 	Size             int
 	BatchSize        int
@@ -31,11 +31,11 @@ type resource struct {
 	Http             http.Client
 }
 
-func (r *resource) GetSize() error {
+func (d *Downloader) GetSize() error {
 	log.Printf("resource.getSize()\n")
 
 	// HEADでサイズを調べる
-	res, err := r.Http.Head(r.Url)
+	res, err := d.Http.Head(d.Url)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (r *resource) GetSize() error {
 	if !ok {
 		return errors.New("Content-Length couldn't be found")
 	}
-	r.Size, err = strconv.Atoi(cl[0])
+	d.Size, err = strconv.Atoi(cl[0])
 	if err != nil {
 		return err
 	}
@@ -54,14 +54,14 @@ func (r *resource) GetSize() error {
 
 }
 
-func (r *resource) GetPartialContent(startByte int, endByte int, ctx context.Context) error {
+func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.Context) error {
 	log.Printf("resource.getPartialContent(%d, %d)\n", startByte, endByte)
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
 
 	// リクエストとクライアントの作成
 	reader := bytes.NewReader([]byte{})
-	req, err := http.NewRequest("GET", r.Url, reader)
+	req, err := http.NewRequest("GET", d.Url, reader)
 	if err != nil {
 		return err
 	}
@@ -123,40 +123,40 @@ func (r *resource) GetPartialContent(startByte int, endByte int, ctx context.Con
 	}
 
 	pc := partialContent{StartByte: startByte, EndByte: endByte, Body: body}
-	r.PartialContentCh <- pc
+	d.PartialContentCh <- pc
 	return nil
 }
 
-func (r *resource) GetContent(batchCount int, ctx context.Context) error {
+func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	log.Println("resource.getContent()")
 
 	// コンテンツのデータサイズを取得
-	err := r.GetSize()
+	err := d.GetSize()
 	if err != nil {
 		return err
 	}
-	log.Printf("r.size: %d\n", r.Size)
+	log.Printf("d.size: %d\n", d.Size)
 
 	// batchCount分リクエスト
-	r.BatchCount = batchCount
-	r.BatchSize = int(math.Ceil(float64(r.Size) / float64(r.BatchCount)))
-	r.Content = make([]byte, r.Size)
+	d.BatchCount = batchCount
+	d.BatchSize = int(math.Ceil(float64(d.Size) / float64(d.BatchCount)))
+	d.Content = make([]byte, d.Size)
 	var eg *errgroup.Group
 	eg, ctx = errgroup.WithContext(ctx)
-	r.PartialContentCh = make(chan partialContent, r.BatchCount)
-	for i := 0; i < r.BatchCount; i++ {
+	d.PartialContentCh = make(chan partialContent, d.BatchCount)
+	for i := 0; i < d.BatchCount; i++ {
 
 		// 担当する範囲を決定
-		startByte := r.BatchSize * i
-		endByte := r.BatchSize*(i+1) - 1
-		if endByte > r.Size {
-			endByte = r.Size
+		startByte := d.BatchSize * i
+		endByte := d.BatchSize*(i+1) - 1
+		if endByte > d.Size {
+			endByte = d.Size
 		}
 
 		// TODO Channelを返すようにして、中断時に終了できるようにする
 		// レンジごとにリクエスト
 		eg.Go(func() error {
-			return r.GetPartialContent(startByte, endByte, ctx)
+			return d.GetPartialContent(startByte, endByte, ctx)
 		})
 	}
 
@@ -166,12 +166,12 @@ func (r *resource) GetContent(batchCount int, ctx context.Context) error {
 	}
 
 	// 一つのバイト列にマージ
-	r.Content = make([]byte, r.Size)
-	for i := 0; i < r.BatchCount; i++ {
+	d.Content = make([]byte, d.Size)
+	for i := 0; i < d.BatchCount; i++ {
 		log.Println("merging...")
-		pc := <-r.PartialContentCh
+		pc := <-d.PartialContentCh
 		log.Printf("pc.startByte: %v\n", pc.StartByte)
-		fillByteArr(r.Content[:], pc.StartByte, pc.Body)
+		fillByteArr(d.Content[:], pc.StartByte, pc.Body)
 	}
 
 	return nil

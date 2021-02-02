@@ -1,3 +1,3 @@
-package splitDownload
+package downloader
 
 var ExportedFillByteArr = fillByteArr
