@@ -1,6 +1,7 @@
 package downloader_test
 
 import (
+	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/terminate"
 	"os"
 	"testing"
 
@@ -32,8 +33,9 @@ func TestDownload(t *testing.T) {
 			dwDirPath := homedir + "/Downloads"
 
 			// ダウンロード
+			ctx := terminate.Listen()
 			d := downloader.Downloader{Url: c.url}
-			filePath := d.Download(c.concurrency, dwDirPath)
+			filePath := d.Download(ctx, c.concurrency, dwDirPath)
 			file, err := os.Open(filePath)
 			if err != nil {
 				t.Error(err)

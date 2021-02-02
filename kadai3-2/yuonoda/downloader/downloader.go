@@ -13,10 +13,8 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strconv"
-	"syscall"
 	"time"
 )
 
@@ -182,26 +180,9 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	return nil
 }
 
-// TODO 終了処理を別パッケージにする
-func (d Downloader) Download(batchCount int, dwDirPath string) string {
+func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath string) string {
 	log.Println("Run")
 	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
-
-	//　キャンセルコンテクストを定義
-	ctx := context.Background()
-	cancelCtx, cancel := context.WithCancel(ctx)
-	defer cancel() // 何もなければコンテクストを開放
-
-	// 中断シグナルがきたらキャンセル処理
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		select {
-		case <-c:
-			log.Println("interrupted")
-			cancel()
-		}
-	}()
 
 	// ファイルの作成
 	_, filename := filepath.Split(d.Url)
@@ -214,7 +195,7 @@ func (d Downloader) Download(batchCount int, dwDirPath string) string {
 	}
 
 	// ダウンロード実行
-	err = d.GetContent(batchCount, cancelCtx)
+	err = d.GetContent(batchCount, ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
