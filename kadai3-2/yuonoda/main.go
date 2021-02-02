@@ -11,5 +11,6 @@ var dwDirPath = flag.String("path", ".", "where to put a downloaded file")
 
 func main() {
 	flag.Parse()
-	downloader.Run(*url, *batchCount, *dwDirPath)
+	d := downloader.Downloader{Url: *url}
+	d.Download(*batchCount, *dwDirPath)
 }

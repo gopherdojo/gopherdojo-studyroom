@@ -7,7 +7,7 @@ import (
 	downloader "github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/downloader"
 )
 
-func TestRun(t *testing.T) {
+func TestDownload(t *testing.T) {
 	cases := []struct {
 		name         string
 		url          string
@@ -32,7 +32,8 @@ func TestRun(t *testing.T) {
 			dwDirPath := homedir + "/Downloads"
 
 			// ダウンロード
-			filePath := downloader.Run(c.url, c.concurrency, dwDirPath)
+			d := downloader.Downloader{Url: c.url}
+			filePath := d.Download(c.concurrency, dwDirPath)
 			file, err := os.Open(filePath)
 			if err != nil {
 				t.Error(err)

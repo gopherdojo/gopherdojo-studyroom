@@ -183,8 +183,7 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 }
 
 // TODO 終了処理を別パッケージにする
-// TODO ファイルの作成までDownloaderの責任範囲として、以下もメソッドにする
-func Run(url string, batchCount int, dwDirPath string) string {
+func (d Downloader) Download(batchCount int, dwDirPath string) string {
 	log.Println("Run")
 	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
 
@@ -205,7 +204,7 @@ func Run(url string, batchCount int, dwDirPath string) string {
 	}()
 
 	// ファイルの作成
-	_, filename := filepath.Split(url)
+	_, filename := filepath.Split(d.Url)
 	dwFilePath := dwDirPath + "/" + filename + ".download"
 	finishedFilePath := dwDirPath + "/" + filename
 	dwFile, err := os.Create(dwFilePath)
@@ -215,7 +214,6 @@ func Run(url string, batchCount int, dwDirPath string) string {
 	}
 
 	// ダウンロード実行
-	d := &Downloader{Url: url}
 	err = d.GetContent(batchCount, cancelCtx)
 	if err != nil {
 		log.Fatal(err)
