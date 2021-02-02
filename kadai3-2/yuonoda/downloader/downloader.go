@@ -5,13 +5,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/utilities"
 	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
 	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
 	"strconv"
+	"syscall"
 	"time"
 )
 
@@ -171,8 +176,56 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 		log.Println("merging...")
 		pc := <-d.PartialContentCh
 		log.Printf("pc.startByte: %v\n", pc.StartByte)
-		fillByteArr(d.Content[:], pc.StartByte, pc.Body)
+		utilities.FillByteArr(d.Content[:], pc.StartByte, pc.Body)
 	}
 
 	return nil
+}
+
+func Run(url string, batchCount int, dwDirPath string) string {
+	log.Println("Run")
+	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
+
+	//　キャンセルコンテクストを定義
+	ctx := context.Background()
+	cancelCtx, cancel := context.WithCancel(ctx)
+	defer cancel() // 何もなければコンテクストを開放
+
+	// 中断シグナルがきたらキャンセル処理
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		select {
+		case <-c:
+			log.Println("interrupted")
+			cancel()
+		}
+	}()
+
+	// ファイルの作成
+	_, filename := filepath.Split(url)
+	dwFilePath := dwDirPath + "/" + filename + ".download"
+	finishedFilePath := dwDirPath + "/" + filename
+	dwFile, err := os.Create(dwFilePath)
+	if err != nil {
+		os.Remove(dwFilePath)
+		log.Fatal(err)
+	}
+
+	// ダウンロード実行
+	d := &Downloader{Url: url}
+	err = d.GetContent(batchCount, cancelCtx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// データの書き込み
+	_, err = dwFile.Write(d.Content)
+	if err != nil {
+		os.Remove(dwFilePath)
+		log.Fatal(err)
+	}
+	os.Rename(dwFilePath, finishedFilePath)
+	log.Println("download succeeded!")
+	return finishedFilePath
 }
