@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -130,6 +131,11 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 	return nil
 }
 
+//
+//func (d Downloader) GetPartialContentAndSendToChannel(startByte int, endByte int, ctx context.Context, filenameCh  )  {
+//	d.GetPartialContent(startByte, endByte, ctx)
+//}
+
 func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	log.Println("resource.getContent()")
 
@@ -156,10 +162,24 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 			endByte = d.Size
 		}
 
-		// TODO Channelを返すようにして、中断時に終了できるようにする
 		// レンジごとにリクエスト
+		go d.GetPartialContent(startByte, endByte, ctx)
+	}
+
+	// リクエスト回数分受け付けてマージ
+	var mu sync.Mutex
+	d.Content = make([]byte, d.Size)
+	for i := 0; i < d.BatchCount; i++ {
 		eg.Go(func() error {
-			return d.GetPartialContent(startByte, endByte, ctx)
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case pc := <-d.PartialContentCh:
+				mu.Lock()
+				utilities.FillByteArr(d.Content[:], pc.StartByte, pc.Body)
+				mu.Unlock()
+			}
+			return nil
 		})
 	}
 
@@ -168,22 +188,13 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 		return err
 	}
 
-	// 一つのバイト列にマージ
-	d.Content = make([]byte, d.Size)
-	for i := 0; i < d.BatchCount; i++ {
-		log.Println("merging...")
-		pc := <-d.PartialContentCh
-		log.Printf("pc.startByte: %v\n", pc.StartByte)
-		utilities.FillByteArr(d.Content[:], pc.StartByte, pc.Body)
-	}
-
 	return nil
 }
 
 func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath string) error {
 	log.Println("Download")
 
-	// ファイルの作成
+	// 一時ファイルの作成
 	_, filename := filepath.Split(d.Url)
 	dwFilePath := dwDirPath + "/" + filename + ".download"
 	finishedFilePath := dwDirPath + "/" + filename

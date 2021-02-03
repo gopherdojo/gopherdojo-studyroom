@@ -35,26 +35,7 @@ func TestDownload(t *testing.T) {
 			// ダウンロード
 			ctx := terminate.Listen()
 			d := downloader.Downloader{Url: c.url}
-			filePath := d.Download(ctx, c.concurrency, dwDirPath)
-			file, err := os.Open(filePath)
-			if err != nil {
-				t.Error(err)
-			}
-
-			// サイズを取得
-			info, err := file.Stat()
-			if err != nil {
-				t.Error(err)
-			}
-			dwSize := info.Size()
-
-			// サイズを比較
-			if dwSize != c.expectedSize {
-				t.Errorf("Size doesn't match, got %d but expexted %d", dwSize, c.expectedSize)
-			}
-
-			// ファイルを削除
-			err = os.Remove(filePath)
+			err = d.Download(ctx, c.concurrency, dwDirPath)
 			if err != nil {
 				t.Error(err)
 			}
