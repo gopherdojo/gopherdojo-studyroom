@@ -1,11 +1,11 @@
 package downloader_test
 
 import (
-	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/terminate"
 	"os"
 	"testing"
 
-	downloader "github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/downloader"
+	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/downloader"
+	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/terminate"
 )
 
 func TestDownload(t *testing.T) {
