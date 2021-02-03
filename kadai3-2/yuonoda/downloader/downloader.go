@@ -105,36 +105,16 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 
 	// bodyの取得
 	log.Println("start reading")
-	bodyCh := make(chan []byte)
-	go func() {
-		body, _ := ioutil.ReadAll(res.Body)
-		bodyCh <- body
-	}()
-
-	// 中止になったらBodyの読み込みを中止
-	var body []byte
-	select {
-	case <-ctx.Done():
-		log.Println("canceled reading body")
-		return ctx.Err()
-	case body = <-bodyCh:
-		log.Println("finished reading body")
-	}
-
-	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
 
 	pc := partialContent{StartByte: startByte, EndByte: endByte, Body: body}
 	d.PartialContentCh <- pc
 	return nil
 }
-
-//
-//func (d Downloader) GetPartialContentAndSendToChannel(startByte int, endByte int, ctx context.Context, filenameCh  )  {
-//	d.GetPartialContent(startByte, endByte, ctx)
-//}
 
 func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	log.Println("resource.getContent()")
