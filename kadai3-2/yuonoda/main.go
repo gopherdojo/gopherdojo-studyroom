@@ -4,6 +4,7 @@ import (
 	"flag"
 	downloader "github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/downloader"
 	"github.com/yuonoda/gopherdojo-studyroom/kadai3-2/yuonoda/terminate"
+	"log"
 )
 
 var url = flag.String("url", "https://dumps.wikimedia.org/jawiki/20210101/jawiki-20210101-pages-articles-multistream-index.txt.bz2", "URL to download")
@@ -14,5 +15,8 @@ func main() {
 	flag.Parse()
 	ctx := terminate.Listen()
 	d := downloader.Downloader{Url: *url}
-	d.Download(ctx, *batchCount, *dwDirPath)
+	err := d.Download(ctx, *batchCount, *dwDirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
