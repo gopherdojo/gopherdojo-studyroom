@@ -180,9 +180,8 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	return nil
 }
 
-func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath string) string {
-	log.Println("Run")
-	// TODO log.Fatalをやめ、正常系でも異常系でも最後に一時ファイルを削除する
+func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath string) error {
+	log.Println("Download")
 
 	// ファイルの作成
 	_, filename := filepath.Split(d.Url)
@@ -190,23 +189,22 @@ func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath stri
 	finishedFilePath := dwDirPath + "/" + filename
 	dwFile, err := os.Create(dwFilePath)
 	if err != nil {
-		os.Remove(dwFilePath)
-		log.Fatal(err)
+		return err
 	}
+	defer os.Remove(dwFilePath)
 
 	// ダウンロード実行
 	err = d.GetContent(batchCount, ctx)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// データの書き込み
 	_, err = dwFile.Write(d.Content)
 	if err != nil {
-		os.Remove(dwFilePath)
-		log.Fatal(err)
+		return err
 	}
 	os.Rename(dwFilePath, finishedFilePath)
 	log.Println("download succeeded!")
-	return finishedFilePath
+	return nil
 }
