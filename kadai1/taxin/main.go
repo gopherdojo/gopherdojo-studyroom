@@ -23,7 +23,6 @@ func init() {
 	flag.Parse()
 }
 
-// Write your go code in the editor on the left and watch it previewed here on the right.
 func main() {
 	dirList := flag.Args()
 	if err := validateArgs(dirList); err != nil {
