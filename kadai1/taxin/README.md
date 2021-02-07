@@ -24,8 +24,10 @@ drwxr-xr-x  5 nishikawatakushi  staff      160 Feb  7 10:41 ..
 $ make build
 go build -o bin/imgconverter ./main.go
 
-$ ./bin/imgconverter -h
+$ ./bin/imgconverter -h                                              
 Usage of ./bin/imgconverter:
+  -d string
+        画像が配置されているディレクトリのパス (default ".")
   -f string
         画像ファイルの変更前のフォーマット(jpg/jpeg/png/gif) (default "jpg")
   -o string
