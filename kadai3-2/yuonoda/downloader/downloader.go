@@ -195,7 +195,9 @@ func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath stri
 	if err != nil {
 		return err
 	}
-	os.Rename(dwFilePath, finishedFilePath)
+	if err = os.Rename(dwFilePath, finishedFilePath); err != nil {
+		return err
+	}
 	log.Println("download succeeded!")
 	return nil
 }
