@@ -15,12 +15,6 @@
 
 ### CLIツールの利用方法(Usage)
 ```
-$ ls -la ./testdata/testdir
-total 12352
-drwxr-xr-x  4 nishikawatakushi  staff      128 Feb  7 12:55 .
-drwxr-xr-x  5 nishikawatakushi  staff      160 Feb  7 10:41 ..
--rw-r--r--@ 1 nishikawatakushi  staff  5669621 Jan 30 23:44 raphael-renter-csae9W8JAsw-unsplash.jpg
-
 $ make build
 go build -o bin/imgconverter ./main.go
 
