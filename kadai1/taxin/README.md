@@ -28,7 +28,7 @@ Usage of ./bin/imgconverter:
         画像ファイルの変更後のフォーマット(jpg/jpeg/png/gif) (default "png")
 
 
-$ ./bin/imgconverter testdata -f jpg -o png
+$ ./bin/imgconverter -d testdata -f jpg -o png
 Start to covert image file...
 Finished to covert image file
 ```
