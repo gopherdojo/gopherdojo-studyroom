@@ -113,7 +113,12 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 		errCh <- err
 		return
 	}
-	defer res.Body.Close()
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			errCh <- err
+			return
+		}
+	}()
 
 	pc := partialContent{StartByte: startByte, EndByte: endByte, Body: body}
 	d.PartialContentCh <- pc
@@ -190,7 +195,13 @@ func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath stri
 	if err != nil {
 		return err
 	}
-	defer os.Remove(dwFilePath)
+
+	// 関数の終了時に一時ファイルを削除
+	defer func() {
+		if err = os.Remove(dwFilePath); err != nil {
+			log.Fatalf("falid to remove .download file. %s", err)
+		}
+	}()
 
 	// ダウンロード実行
 	err = d.GetContent(batchCount, ctx)
