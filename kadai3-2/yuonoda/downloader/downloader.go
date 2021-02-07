@@ -198,6 +198,9 @@ func (d Downloader) Download(ctx context.Context, batchCount int, dwDirPath stri
 
 	// 関数の終了時に一時ファイルを削除
 	defer func() {
+		if _, err = os.Stat(dwFilePath); err != nil {
+			return
+		}
 		if err = os.Remove(dwFilePath); err != nil {
 			log.Fatalf("falid to remove .download file. %s", err)
 		}
