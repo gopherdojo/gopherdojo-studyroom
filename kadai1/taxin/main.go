@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/taxintt/gopherdojo-studyroom/kadai1/taxin/converter"
@@ -12,6 +13,7 @@ import (
 var (
 	imgFormat          string
 	convertedImgFormat string
+	dirPath            string
 	fileFormatList     []string
 )
 
@@ -19,28 +21,30 @@ var (
 func init() {
 	flag.StringVar(&imgFormat, "f", "jpg", "画像ファイルの変更前のフォーマット(jpg/jpeg/png/gif)")
 	flag.StringVar(&convertedImgFormat, "o", "png", "画像ファイルの変更後のフォーマット(jpg/jpeg/png/gif)")
+	flag.StringVar(&dirPath, "d", ".", "画像が配置されているディレクトリのパス")
 	fileFormatList = []string{"jpg", "jpeg", "png", "gif"}
 	flag.Parse()
 }
 
 func main() {
-	dirList := flag.Args()
-	if err := validateArgs(dirList); err != nil {
+	if err := validateArgs(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return
 	}
-	for _, dir := range dirList {
-		eachImgDirData := converter.ImgDirData{DirPath: dir, ImgFormat: imgFormat, ConvertedImgFormat: convertedImgFormat}
-		converter.WalkAndConvertImgFiles(eachImgDirData)
-	}
+	eachImgDirData := converter.ImgDirData{DirPath: dirPath, ImgFormat: imgFormat, ConvertedImgFormat: convertedImgFormat}
+	converter.WalkAndConvertImgFiles(eachImgDirData)
 }
 
 // validate arguments that are passed by.
 //
 // if you specify invalid file types or don't pass directory path that contains image files, it will raise an error.
-func validateArgs(dirList []string) error {
-	if len(dirList) == 0 {
-		return errors.New("Error: Specify directory that contains image files")
+func validateArgs() error {
+	files, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		return err
+	}
+	if existsDir(files) {
+		return errors.New("Error: Doesn't exists the directory that you specified")
 	}
 	if !validateFileFormat(imgFormat) || !validateFileFormat(convertedImgFormat) {
 		return errors.New("Error: Invalid or Unsupported file format")
@@ -54,6 +58,15 @@ func validateArgs(dirList []string) error {
 func validateFileFormat(passedImgFormat string) bool {
 	for _, f := range fileFormatList {
 		if f == imgFormat {
+			return true
+		}
+	}
+	return false
+}
+
+func existsDir(dirs []os.FileInfo) bool {
+	for _, f := range dirs {
+		if f.Name() == dirPath {
 			return true
 		}
 	}
