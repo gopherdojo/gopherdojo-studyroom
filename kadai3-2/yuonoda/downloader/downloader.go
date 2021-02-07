@@ -58,7 +58,7 @@ func (d *Downloader) GetSize() error {
 
 }
 
-func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.Context) error {
+func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.Context, errCh chan error) {
 	log.Printf("resource.getPartialContent(%d, %d)\n", startByte, endByte)
 	// Rangeヘッダーを作成
 	rangeVal := fmt.Sprintf("bytes=%d-%d", startByte, endByte)
@@ -67,7 +67,8 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 	reader := bytes.NewReader([]byte{})
 	req, err := http.NewRequest("GET", d.Url, reader)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 	req.Header.Set("Range", rangeVal)
 	client := &http.Client{}
@@ -80,7 +81,8 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 		log.Printf("rangeVal[%d]:%s", i, rangeVal)
 		res, err = client.Do(req)
 		if err != nil {
-			return err
+			errCh <- err
+			return
 		}
 
 		// ステータスが200系ならループを抜ける
@@ -100,20 +102,22 @@ func (d *Downloader) GetPartialContent(startByte int, endByte int, ctx context.C
 
 	// 正常系レスポンスでないとき
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return errors.New("status code is not 2xx, got " + res.Status)
+		errCh <- errors.New("status code is not 2xx, got " + res.Status)
+		return
 	}
 
 	// bodyの取得
 	log.Println("start reading")
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 	defer res.Body.Close()
 
 	pc := partialContent{StartByte: startByte, EndByte: endByte, Body: body}
 	d.PartialContentCh <- pc
-	return nil
+	return
 }
 
 func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
@@ -132,6 +136,7 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 	d.Content = make([]byte, d.Size)
 	var eg *errgroup.Group
 	eg, ctx = errgroup.WithContext(ctx)
+	errCh := make(chan error)
 	d.PartialContentCh = make(chan partialContent, d.BatchCount)
 	for i := 0; i < d.BatchCount; i++ {
 
@@ -143,7 +148,7 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 		}
 
 		// レンジごとにリクエスト
-		go d.GetPartialContent(startByte, endByte, ctx)
+		go d.GetPartialContent(startByte, endByte, ctx, errCh)
 	}
 
 	// リクエスト回数分受け付けてマージ
@@ -158,6 +163,9 @@ func (d *Downloader) GetContent(batchCount int, ctx context.Context) error {
 				mu.Lock()
 				utilities.FillByteArr(d.Content[:], pc.StartByte, pc.Body)
 				mu.Unlock()
+			case err = <-errCh:
+				return err
+
 			}
 			return nil
 		})
