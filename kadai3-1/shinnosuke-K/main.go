@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -14,6 +15,7 @@ import (
 func main() {
 
 	num := flag.Int("n", 10, "number of questions")
+	t := flag.Int("t", 3, "answer time")
 	flag.Parse()
 
 	correct := 0
@@ -27,20 +29,30 @@ func main() {
 		}
 	}()
 
-	rand.Seed(time.Now().Unix())
+	bc := context.Background()
 
+	rand.Seed(time.Now().Unix())
 	for i := 0; i < *num; i++ {
 		fmt.Print("word:")
 		q := word.List[rand.Intn(len(word.List))]
 		fmt.Println(q)
 		fmt.Print("input:")
+
+		ctx, cancel := context.WithTimeout(bc, time.Duration(*t)*time.Second)
 		select {
 		case r := <-w:
 			if r == q {
 				fmt.Println("◯")
+				correct++
 			} else {
 				fmt.Println("×")
+				incorrect++
 			}
+		case <-ctx.Done():
+			fmt.Println("time out")
+			fmt.Println("×")
+			incorrect++
+			cancel()
 		}
 	}
 
