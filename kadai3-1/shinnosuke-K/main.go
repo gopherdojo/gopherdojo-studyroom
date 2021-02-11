@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
@@ -12,8 +13,13 @@ import (
 
 func main() {
 
-	buf := bufio.NewScanner(os.Stdin)
+	num := flag.Int("n", 10, "number of questions")
+	flag.Parse()
 
+	correct := 0
+	incorrect := 0
+
+	buf := bufio.NewScanner(os.Stdin)
 	w := make(chan string, 1)
 	go func() {
 		for buf.Scan() {
@@ -23,7 +29,7 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	for {
+	for i := 0; i < *num; i++ {
 		fmt.Print("word:")
 		q := word.List[rand.Intn(len(word.List))]
 		fmt.Println(q)
@@ -37,4 +43,9 @@ func main() {
 			}
 		}
 	}
+
+	fmt.Println()
+	fmt.Printf("correct:%d\n", correct)
+	fmt.Printf("incorrect:%d\n", incorrect)
+	fmt.Printf("rate:%.3f\n", float64(correct)/float64(*num)*100)
 }
