@@ -52,8 +52,8 @@ func main() {
 			fmt.Println("time out")
 			fmt.Println("×")
 			incorrect++
-			cancel()
 		}
+		cancel()
 	}
 
 	fmt.Println()
