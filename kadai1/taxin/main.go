@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/taxintt/gopherdojo-studyroom/kadai1/taxin/converter"
@@ -39,11 +38,8 @@ func main() {
 //
 // if you specify invalid file types or don't pass directory path that contains image files, it will raise an error.
 func validateArgs() error {
-	files, err := ioutil.ReadDir(dirPath)
-	if err != nil {
-		return err
-	}
-	if !existsDir(files) {
+	fmt.Println(dirPath)
+	if _, err := os.Stat(dirPath); err != nil {
 		return errors.New("Error: Doesn't exists the directory that you specified")
 	}
 	if !validateFileFormat(imgFormat) || !validateFileFormat(convertedImgFormat) {
@@ -58,15 +54,6 @@ func validateArgs() error {
 func validateFileFormat(passedImgFormat string) bool {
 	for _, f := range fileFormatList {
 		if f == imgFormat {
-			return true
-		}
-	}
-	return false
-}
-
-func existsDir(dirs []os.FileInfo) bool {
-	for _, f := range dirs {
-		if f.Name() == dirPath {
 			return true
 		}
 	}
