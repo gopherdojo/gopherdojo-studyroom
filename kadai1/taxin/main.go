@@ -43,7 +43,7 @@ func validateArgs() error {
 	if err != nil {
 		return err
 	}
-	if existsDir(files) {
+	if !existsDir(files) {
 		return errors.New("Error: Doesn't exists the directory that you specified")
 	}
 	if !validateFileFormat(imgFormat) || !validateFileFormat(convertedImgFormat) {
