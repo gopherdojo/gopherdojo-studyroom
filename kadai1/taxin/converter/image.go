@@ -79,7 +79,7 @@ func decodeImgFile(filepath string, imgData ImgDirData) image.Image {
 
 // encodeImgFile checks files type and encodes the file from the data(image.Image)
 func encodeImgFile(filePath string, imgData ImgDirData, srcImg image.Image) {
-	file, err := os.Create(strings.Replace(filePath, imgData.ImgFormat, imgData.ConvertedImgFormat, 1))
+	file, err := os.Create(filePathConvert(filePath, imgData.ImgFormat, imgData.ConvertedImgFormat))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return
@@ -109,4 +109,10 @@ func encodeImgFile(filePath string, imgData ImgDirData, srcImg image.Image) {
 		return
 	}
 	fmt.Println("Finished to covert image file")
+}
+
+func filePathConvert(filePath, imgFormat, convertedImgFormat string) string {
+	fileName := filepath.Base(filePath)
+	trimmedFileName := strings.TrimRight(fileName, imgFormat)
+	return filepath.Dir(filePath) + "/" + trimmedFileName + convertedImgFormat
 }
