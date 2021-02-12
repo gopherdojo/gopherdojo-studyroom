@@ -80,11 +80,11 @@ func decodeImgFile(filepath string, imgData ImgDirData) image.Image {
 // encodeImgFile checks files type and encodes the file from the data(image.Image)
 func encodeImgFile(filePath string, imgData ImgDirData, srcImg image.Image) {
 	file, err := os.Create(strings.Replace(filePath, imgData.ImgFormat, imgData.ConvertedImgFormat, 1))
-	defer file.Close()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return
 	}
+	defer file.Close()
 
 	switch imgData.ConvertedImgFormat {
 	case "png":
