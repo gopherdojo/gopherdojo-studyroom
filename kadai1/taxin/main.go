@@ -38,7 +38,7 @@ func main() {
 //
 // if you specify invalid file types or don't pass directory path that contains image files, it will raise an error.
 func validateArgs() error {
-	if _, err := os.Stat(dirPath); err != nil {
+	if f, err := os.Stat(dirPath); err != nil && !f.IsDir() {
 		return errors.New("Error: Doesn't exists the directory that you specified")
 	}
 	if !validateFileFormat(imgFormat) || !validateFileFormat(convertedImgFormat) {
