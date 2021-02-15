@@ -19,14 +19,18 @@ type CLI struct {
 }
 
 func (c *CLI) Run(args []string) int {
-	var dir string
-	var from string
-	var target []string
+	var (
+		dir    string
+		from   string
+		to     string
+		target []string
+	)
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
 	flags.StringVar(&dir, "dir", "", "")
 	flags.StringVar(&from, "from", "jpg", "")
+	flags.StringVar(&to, "to", "png", "")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeParseFlagError
