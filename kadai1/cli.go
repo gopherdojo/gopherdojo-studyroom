@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	_ "image/jpeg"
+	"fmt"
 	"io"
 
 	"./imgconv"
@@ -37,11 +37,13 @@ func (c *CLI) Run(args []string) int {
 
 	images, err := imgconv.FileWalk(dir, from, to)
 	if err != nil {
+		fmt.Fprintln(c.errStream, err)
 		return ExitCodeError
 	}
 	for _, img := range images {
 		err := img.Convert()
 		if err != nil {
+			fmt.Fprintln(c.errStream, err)
 			return ExitCodeError
 		}
 	}
