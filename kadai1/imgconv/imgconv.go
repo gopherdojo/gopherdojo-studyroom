@@ -2,7 +2,8 @@ package imgconv
 
 import (
 	"image"
-	_ "image/jpeg"
+	"image/gif"
+	"image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -29,8 +30,12 @@ func (i TargetImage) Convert() error {
 	defer df.Close()
 
 	switch filepath.Ext(i.toPath) {
-	case ",png":
+	case ".jpeg", ".jpg":
+		err = jpeg.Encode(df, img, nil)
+	case ".png":
 		err = png.Encode(df, img)
+	case ".gif":
+		err = gif.Encode(df, img, nil)
 	}
 	if err != nil {
 		return err
