@@ -7,15 +7,15 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-type TargetImage struct {
-	fromPath string
-	toPath   string
+type ConvertImage struct {
+	FromPath, ToPath string
 }
 
-func (i TargetImage) Convert() error {
-	sf, err := os.Open(i.fromPath)
+func (i ConvertImage) Convert() error {
+	sf, err := os.Open(i.FromPath)
 	if err != nil {
 		return err
 	}
@@ -26,10 +26,13 @@ func (i TargetImage) Convert() error {
 		return err
 	}
 
-	df, _ := os.Create(i.toPath)
+	df, err := os.Create(i.ToPath)
+	if err != nil {
+		return err
+	}
 	defer df.Close()
 
-	switch filepath.Ext(i.toPath) {
+	switch strings.ToLower(filepath.Ext(i.ToPath)) {
 	case ".jpeg", ".jpg":
 		err = jpeg.Encode(df, img, nil)
 	case ".png":
@@ -41,21 +44,20 @@ func (i TargetImage) Convert() error {
 		return err
 	}
 
-	err = os.Remove(i.fromPath)
-	if err != nil {
+	if err = os.Remove(i.FromPath); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func FileWalk(dir string, from string, to string) ([]TargetImage, error) {
-	var images []TargetImage
+func GetConvertImages(dir, from, to string) ([]ConvertImage, error) {
+	var images []ConvertImage
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == "."+from {
-			images = append(images, TargetImage{
-				fromPath: path,
-				toPath:   path[:len(path)-len(filepath.Ext(path))] + "." + to,
+			images = append(images, ConvertImage{
+				FromPath: path,
+				ToPath:   path[:len(path)-len(filepath.Ext(path))] + "." + to,
 			})
 		}
 		if err != nil {
