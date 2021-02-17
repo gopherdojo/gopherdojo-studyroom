@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/rnakamine/gopherdojo-studyroom/kadai1/imgconv"
 )
@@ -13,22 +14,35 @@ const (
 	ExitCodeError = 1
 )
 
+var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
+
 type CLI struct {
 	outStream, errStream io.Writer
 }
 
+// Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
 	var dir, from, to string
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
 
-	flags.StringVar(&dir, "dir", "", "")
-	flags.StringVar(&from, "from", "jpg", "")
-	flags.StringVar(&to, "to", "png", "")
+	flags.StringVar(&dir, "dir", "", "Specify the directory to be converted")
+	flags.StringVar(&from, "from", "jpg", "Extension before conversion")
+	flags.StringVar(&to, "to", "png", "Extensions after conversion")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		fmt.Fprintln(c.errStream, err)
+		return ExitCodeError
+	}
+
+	if dir == "" {
+		fmt.Fprintln(c.errStream, "Directory is not specified.")
+		return ExitCodeError
+	}
+
+	if !checkFormat(from) || !checkFormat(to) {
+		fmt.Fprintln(c.errStream, "Unsupported format. Supported formats are jpg, jpeg, png and gif.")
 		return ExitCodeError
 	}
 
@@ -46,4 +60,14 @@ func (c *CLI) Run(args []string) int {
 	}
 
 	return ExitCodeOK
+}
+
+// CheckFormat is determine if the correct image is in the correct format.
+func checkFormat(ext string) bool {
+	for _, f := range supportFormat {
+		if strings.ToLower(ext) == f {
+			return true
+		}
+	}
+	return false
 }
