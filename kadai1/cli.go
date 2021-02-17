@@ -20,6 +20,7 @@ type CLI struct {
 	outStream, errStream io.Writer
 }
 
+// Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
 	var dir, from, to string
 
@@ -32,6 +33,11 @@ func (c *CLI) Run(args []string) int {
 
 	if err := flags.Parse(args[1:]); err != nil {
 		fmt.Fprintln(c.errStream, err)
+		return ExitCodeError
+	}
+
+	if dir == "" {
+		fmt.Fprintln(c.errStream, "Directory is not specified.")
 		return ExitCodeError
 	}
 
@@ -56,6 +62,7 @@ func (c *CLI) Run(args []string) int {
 	return ExitCodeOK
 }
 
+// CheckFormat is determine if the correct image is in the correct format.
 func checkFormat(ext string) bool {
 	for _, f := range supportFormat {
 		if strings.ToLower(ext) == f {

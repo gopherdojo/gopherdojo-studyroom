@@ -14,6 +14,7 @@ type ConvertImage struct {
 	FromPath, ToPath string
 }
 
+// Convert is converts an image to a specified format
 func (i ConvertImage) Convert() error {
 	sf, err := os.Open(i.FromPath)
 	if err != nil {
@@ -51,6 +52,7 @@ func (i ConvertImage) Convert() error {
 	return nil
 }
 
+// GetConvertImages retrieves the images to be converted from the specified directory
 func GetConvertImages(dir, from, to string) ([]ConvertImage, error) {
 	var images []ConvertImage
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
