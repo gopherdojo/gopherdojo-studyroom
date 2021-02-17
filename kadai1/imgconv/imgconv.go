@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// ConvertImage is information about the path of the image to be converted.
 type ConvertImage struct {
 	FromPath, ToPath string
 }
