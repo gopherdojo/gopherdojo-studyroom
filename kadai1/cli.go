@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"./imgconv"
+	"github.com/rnakamine/gopherdojo-studyroom/kadai1/imgconv"
 )
 
 const (
