@@ -34,7 +34,7 @@ func (i ConvertImage) Convert() error {
 
 	switch strings.ToLower(filepath.Ext(i.ToPath)) {
 	case ".jpeg", ".jpg":
-		err = jpeg.Encode(df, img, nil)
+		err = jpeg.Encode(df, img, &jpeg.Options{Quality: 100})
 	case ".png":
 		err = png.Encode(df, img)
 	case ".gif":
