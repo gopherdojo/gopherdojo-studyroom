@@ -8,7 +8,6 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,31 +21,33 @@ type ImgDirData struct {
 }
 
 // WalkAndConvertImgFiles is the function that walks diretory that is passed as args and convert image file format
-func WalkAndConvertImgFiles(imgData ImgDirData) {
+func WalkAndConvertImgFiles(imgData ImgDirData) error {
 	err := filepath.Walk(
 		imgData.DirPath,
 		func(path string, info os.FileInfo, err error) error {
 			if filepath.Ext(path) == "."+imgData.ImgFormat {
-				convertImgFile(path, imgData)
+				convErr := convertImgFile(path, imgData)
+				return convErr
 			}
 			return nil
 		})
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
+	return nil
 }
 
 // convertImgFile is the function that checks the typd of image files and convert it to another file type
-func convertImgFile(filePath string, imgData ImgDirData) {
+func convertImgFile(filePath string, imgData ImgDirData) error {
 	srcImg, decodeErr := decodeImgFile(filePath, imgData)
 	if decodeErr != nil {
-		fmt.Printf("failed to decode image file: %#v", decodeErr)
+		return fmt.Errorf("failed to decode image file: %#v", decodeErr)
 	}
 	encodeErr := encodeImgFile(filePath, imgData, srcImg)
 	if encodeErr != nil {
-		fmt.Printf("failed to encode image file: %#v", decodeErr)
+		return fmt.Errorf("failed to encode image file: %#v", decodeErr)
 	}
+	return nil
 }
 
 // decodeImgFile checks files type and decodes the file as an image.Image.

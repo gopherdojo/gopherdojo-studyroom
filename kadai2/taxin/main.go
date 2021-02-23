@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/taxintt/gopherdojo-studyroom/kadai2/taxin/converter"
@@ -30,7 +31,10 @@ func main() {
 		return
 	}
 	eachImgDirData := converter.ImgDirData{DirPath: dirPath, ImgFormat: imgFormat, ConvertedImgFormat: convertedImgFormat}
-	converter.WalkAndConvertImgFiles(eachImgDirData)
+	err := converter.WalkAndConvertImgFiles(eachImgDirData)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // validate arguments that are passed by.
