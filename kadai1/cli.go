@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -23,7 +24,7 @@ type CLI struct {
 }
 
 // Run invokes the CLI with the given arguments.
-func (c *CLI) Run(args []string) int {
+func (c *CLI) Run(args []string) (int, error) {
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -37,31 +38,30 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&del, "del", false, "Delete the original image.")
 
 	if err := flags.Parse(args[1:]); err != nil {
-		fmt.Fprintln(c.errStream, err)
-		return ExitCodeError
+		return ExitCodeError, err
 	}
 
 	if dir == "" {
-		fmt.Fprintln(c.errStream, "Directory is not specified.")
-		return ExitCodeError
+		return ExitCodeError, errors.New("Directory is not specified.")
 	}
 
 	if !checkFormat(from) || !checkFormat(to) {
-		fmt.Fprintln(c.errStream, "Unsupported format. Supported formats are jpg, jpeg, png and gif.")
-		return ExitCodeError
+		return ExitCodeError, errors.New("Unsupported format. Supported formats are jpg, jpeg, png and gif.")
 	}
 
 	var deleteOption bool
 	if del {
-		fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
+		_, err := fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
+		if err != nil {
+			return ExitCodeError, err
+		}
 		in := bufio.NewScanner(c.inStream)
 		in.Scan()
 		answer := in.Text()
 		if answer == "y" || answer == "Y" {
 			deleteOption = true
 		} else {
-			fmt.Fprintln(c.errStream, "It suspends processing.")
-			return ExitCodeError
+			return ExitCodeError, errors.New("It suspends processing.")
 		}
 	} else {
 		deleteOption = false
@@ -69,18 +69,19 @@ func (c *CLI) Run(args []string) int {
 
 	images, err := imgconv.GetConvertImages(dir, from, to)
 	if err != nil {
-		fmt.Fprintln(c.errStream, err)
-		return ExitCodeError
+		return ExitCodeError, err
 	}
 	for _, img := range images {
-		fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
+		_, err := fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
+		if err != nil {
+			return ExitCodeError, err
+		}
 		if err := img.Convert(deleteOption); err != nil {
-			fmt.Fprintln(c.errStream, err)
-			return ExitCodeError
+			return ExitCodeError, err
 		}
 	}
 
-	return ExitCodeOK
+	return ExitCodeOK, nil
 }
 
 // CheckFormat is determine if the correct image is in the correct format.
