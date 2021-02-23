@@ -5,14 +5,6 @@ import (
 	"testing"
 )
 
-func errExists(t *testing.T, err error) bool {
-	t.Helper()
-	if err != nil {
-		return true
-	}
-	return false
-}
-
 func TestValidateArgs(t *testing.T) {
 	imgDirDataTests := []struct {
 		caseName           string
@@ -23,8 +15,9 @@ func TestValidateArgs(t *testing.T) {
 	}{
 		{"case1", "png", "jpg", "testdata", false},
 		{"case2", "jpg", "svg", "testdata", true},
-		{"case3", "png", "jpg", "testdatadata", true},
-		{"case4", "jpg", "gif", "testdata", false},
+		{"case3", "svg", "jpg", "testdata", true},
+		{"case4", "png", "jpg", "testdatadata", true},
+		{"case5", "jpg", "gif", "testdata", false},
 	}
 
 	for _, tt := range imgDirDataTests {
@@ -39,4 +32,12 @@ func TestValidateArgs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func errExists(t *testing.T, err error) bool {
+	t.Helper()
+	if err != nil {
+		return true
+	}
+	return false
 }
