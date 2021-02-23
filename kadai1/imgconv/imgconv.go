@@ -16,7 +16,7 @@ type ConvertImage struct {
 }
 
 // Convert is converts an image to a specified format
-func (i ConvertImage) Convert() error {
+func (i ConvertImage) Convert(deleteOption bool) error {
 	sf, err := os.Open(i.FromPath)
 	if err != nil {
 		return err
@@ -46,8 +46,10 @@ func (i ConvertImage) Convert() error {
 		return err
 	}
 
-	if err = os.Remove(i.FromPath); err != nil {
-		return err
+	if deleteOption {
+		if err = os.Remove(i.FromPath); err != nil {
+			return err
+		}
 	}
 
 	return nil
