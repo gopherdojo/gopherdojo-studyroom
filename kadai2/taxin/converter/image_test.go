@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
@@ -32,6 +33,9 @@ func TestFilePathConvert(t *testing.T) {
 		{"case2", "./testdata/xx.png.png", "png", "jpg", "testdata/xx.png.jpg"},
 		{"case3", "./png/xx.png", "png", "jpg", "png/xx.jpg"},
 		{"case4", "testdata/xx.png", "png", "jpg", "testdata/xx.jpg"},
+		{"case5", "testdata/xx.jpg", "jpg", "png", "testdata/xx.png"},
+		{"case6", "testdata/xx.jpg", "jpg", "gif", "testdata/xx.gif"},
+		{"case7", "testdata/xx.jpeg", "jpeg", "png", "testdata/xx.png"},
 	}
 
 	for _, tt := range filePaths {
@@ -53,23 +57,20 @@ func TestConvertImgFile(t *testing.T) {
 		imgData    ImgDirData
 		fileFormat string
 	}{
-		{"case1", "../testdata/test1.png", ImgDirData{"../testdata", "png", "jpg"}, "image/jpeg"},
-		{"case2", "../testdata/test2.jpg", ImgDirData{"../testdata", "jpg", "gif"}, "image/gif"},
+		{"case1", "../testdata/test1.png", ImgDirData{"../testdata", "png", "gif"}, "image/gif"},
+		{"case2", "../testdata/test2.gif", ImgDirData{"../testdata", "gif", "jpeg"}, "image/jpeg"},
 		{"case3", "../testdata/test3.jpeg", ImgDirData{"../testdata", "jpeg", "png"}, "image/png"},
+		{"case4", "../testdata/test4.gif", ImgDirData{"../testdata", "gif", "jpg"}, "image/jpeg"},
 	}
 
 	for _, tt := range testCases {
 		t.Run(tt.caseName, func(t *testing.T) {
-			// create image for testing
-			file, err := os.Create(tt.filePath)
-			if err != nil {
-				t.Error("failed to create file")
-			}
-			defer file.Close()
-			encodeImgForTesting(t, file, tt.filePath, tt.imgData)
 
-			// convert image
-			convertImgFile(tt.filePath, tt.imgData)
+			// create image files for tests
+			createImgFileForTesting(t, tt.filePath, tt.imgData)
+
+			// walk dir and convert image
+			WalkAndConvertImgFiles(tt.imgData)
 
 			// check the existance of files
 			newFilePath := filePathConvert(tt.filePath, tt.imgData.ImgFormat, tt.imgData.ConvertedImgFormat)
@@ -102,8 +103,48 @@ func TestConvertImgFile(t *testing.T) {
 	}
 }
 
-func encodeImgForTesting(t *testing.T, file *os.File, filepath string, imgData ImgDirData) error {
+func TestConvertOtherKindsOfFiles(t *testing.T) {
+	testCases := []struct {
+		caseName      string
+		filePath      string
+		imgData       ImgDirData
+		errExistsFlag bool
+	}{
+		{"case1", "../testdata/test1.txt", ImgDirData{"../testdata", "txt", "gif"}, true},
+		{"case2", "../testdata/test2.png", ImgDirData{"../testdata", "png", "txt"}, true},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.caseName, func(t *testing.T) {
+
+			// create image files for tests
+			os.Create(tt.filePath)
+
+			// convert image
+			err := WalkAndConvertImgFiles(tt.imgData)
+
+			// delete test files
+			fileErr := os.Remove(tt.filePath)
+			if fileErr != nil {
+				log.Fatal(fileErr)
+			}
+
+			if errExists(t, err) != tt.errExistsFlag {
+				t.Errorf("error: %#v", err)
+			}
+		})
+	}
+}
+
+func createImgFileForTesting(t *testing.T, filepath string, imgData ImgDirData) error {
 	t.Helper()
+
+	// create image for testing
+	file, err := os.Create(filepath)
+	if err != nil {
+		t.Error("failed to create file")
+	}
+	defer file.Close()
 
 	img := image.NewRGBA(image.Rect(x, y, width, height))
 	for i := img.Rect.Min.Y; i < img.Rect.Max.Y; i++ {
@@ -130,5 +171,14 @@ func encodeImgForTesting(t *testing.T, file *os.File, filepath string, imgData I
 	if err := file.Close(); err != nil {
 		return err
 	}
+	fmt.Println("created files for testing")
 	return nil
+}
+
+func errExists(t *testing.T, err error) bool {
+	t.Helper()
+	if err != nil {
+		return true
+	}
+	return false
 }
