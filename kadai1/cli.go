@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -17,19 +18,23 @@ const (
 var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
 
 type CLI struct {
+	inStream             io.Reader
 	outStream, errStream io.Writer
 }
 
 // Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
-	var dir, from, to string
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
 
+	var dir, from, to string
 	flags.StringVar(&dir, "dir", "", "Specify the directory to be converted")
 	flags.StringVar(&from, "from", "jpg", "Extension before conversion")
 	flags.StringVar(&to, "to", "png", "Extensions after conversion")
+
+	var del bool
+	flags.BoolVar(&del, "del", false, "Delete the original image.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		fmt.Fprintln(c.errStream, err)
@@ -46,6 +51,22 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
+	var deleteOption bool
+	if del {
+		fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
+		in := bufio.NewScanner(c.inStream)
+		in.Scan()
+		answer := in.Text()
+		if answer == "y" || answer == "Y" {
+			deleteOption = true
+		} else {
+			fmt.Fprintln(c.errStream, "It suspends processing.")
+			return ExitCodeError
+		}
+	} else {
+		deleteOption = false
+	}
+
 	images, err := imgconv.GetConvertImages(dir, from, to)
 	if err != nil {
 		fmt.Fprintln(c.errStream, err)
@@ -53,7 +74,7 @@ func (c *CLI) Run(args []string) int {
 	}
 	for _, img := range images {
 		fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
-		if err := img.Convert(); err != nil {
+		if err := img.Convert(deleteOption); err != nil {
 			fmt.Fprintln(c.errStream, err)
 			return ExitCodeError
 		}
