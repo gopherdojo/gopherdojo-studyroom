@@ -59,7 +59,7 @@ func (i ConvertImage) Convert(deleteOption bool) error {
 func GetConvertImages(dir, from, to string) ([]ConvertImage, error) {
 	var images []ConvertImage
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if filepath.Ext(path) == "."+from {
+		if filepath.Ext(path) == "."+from && !info.IsDir() {
 			images = append(images, ConvertImage{
 				FromPath: path,
 				ToPath:   path[:len(path)-len(filepath.Ext(path))] + "." + to,
