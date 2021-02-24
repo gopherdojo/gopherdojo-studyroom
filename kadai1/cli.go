@@ -11,11 +11,6 @@ import (
 	"github.com/rnakamine/gopherdojo-studyroom/kadai1/imgconv"
 )
 
-const (
-	ExitCodeOK    = 0
-	ExitCodeError = 1
-)
-
 var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
 
 type CLI struct {
@@ -24,7 +19,7 @@ type CLI struct {
 }
 
 // Run invokes the CLI with the given arguments.
-func (c *CLI) Run(args []string) (int, error) {
+func (c *CLI) Run(args []string) error {
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -38,22 +33,22 @@ func (c *CLI) Run(args []string) (int, error) {
 	flags.BoolVar(&del, "del", false, "Delete the original image.")
 
 	if err := flags.Parse(args[1:]); err != nil {
-		return ExitCodeError, err
+		return err
 	}
 
 	if dir == "" {
-		return ExitCodeError, errors.New("Directory is not specified.")
+		return errors.New("Directory is not specified.")
 	}
 
 	if !checkFormat(from) || !checkFormat(to) {
-		return ExitCodeError, errors.New("Unsupported format. Supported formats are jpg, jpeg, png and gif.")
+		return errors.New("Unsupported format. Supported formats are jpg, jpeg, png and gif.")
 	}
 
 	var deleteOption bool
 	if del {
 		_, err := fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
 		if err != nil {
-			return ExitCodeError, err
+			return err
 		}
 		in := bufio.NewScanner(c.inStream)
 		in.Scan()
@@ -61,7 +56,7 @@ func (c *CLI) Run(args []string) (int, error) {
 		if answer == "y" || answer == "Y" {
 			deleteOption = true
 		} else {
-			return ExitCodeError, errors.New("It suspends processing.")
+			return errors.New("It suspends processing.")
 		}
 	} else {
 		deleteOption = false
@@ -69,19 +64,19 @@ func (c *CLI) Run(args []string) (int, error) {
 
 	images, err := imgconv.GetConvertImages(dir, from, to)
 	if err != nil {
-		return ExitCodeError, err
+		return err
 	}
 	for _, img := range images {
 		_, err := fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
 		if err != nil {
-			return ExitCodeError, err
+			return err
 		}
 		if err := img.Convert(deleteOption); err != nil {
-			return ExitCodeError, err
+			return err
 		}
 	}
 
-	return ExitCodeOK, nil
+	return nil
 }
 
 // CheckFormat is determine if the correct image is in the correct format.

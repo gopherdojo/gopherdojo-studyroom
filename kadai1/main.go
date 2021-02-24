@@ -5,11 +5,17 @@ import (
 	"os"
 )
 
+const (
+	ExitCodeOK    = 0
+	ExitCodeError = 1
+)
+
 func main() {
 	cli := &CLI{inStream: os.Stdin, outStream: os.Stdout, errStream: os.Stderr}
-	ExitCode, err := cli.Run(os.Args)
+	err := cli.Run(os.Args)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(ExitCodeError)
 	}
-	os.Exit(ExitCode)
+	os.Exit(ExitCodeOK)
 }
