@@ -16,6 +16,8 @@ func init() {
 	flag.StringVar(&ci.From, "f", "jpg", "変更元(short)")
 	flag.StringVar(&ci.To, "-to", "png", "変更先")
 	flag.StringVar(&ci.To, "t", "png", "変更先(short)")
+	flag.BoolVar(&ci.DeleteOption, "-delete", false, "削除フラグ")
+	flag.BoolVar(&ci.DeleteOption, "d", false, "削除フラグ(short)")
 }
 
 func main() {

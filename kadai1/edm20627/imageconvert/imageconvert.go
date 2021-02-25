@@ -13,8 +13,9 @@ import (
 var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
 
 type ConvertImage struct {
-	filepaths []string
-	From, To  string
+	filepaths    []string
+	From, To     string
+	DeleteOption bool
 }
 
 func (ci *ConvertImage) Get(dirs []string) error {
@@ -39,7 +40,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 
 func (ci *ConvertImage) Convert() error {
 	for _, path := range ci.filepaths {
-		err := convert(path, ci.To)
+		err := convert(path, ci.To, ci.DeleteOption)
 		if err != nil {
 			return err
 		}
@@ -60,7 +61,7 @@ func (ci *ConvertImage) Valid() bool {
 	return false
 }
 
-func convert(path string, To string) error {
+func convert(path string, to string, deleteOption bool) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -72,13 +73,13 @@ func convert(path string, To string) error {
 		return err
 	}
 
-	out, err := os.Create(path[:len(path)-len(filepath.Ext(path))+1] + To)
+	out, err := os.Create(path[:len(path)-len(filepath.Ext(path))+1] + to)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	switch To {
+	switch to {
 	case "png":
 		if err := png.Encode(out, img); err != nil {
 			return err
@@ -92,5 +93,12 @@ func convert(path string, To string) error {
 			return err
 		}
 	}
+
+	if deleteOption {
+		if err := os.Remove(path); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
