@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 )
 
+var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
+
 type ConvertImage struct {
 	filepaths []string
 	From, To  string
@@ -19,6 +21,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 	for _, dir := range dirs {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
+
 				if info == nil {
 					return errors.New(path + " is not directory")
 				}
@@ -44,6 +47,19 @@ func (ci *ConvertImage) Convert() error {
 		}
 	}
 	return nil
+}
+
+func (ci *ConvertImage) Valid() bool {
+	for _, v := range SupportedFormat {
+		if v == ci.From {
+			for _, v := range SupportedFormat {
+				if v == ci.To {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func convert(path string, To string) error {
