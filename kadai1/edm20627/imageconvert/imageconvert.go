@@ -21,7 +21,6 @@ func (ci *ConvertImage) Get(dirs []string) error {
 	for _, dir := range dirs {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
-
 				if info == nil {
 					return errors.New(path + " is not directory")
 				}
@@ -34,7 +33,6 @@ func (ci *ConvertImage) Get(dirs []string) error {
 		if err != nil {
 			return err
 		}
-		return nil
 	}
 	return nil
 }
@@ -74,7 +72,7 @@ func convert(path string, To string) error {
 		return err
 	}
 
-	out, err := os.Create(path[:len(path)-len(filepath.Ext(path))] + "." + To)
+	out, err := os.Create(path[:len(path)-len(filepath.Ext(path))+1] + To)
 	if err != nil {
 		return err
 	}

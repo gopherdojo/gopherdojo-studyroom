@@ -30,10 +30,12 @@ func main() {
 	err := ci.Get(dirs)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	err = ci.Convert()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
