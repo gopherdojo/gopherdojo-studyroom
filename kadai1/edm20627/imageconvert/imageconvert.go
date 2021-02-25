@@ -80,11 +80,17 @@ func convert(path string, To string) error {
 
 	switch To {
 	case "png":
-		png.Encode(out, img)
+		if err := png.Encode(out, img); err != nil {
+			return err
+		}
 	case "jpg", "jpeg":
-		jpeg.Encode(out, img, nil)
+		if err := jpeg.Encode(out, img, nil); err != nil {
+			return err
+		}
 	case "gif":
-		gif.Encode(out, img, nil)
+		if err := gif.Encode(out, img, nil); err != nil {
+			return err
+		}
 	}
 	return nil
 }
