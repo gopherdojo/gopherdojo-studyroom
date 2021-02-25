@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rnakamine/gopherdojo-studyroom/kadai1/imgconv"
+	"github.com/rnakamine/gopherdojo-studyroom/kadai2/rnakamine/imgconv"
 )
 
 var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
