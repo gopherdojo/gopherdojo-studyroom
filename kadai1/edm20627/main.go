@@ -12,12 +12,12 @@ import (
 var ci = imageconvert.ConvertImage{}
 
 func init() {
-	flag.StringVar(&ci.From, "-from", "jpg", "変更元")
-	flag.StringVar(&ci.From, "f", "jpg", "変更元(short)")
-	flag.StringVar(&ci.To, "-to", "png", "変更先")
-	flag.StringVar(&ci.To, "t", "png", "変更先(short)")
-	flag.BoolVar(&ci.DeleteOption, "-delete", false, "削除フラグ")
-	flag.BoolVar(&ci.DeleteOption, "d", false, "削除フラグ(short)")
+	flag.StringVar(&ci.From, "-from", "jpg", "Specify the image format before conversion")
+	flag.StringVar(&ci.From, "f", "jpg", "Specify the image format before conversion (short)")
+	flag.StringVar(&ci.To, "-to", "png", "Specify the converted image format")
+	flag.StringVar(&ci.To, "t", "png", "Specify the converted image format (short)")
+	flag.BoolVar(&ci.DeleteOption, "-delete", false, "Delete the image before conversion")
+	flag.BoolVar(&ci.DeleteOption, "d", false, "Delete the image before conversion (short)")
 }
 
 func main() {

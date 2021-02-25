@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 )
 
+// Supported extensions.
 var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
 
 type ConvertImage struct {
@@ -18,6 +19,7 @@ type ConvertImage struct {
 	DeleteOption bool
 }
 
+// Get the target files for image conversion.
 func (ci *ConvertImage) Get(dirs []string) error {
 	for _, dir := range dirs {
 		err := filepath.Walk(dir,
@@ -38,6 +40,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 	return nil
 }
 
+// Perform image conversion.
 func (ci *ConvertImage) Convert() error {
 	for _, path := range ci.filepaths {
 		err := convert(path, ci.To, ci.DeleteOption)
@@ -48,6 +51,7 @@ func (ci *ConvertImage) Convert() error {
 	return nil
 }
 
+// Check for supported extensions.
 func (ci *ConvertImage) Valid() bool {
 	for _, v := range SupportedFormat {
 		if v == ci.From {
