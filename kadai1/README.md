@@ -3,8 +3,11 @@
 
 ## 使用方法
 imgconvディレクトリに移動して、以下のコマンドを実行する。
+
 `./imgconv -s jpg -d -png [ディレクトリ]`
+
 もしくは、
+
 `go run main.go -s jpg -d png [ディレクトリ]`
 
 ## オプション
