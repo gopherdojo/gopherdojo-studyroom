@@ -75,7 +75,7 @@ func TestConvertImgFile(t *testing.T) {
 			// check the existance of files
 			newFilePath := filePathConvert(tt.filePath, tt.imgData.ImgFormat, tt.imgData.ConvertedImgFormat)
 			if _, err := os.Stat(newFilePath); err != nil {
-				t.Error("does not exists image file that is converted")
+				t.Fatal("does not exists image file that is converted")
 			}
 
 			// check whether the file is valid
@@ -83,11 +83,11 @@ func TestConvertImgFile(t *testing.T) {
 			buff := make([]byte, 512)
 			srcImgFile, err := os.Open(newFilePath)
 			if _, err = srcImgFile.Read(buff); err != nil {
-				t.Error("failed to read file header")
+				t.Fatal("failed to read file header")
 			}
 
 			if tt.fileFormat != http.DetectContentType(buff) {
-				t.Error("the file is not valid file type")
+				t.Fatal("the file is not valid file type")
 			}
 
 			// delete test files
