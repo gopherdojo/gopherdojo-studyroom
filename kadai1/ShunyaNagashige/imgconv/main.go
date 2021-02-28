@@ -15,7 +15,7 @@ var (
 func main() {
 	flag.Parse()
 
-	s:=flag.Args()
+	s := flag.Args()
 
 	if len(s) == 0 {
 		log.Fatal("ディレクトリを指定してください。")
@@ -27,7 +27,7 @@ func main() {
 		switch *format {
 		case "png", "jpg", "gif":
 		case "jpeg":
-			*format="jpg"
+			*format = "jpg"
 		default:
 			log.Fatalf("拡張子%sを指定することはできません。", *format)
 		}
@@ -36,7 +36,7 @@ func main() {
 	var sources []string
 
 	//指定したディレクトリ以下にある、拡張子srcFormatのファイルのパスを取得
-	for _, dir := range s{
+	for _, dir := range s {
 		var err error
 		sources, err = image.Search(dir, *srcFormat)
 		if err != nil {

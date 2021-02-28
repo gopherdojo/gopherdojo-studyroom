@@ -28,8 +28,6 @@ func TestSearch(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			t.Helper()
-
 			actual, _ := image.Search(c.input.dir, c.input.format)
 
 			if len(actual) != len(c.expected) {
@@ -47,7 +45,7 @@ func TestSearch(t *testing.T) {
 	}
 }
 
-func ExampleSearch(){
-	fmt.Println(image.Search(".","png"))
+func ExampleSearch() {
+	fmt.Println(image.Search(".", "png"))
 	// output: [testdata/dog_hachi_sasareta.png] <nil>
 }
