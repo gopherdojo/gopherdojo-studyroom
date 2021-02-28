@@ -35,7 +35,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
 	if err := enc.Encode(o); err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		http.Error(w, "処理中にエラーが発生しました。もう一度やり直してください", http.StatusInternalServerError)
 	}
 	str := buf.String()
 	log.Println(str)
