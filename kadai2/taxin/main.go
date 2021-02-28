@@ -28,7 +28,7 @@ func init() {
 func main() {
 	if err := validateArgs(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		return
+		os.Exit(1)
 	}
 	eachImgDirData := converter.ImgDirData{DirPath: dirPath, ImgFormat: imgFormat, ConvertedImgFormat: convertedImgFormat}
 	err := converter.WalkAndConvertImgFiles(eachImgDirData)
