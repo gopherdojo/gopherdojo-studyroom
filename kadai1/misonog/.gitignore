@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+/imgconv
 
 # Test binary, built with `go test -c`
 *.test
