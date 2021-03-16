@@ -8,28 +8,32 @@ import (
 	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/conversion"
 )
 
-var before, after string
+var cs conversion.ConvertStruct
 
 func init() {
-	flag.StringVar(&before, "b", "jpg", "select extension of conversion source")
-	flag.StringVar(&after, "a", "png", "select extension you want to convert")
+	flag.StringVar(&cs.Before, "b", "jpg", "select extension of conversion source")
+	flag.StringVar(&cs.After, "a", "png", "select extension you want to convert")
 }
 
 func main() {
 	flag.Parse()
 	dirs := flag.Args()
 
-	err := conversion.ExtensionCheck(before)
+	err := conversion.ExtensionCheck(cs.Before)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Fprintln(os.Stderr, "Extension Error")
 		os.Exit(1)
 	}
 
-	for _, dir := range dirs {
-		err := conversion.WalkDir(dir, after)
-		if err != nil {
-			fmt.Println("Error:", err)
-			os.Exit(1)
-		}
+	err = cs.WalkDirs(dirs)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Directory walk Error")
+		os.Exit(1)
+	}
+
+	err = cs.Convert()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Convert Error")
+		os.Exit(1)
 	}
 }

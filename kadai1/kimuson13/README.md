@@ -2,7 +2,16 @@
 指定したディレクトリ以下の画像ファイルの拡張子を変換します。
 
 ## 使用方法
-`cmd -b jpf -a png direcotory name`
+kimuson13ディレクトリに移動し、以下のコマンドを実行する。
+
+`go build main.go`
+`./main -b jpg -a png (dir名)`
+
+また、
+
+`go run main.go -b jpg -a png (dir名)`
+
+で使用できる。
 
 ## オプション
 `-b` 変換対象の画像の拡張子を選択する。デフォルトはJPG
