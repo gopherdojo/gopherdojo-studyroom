@@ -3,7 +3,7 @@
 # Create testdata dir
 mkdir -p testdata/jpg
 mkdir -p testdata/jpeg
-mkdir -p testdata/png
+mkdir -p testdata/png/recursive
 
 # Create sample testdata
 createSample() {
@@ -17,3 +17,4 @@ createSample "testdata/jpg" "jpg"
 createSample "testdata/jpeg" "jpeg"
 createSample "testdata/png" "png"
 createSample "testdata" "gif"
+cp sample.png testdata/png/recursive/4.png
