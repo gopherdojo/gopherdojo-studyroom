@@ -6,6 +6,11 @@ import (
 	"path/filepath"
 )
 
+type File struct {
+	Path string
+	Ext  string
+}
+
 func ExistDir(dir string) bool {
 	if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
 		return false
@@ -29,4 +34,16 @@ func dirWalk(dir string) []string {
 	}
 
 	return paths
+}
+
+func getFileStruct(paths []string) []File {
+	var fileList []File
+
+	for _, path := range paths {
+		fileList = append(fileList, File{
+			Path: path,
+			Ext:  filepath.Ext(path),
+		})
+	}
+	return fileList
 }
