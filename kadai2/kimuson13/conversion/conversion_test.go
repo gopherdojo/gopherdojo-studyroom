@@ -132,7 +132,6 @@ func testconvert(t *testing.T, dirs []string, before, after string, imageId int,
 	if actual != expected {
 		t.Fatal(err)
 	}
-	cs.After = ""
 	pathname := "testdir2/image" + id + "." + after
 	return pathname
 }
