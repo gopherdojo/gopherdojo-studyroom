@@ -11,6 +11,8 @@ type File struct {
 	Ext  string
 }
 
+type Files []File
+
 func ExistDir(dir string) bool {
 	if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
 		return false
@@ -46,4 +48,19 @@ func getFileStruct(paths []string) []File {
 		})
 	}
 	return fileList
+}
+
+func (f Files) filter(ext string) Files {
+	var fileList Files
+
+	for _, file := range f {
+		if file.cmpExt(ext) {
+			fileList = append(fileList, file)
+		}
+	}
+	return fileList
+}
+
+func (f File) cmpExt(ext string) bool {
+	return f.Ext == ext
 }
