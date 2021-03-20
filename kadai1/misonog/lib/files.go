@@ -20,12 +20,12 @@ const (
 	PNG  = "png"
 	JPG  = "jpg"
 	JPEG = "jpeg"
-	GIF  = "GIF"
+	GIF  = "gif"
 )
 
 type Files []File
 
-func ExistDir(dir string) bool {
+func existDir(dir string) bool {
 	if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
 		return false
 	}

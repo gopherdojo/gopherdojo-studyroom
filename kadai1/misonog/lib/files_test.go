@@ -18,8 +18,8 @@ func TestExistDir(t *testing.T) {
 	for _, c := range cases {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
-			if actual := ExistDir(c.input); c.expected != actual {
-				t.Errorf("want ExitDir(%v) = %v, got %v",
+			if actual := existDir(c.input); c.expected != actual {
+				t.Errorf("want exitDir(%v) = %v, got %v",
 					c.input, c.expected, actual)
 			}
 		})
