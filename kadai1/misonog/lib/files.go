@@ -17,10 +17,10 @@ type File struct {
 }
 
 const (
-	PNG  = "png"
-	JPG  = "jpg"
-	JPEG = "jpeg"
-	GIF  = "gif"
+	PNG  = ".png"
+	JPG  = ".jpg"
+	JPEG = ".jpeg"
+	GIF  = ".gif"
 )
 
 type Files []File

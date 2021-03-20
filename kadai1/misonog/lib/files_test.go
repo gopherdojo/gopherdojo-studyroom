@@ -129,8 +129,8 @@ func TestConvert(t *testing.T) {
 		input string
 		f     File
 	}{
-		{name: "png", input: "png", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: "jpeg"}},
-		{name: "gif", input: "gif", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: "jpeg"}},
+		{name: "png", input: ".png", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: ".jpeg"}},
+		{name: "gif", input: ".gif", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: ".jpeg"}},
 	}
 
 	for _, c := range cases {
