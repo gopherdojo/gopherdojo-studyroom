@@ -1,15 +1,27 @@
 package lib
 
 import (
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type File struct {
 	Path string
 	Ext  string
 }
+
+const (
+	PNG  = "png"
+	JPG  = "jpg"
+	JPEG = "jpeg"
+	GIF  = "GIF"
+)
 
 type Files []File
 
@@ -63,4 +75,41 @@ func (f Files) filter(ext string) Files {
 
 func (f File) cmpExt(ext string) bool {
 	return f.Ext == ext
+}
+
+func (f File) convert(ext string) error {
+	file, err := os.Open(f.Path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	imgFile, _, err := image.Decode(file)
+	if err != nil {
+		imgFile = nil
+		return err
+	}
+
+	dstFilePath := f.Path[:strings.LastIndex(f.Path, f.Ext)] + ext
+	dstFile, err := os.Create(dstFilePath)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	switch ext {
+	case PNG:
+		if err := png.Encode(dstFile, imgFile); err != nil {
+			return nil
+		}
+	case JPG, JPEG:
+		if err := jpeg.Encode(dstFile, imgFile, nil); err != nil {
+			return nil
+		}
+	case GIF:
+		if err := gif.Encode(dstFile, imgFile, nil); err != nil {
+			return nil
+		}
+	}
+	return nil
 }

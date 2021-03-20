@@ -121,3 +121,24 @@ func TestCmpExt(t *testing.T) {
 		})
 	}
 }
+
+func TestConvert(t *testing.T) {
+	// TODO: テストの書き方がわからないので、一旦エラーを吐かないかでお茶を濁す
+	cases := []struct {
+		name  string
+		input string
+		f     File
+	}{
+		{name: "png", input: "png", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: "jpeg"}},
+		{name: "gif", input: "gif", f: File{Path: "../testdata/jpeg/1.jpeg", Ext: "jpeg"}},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			if actual := c.f.convert(c.input); actual != nil {
+				t.Errorf("Received unexpected error:\n%v", actual)
+			}
+		})
+	}
+}
