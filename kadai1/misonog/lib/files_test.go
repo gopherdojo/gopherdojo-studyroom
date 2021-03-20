@@ -47,22 +47,22 @@ func TestDirWalk(t *testing.T) {
 	}
 }
 
-func TestGetFileStruct(t *testing.T) {
+func TestGetFiles(t *testing.T) {
 	cases := []struct {
 		name     string
 		input    []string
-		expected []File
+		expected Files
 	}{
-		{name: "single file", input: []string{"1.jpg"}, expected: []File{{Path: "1.jpg", Ext: ".jpg"}}},
-		{name: "multi file", input: []string{"1.jpg", "2.png"}, expected: []File{{Path: "1.jpg", Ext: ".jpg"}, {Path: "2.png", Ext: ".png"}}},
-		{name: "blank", input: []string{""}, expected: []File{{Path: "", Ext: ""}}},
+		{name: "single file", input: []string{"1.jpg"}, expected: Files{File{Path: "1.jpg", Ext: ".jpg"}}},
+		{name: "multi file", input: []string{"1.jpg", "2.png"}, expected: Files{File{Path: "1.jpg", Ext: ".jpg"}, File{Path: "2.png", Ext: ".png"}}},
+		{name: "blank", input: []string{""}, expected: Files{File{Path: "", Ext: ""}}},
 	}
 
 	for _, c := range cases {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
-			if actual := getFileStruct(c.input); !reflect.DeepEqual(c.expected, actual) {
-				t.Errorf("want getFileStruct(%v) = %v, got %v",
+			if actual := getFiles(c.input); !reflect.DeepEqual(c.expected, actual) {
+				t.Errorf("want getFiles(%v) = %v, got %v",
 					c.input, c.expected, actual)
 			}
 		})

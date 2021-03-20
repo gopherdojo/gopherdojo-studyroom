@@ -50,8 +50,9 @@ func dirWalk(dir string) []string {
 	return paths
 }
 
-func getFileStruct(paths []string) []File {
+func getFiles(paths []string) Files {
 	var fileList []File
+	var fileLists Files
 
 	for _, path := range paths {
 		fileList = append(fileList, File{
@@ -59,7 +60,11 @@ func getFileStruct(paths []string) []File {
 			Ext:  filepath.Ext(path),
 		})
 	}
-	return fileList
+
+	for _, file := range fileList {
+		fileLists = append(fileLists, file)
+	}
+	return fileLists
 }
 
 func (f Files) filter(ext string) Files {
