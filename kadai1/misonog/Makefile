@@ -1,6 +1,6 @@
 BINARY_NAME=imgconv
 
-all: test build
+all: create test build
 
 build:
 	go build -o $(BINARY_NAME)
