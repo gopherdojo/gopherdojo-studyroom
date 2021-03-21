@@ -14,6 +14,17 @@ import (
 
 var cs conversion.ConvertStruct
 
+func TestExtensionError(t *testing.T) {
+	expected := "this extension is not supported"
+	actual := conversion.ExtensionCheck("err")
+	if actual.Error() != expected {
+		t.Errorf(
+			"want Error actual = %v, and expected = %v",
+			actual, expected,
+		)
+	}
+}
+
 func TestExtensionCheck(t *testing.T) {
 	cases := []struct {
 		name, input string
@@ -35,13 +46,23 @@ func TestExtensionCheck(t *testing.T) {
 func testExtensionCheck(t *testing.T, input string, expected error) {
 	t.Helper()
 	err := conversion.ExtensionCheck(input)
-	if err != nil {
-		t.Fatal(err)
-	}
 	if err != expected {
 		t.Errorf(
 			"want ExtensionCheck(%v) = %v, got %v",
 			input, expected, err,
+		)
+	}
+}
+
+func TestWalkError(t *testing.T) {
+	expected := "testerror is not directory"
+	var input []string
+	input = append(input, "testerror")
+	actual := cs.WalkDirs(input)
+	if actual.Error() != expected {
+		t.Errorf(
+			"want Error actual = %v, and expected = %v",
+			actual, expected,
 		)
 	}
 }

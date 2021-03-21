@@ -12,7 +12,12 @@ import (
 	"strings"
 )
 
-var supportedextension = []string{"jpeg", "jpg", "png", "gif"}
+const (
+	JPEG string = "jpeg"
+	JPG  string = "jpg"
+	PNG  string = "png"
+	GIF  string = "gif"
+)
 
 type ConvertStruct struct {
 	filepaths     []string
@@ -21,12 +26,12 @@ type ConvertStruct struct {
 
 //ExtensionCheck is to check extension
 func ExtensionCheck(extension string) error {
-	for _, e := range supportedextension {
-		if extension == e {
-			return nil
-		}
+	switch extension {
+	case JPEG, JPG, PNG, GIF:
+		return nil
+	default:
+		return errors.New("this extension is not supported")
 	}
-	return errors.New("this extension is not supported")
 }
 
 func (cs *ConvertStruct) WalkDirs(dirs []string) error {
@@ -34,7 +39,7 @@ func (cs *ConvertStruct) WalkDirs(dirs []string) error {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
 				if info == nil {
-					return errors.New(path + " is not direcotory")
+					return errors.New(path + " is not directory")
 				}
 				if os.IsNotExist(err) || info.IsDir() {
 					return nil
@@ -53,7 +58,7 @@ func (cs *ConvertStruct) Convert() error {
 	for _, path := range cs.filepaths {
 		err := convert(path, cs.After)
 		if err != nil {
-			return err
+			return errors.New("convert failed")
 		}
 	}
 	return nil
@@ -62,40 +67,41 @@ func (cs *ConvertStruct) Convert() error {
 func convert(path, after string) error {
 	f, err := os.Open(path)
 	if err != nil {
-		return errors.New("directory is not selected")
+		return err
 	}
 	defer f.Close()
 
 	img, _, err := image.Decode(f)
 	if err != nil {
-		return errors.New("decode failed")
+		return err
 	}
 
 	out, err := os.Create(strings.Replace(path, filepath.Ext(path), "."+after, 1))
 	if err != nil {
-		return errors.New("create failed")
+		return err
 	}
 	defer out.Close()
 
 	switch after {
-	case "jpeg", "jpg":
+	case JPEG, JPG:
 		if err := jpeg.Encode(out, img, nil); err != nil {
-			return errors.New("encode failed")
+			return err
 		}
 		fmt.Println("convert successed")
 		return nil
-	case "png":
+	case PNG:
 		if err := png.Encode(out, img); err != nil {
-			return errors.New("encode failed")
+			return err
 		}
 		fmt.Println("convert successed")
 		return nil
-	case "gif":
+	case GIF:
 		if err := gif.Encode(out, img, nil); err != nil {
-			return errors.New("encode failed")
+			return err
 		}
 		fmt.Println("convert successed")
 		return nil
+	default:
+		return err
 	}
-	return nil
 }
