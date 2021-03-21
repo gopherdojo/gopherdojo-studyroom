@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"os"
+
+	"github.com/misonog/gopherdojo-studyroom/kadai1/misonog/lib"
 )
 
 func main() {
@@ -16,4 +18,10 @@ func main() {
 
 	flag.StringVar(&path, "path", pwd, "Directory path to convert image file")
 	flag.Parse()
+
+	oldExt := ".png"
+	newExt := ".jpg"
+	if err := lib.ImgConv(path, oldExt, newExt); err != nil {
+		log.Fatal(err)
+	}
 }
