@@ -123,7 +123,6 @@ func TestCmpExt(t *testing.T) {
 }
 
 func TestConvert(t *testing.T) {
-	// TODO: テストの書き方がわからないので、一旦エラーを吐かないかでお茶を濁す
 	cases := []struct {
 		name  string
 		input string
