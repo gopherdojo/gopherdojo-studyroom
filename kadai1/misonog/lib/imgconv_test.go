@@ -27,3 +27,25 @@ func TestImgConv(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateExtParam(t *testing.T) {
+	cases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "png", input: ".png", expected: ".png"},
+		{name: "uppercase", input: ".PNG", expected: ".png"},
+		{name: "no dot", input: "jpeg", expected: ".jpeg"},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			if actual, _ := validateExtArg(c.input); actual != c.expected {
+				t.Errorf("want validateExtArg(%v) = %v, got %v",
+					c.input, c.expected, actual)
+			}
+		})
+	}
+}

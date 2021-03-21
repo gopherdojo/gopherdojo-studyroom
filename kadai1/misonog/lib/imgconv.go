@@ -1,6 +1,9 @@
 package lib
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func ImgConv(dir string, oldExt string, newExt string) error {
 	var fileList Files
@@ -19,4 +22,21 @@ func ImgConv(dir string, oldExt string, newExt string) error {
 	}
 
 	return nil
+}
+
+func validateExtArg(extArg string) (string, error) {
+	var collectExt = []string{PNG, JPG, JPEG, GIF}
+	ext := strings.ToLower(extArg)
+
+	if !strings.HasPrefix(ext, ".") {
+		ext = "." + ext
+	}
+
+	for _, i := range collectExt {
+		if ext == i {
+			return ext, nil
+		}
+	}
+	err := fmt.Errorf("%v is not a supported extension", extArg)
+	return "", err
 }
