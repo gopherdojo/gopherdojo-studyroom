@@ -9,7 +9,7 @@ mkdir -p testdata/png/recursive
 createSample() {
     for i in $(seq 1 3)
     do
-        cp sample.png "$1"/"$i"."$2"
+        convert sample.png "$1"/"$i"."$2"
     done
 }
 
