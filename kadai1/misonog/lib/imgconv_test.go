@@ -13,8 +13,7 @@ func TestImgConv(t *testing.T) {
 		name      string
 		inputArgs args
 	}{
-		{name: "png", inputArgs: args{dir: "../testdata/png/recursive", oldExt: ".png", newExt: ".jpg"}},
-		{name: "png recursive", inputArgs: args{dir: "../testdata/png", oldExt: ".png", newExt: ".jpg"}},
+		{name: "jpeg", inputArgs: args{dir: "../testdata/jpeg", oldExt: ".jpeg", newExt: ".png"}},
 	}
 
 	for _, c := range cases {
