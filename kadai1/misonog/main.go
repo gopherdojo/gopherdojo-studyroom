@@ -15,12 +15,14 @@ func main() {
 	}
 
 	var path string
+	var oldExt string
+	var newExt string
 
 	flag.StringVar(&path, "path", pwd, "Directory path to convert image file")
+	flag.StringVar(&oldExt, "o", ".jpg", "")
+	flag.StringVar(&newExt, "n", ".png", "")
 	flag.Parse()
 
-	oldExt := ".png"
-	newExt := ".jpg"
 	if err := lib.ImgConv(path, oldExt, newExt); err != nil {
 		log.Fatal(err)
 	}

@@ -12,11 +12,20 @@ func ImgConv(dir string, oldExt string, newExt string) error {
 		return fmt.Errorf("%v: No such file or directory", dir)
 	}
 
+	vaildOldExt, err := validateExtArg(oldExt)
+	if err != nil {
+		return err
+	}
+	validNewExt, err := validateExtArg(newExt)
+	if err != nil {
+		return err
+	}
+
 	paths := dirWalk(dir)
-	fileList = getFiles(paths).filter(oldExt)
+	fileList = getFiles(paths).filter(vaildOldExt)
 
 	for _, file := range fileList {
-		if err := file.convert(newExt); err != nil {
+		if err := file.convert(validNewExt); err != nil {
 			return fmt.Errorf("error: cannot create %v", file.Path)
 		}
 	}
