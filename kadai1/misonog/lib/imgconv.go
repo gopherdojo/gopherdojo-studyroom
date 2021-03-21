@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// ImgConvはディレクトリを引数にとり、指定した拡張子の画像ファイルを変換する
 func ImgConv(dir string, oldExt string, newExt string) error {
 	var fileList Files
 
@@ -33,6 +34,7 @@ func ImgConv(dir string, oldExt string, newExt string) error {
 	return nil
 }
 
+// validateExtArgは引数として渡された拡張子が正しいかと"."がなければ付与を行う
 func validateExtArg(extArg string) (string, error) {
 	var collectExt = []string{PNG, JPG, JPEG, GIF}
 	ext := strings.ToLower(extArg)

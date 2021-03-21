@@ -16,6 +16,8 @@ type File struct {
 	Ext  string
 }
 
+type Files []File
+
 const (
 	PNG  = ".png"
 	JPG  = ".jpg"
@@ -23,8 +25,7 @@ const (
 	GIF  = ".gif"
 )
 
-type Files []File
-
+// existDirはディレクトリが存在するかチェックを行う
 func existDir(dir string) bool {
 	if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
 		return false
@@ -32,6 +33,7 @@ func existDir(dir string) bool {
 	return true
 }
 
+// dirWalkはディレクトリ以下のファイルを再帰定期に取得する
 func dirWalk(dir string) []string {
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -50,6 +52,7 @@ func dirWalk(dir string) []string {
 	return paths
 }
 
+// getFilesはファイルのパスを引数にとり、Files構造体を返す
 func getFiles(paths []string) Files {
 	var fileList []File
 	var fileLists Files
@@ -67,6 +70,7 @@ func getFiles(paths []string) Files {
 	return fileLists
 }
 
+// Files.filterは指定した拡張子のファイルのみに絞る
 func (f Files) filter(ext string) Files {
 	var fileList Files
 
@@ -82,6 +86,7 @@ func (f File) cmpExt(ext string) bool {
 	return f.Ext == ext
 }
 
+// File.convertは指定した拡張子に画像ファイルを変換し、作成する
 func (f File) convert(ext string) error {
 	file, err := os.Open(f.Path)
 	if err != nil {
