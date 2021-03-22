@@ -60,7 +60,7 @@ func getFiles(paths []string) Files {
 	for _, path := range paths {
 		fileList = append(fileList, File{
 			Path: path,
-			Ext:  filepath.Ext(path),
+			Ext:  strings.ToLower(filepath.Ext(path)),
 		})
 	}
 
