@@ -110,15 +110,15 @@ func (f File) convert(ext string) error {
 	switch ext {
 	case PNG:
 		if err := png.Encode(dstFile, imgFile); err != nil {
-			return nil
+			return err
 		}
 	case JPG, JPEG:
 		if err := jpeg.Encode(dstFile, imgFile, nil); err != nil {
-			return nil
+			return err
 		}
 	case GIF:
 		if err := gif.Encode(dstFile, imgFile, nil); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
