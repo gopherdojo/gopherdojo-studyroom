@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/misonog/gopherdojo-studyroom/kadai1/misonog/lib"
+	"github.com/misonog/gopherdojo-studyroom/kadai1/misonog/imageconv"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	flag.StringVar(&newExt, "n", ".png", "Image format after change")
 	flag.Parse()
 
-	if err := lib.ImgConv(path, oldExt, newExt); err != nil {
+	if err := imageconv.ImgConv(path, oldExt, newExt); err != nil {
 		log.Fatal(err)
 	}
 }
