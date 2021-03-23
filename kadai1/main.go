@@ -3,45 +3,34 @@ package main
 import (
 	"flag"
 	"fmt"
-	"image/jpeg"
-	"image/png"
 	"os"
+	"path/filepath"
+
+	"./imageConverter"
 )
-
-func jpg2png(filename string) {
-	fs, err := os.Open(filename)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
-
-	img, err := jpeg.Decode(fs)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
-	fs.Close()
-
-	fs, err = os.OpenFile(filename+".png", os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
-
-	err = png.Encode(fs, img)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-	println(filename)
-	fs.Close()
-}
 
 func main() {
 	flag.Parse()
-	if len(flag.Args()) == 0 {
-		fmt.Fprintln(os.Stderr, "error: need argument")
-		return // should return 1
+	if len(flag.Args()) != 1 {
+		fmt.Fprintln(os.Stderr, "error: invalid argument")
+		return
 	}
+	convert(flag.Args()[0])
+}
 
-	jpg2png(flag.Args()[0])
+func convert(dirpath string) {
+	err := filepath.Walk(flag.Args()[0], func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			if path != dirpath {
+				convert(path)
+			}
+		} else {
+			fmt.Println(path)
+			imageConverter.Jpg2png(path)
+		}
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 }
