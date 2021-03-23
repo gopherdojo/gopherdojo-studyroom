@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"./imageConverter"
+	"github.com/dai65527/gopherdojo-studyroom/kadai1/imageConverter"
 )
 
 func main() {
@@ -25,7 +25,6 @@ func convert(dirpath string) {
 				convert(path)
 			}
 		} else {
-			fmt.Println(path)
 			imageConverter.Jpg2png(path)
 		}
 		return nil

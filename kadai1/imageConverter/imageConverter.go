@@ -12,8 +12,6 @@ import (
 func Jpg2png(filename string) {
 	fileext := strings.ToLower(filepath.Ext(filename))
 	if fileext != ".jpg" && fileext != ".jpeg" {
-		fmt.Printf("ext = %s\n", fileext)
-		fmt.Fprintln(os.Stderr, filename+" invalid file name")
 		return
 	}
 
@@ -40,6 +38,5 @@ func Jpg2png(filename string) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	println(filename)
 	fs.Close()
 }
