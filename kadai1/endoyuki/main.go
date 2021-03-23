@@ -18,7 +18,7 @@ type Hoge struct {
 var hoge Hoge
 
 func main() {
-	hoge.beforeExt = flag.String("b", "jpeg", "before Extension")
+	hoge.beforeExt = flag.String("b", "jpg", "before Extension")
 	hoge.afterExt = flag.String("a", "png", "after Extension")
 	flag.Parse()
 
