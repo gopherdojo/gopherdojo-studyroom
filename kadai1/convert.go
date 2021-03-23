@@ -20,11 +20,7 @@ func main() {
 
 func convert(dirpath string) {
 	err := filepath.Walk(flag.Args()[0], func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			if path != dirpath {
-				convert(path)
-			}
-		} else {
+		if !info.IsDir() {
 			imageConverter.Jpg2png(path)
 		}
 		return nil
