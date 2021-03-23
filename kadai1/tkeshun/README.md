@@ -12,15 +12,16 @@
 - [x] Go Modulesを使ってみる
 
 ## ファイル構成
+
 image_trans以下が画像変換プログラム
 
 - conversion/conversion.go
   
-画像変換の本体
+  画像変換の本体
 
 - findFile/findFile.go
 
-対象ファイル検索
+  対象ファイル検索
 
 ## オプション
 
