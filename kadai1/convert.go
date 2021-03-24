@@ -9,6 +9,9 @@ import (
 	"github.com/dai65527/gopherdojo-studyroom/kadai1/imageConverter"
 )
 
+var input = flag.String("i", "jpg", "input type (jpg or png, default: jpg)")
+var output = flag.String("o", "png", "jpg or png (jpg or png, default: png)")
+
 func main() {
 	flag.Parse()
 	if len(flag.Args()) != 1 {
@@ -18,13 +21,29 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error: "+flag.Args()[0]+": no such file or directory")
 		os.Exit(1)
 	}
-	convert(flag.Args()[0])
+	convert(flag.Args()[0], isReverse())
 }
 
-func convert(dirpath string) {
-	err := filepath.Walk(flag.Args()[0], func(path string, info os.FileInfo, err error) error {
+func isReverse() bool {
+	if *input == "png" && (*output == "jpg" || *output == "jpeg") {
+		return true
+	} else if (*input == "jpg" || *input == "jpeg") && *output == "png" {
+		return false
+	} else {
+		fmt.Fprintln(os.Stderr, "error: invalid option")
+		os.Exit(1)
+	}
+	return false
+}
+
+func convert(dirpath string, isRev bool) {
+	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			imageConverter.Jpg2png(path)
+			if isRev {
+				imageConverter.Png2jpg(path)
+			} else {
+				imageConverter.Jpg2png(path)
+			}
 		}
 		return nil
 	})
