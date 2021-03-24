@@ -13,7 +13,10 @@ func main() {
 	flag.Parse()
 	if len(flag.Args()) != 1 {
 		fmt.Fprintln(os.Stderr, "error: invalid argument")
-		return
+		os.Exit(1)
+	} else if _, err := os.Stat(flag.Args()[0]); err != nil {
+		fmt.Fprintln(os.Stderr, "error: "+flag.Args()[0]+": no such file or directory")
+		os.Exit(1)
 	}
 	convert(flag.Args()[0])
 }
