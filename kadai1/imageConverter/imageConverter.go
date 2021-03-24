@@ -1,3 +1,4 @@
+// imageCoverter is a package of functions to convert images
 package imageConverter
 
 import (
@@ -9,6 +10,7 @@ import (
 	"strings"
 )
 
+// Jpg2png takes path to image of jpg and convert to png
 func Jpg2png(filename string) {
 	fileext := strings.ToLower(filepath.Ext(filename))
 	if fileext != ".jpg" && fileext != ".jpeg" {
@@ -41,6 +43,7 @@ func Jpg2png(filename string) {
 	fs.Close()
 }
 
+// Png2jpg takes path to image of png and convert to jpg
 func Png2jpg(filename string) {
 	fileext := strings.ToLower(filepath.Ext(filename))
 	if fileext != ".png" {
