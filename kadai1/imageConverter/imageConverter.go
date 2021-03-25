@@ -2,76 +2,71 @@
 package imageConverter
 
 import (
-	"fmt"
+	"errors"
+	"image"
 	"image/jpeg"
 	"image/png"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
-// Jpg2png takes path to image of jpg and convert to png
-func Jpg2png(filename string) {
-	fileext := strings.ToLower(filepath.Ext(filename))
-	if fileext != ".jpg" && fileext != ".jpeg" {
-		return
+type Extension string
+
+// Convert takes a filename of image and convert it to another imagefile of outputFileExt
+func Convert(filename string, inputFileExt Extension, outputFileExt Extension) error {
+	// get file extension in lower case (to compare)
+	inputFileExt = Extension(strings.ToLower(string(inputFileExt)))
+	outputFileExt = Extension(strings.ToLower(string(outputFileExt)))
+
+	// check extension
+	if inputFileExt != "jpg" && inputFileExt != "jpeg" && inputFileExt != "png" {
+		return errors.New("invalid input file extension")
+	} else if outputFileExt != "jpg" && outputFileExt != "jpeg" && outputFileExt != "png" {
+		return errors.New("invalid output file extension")
 	}
 
-	fs, err := os.Open(filename)
+	// read and decode file
+	img, err := readImageFile(filename, inputFileExt)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		return err
 	}
 
-	img, err := jpeg.Decode(fs)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
-	fs.Close()
-
-	fs, err = os.OpenFile(filename+".png", os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
-
-	err = png.Encode(fs, img)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-	fs.Close()
+	// encode img and write to file
+	return writeImageToFile(img, filename+"."+string(outputFileExt), outputFileExt)
 }
 
-// Png2jpg takes path to image of png and convert to jpg
-func Png2jpg(filename string) {
-	fileext := strings.ToLower(filepath.Ext(filename))
-	if fileext != ".png" {
-		return
-	}
-
+func readImageFile(filename string, fileExt Extension) (image.Image, error) {
+	// openfile
 	fs, err := os.Open(filename)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		return nil, errors.New("failed to open file")
 	}
+	defer fs.Close()
 
-	img, err := png.Decode(fs)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+	// decode file to Image.image
+	if fileExt == "jpg" || fileExt == "jpeg" {
+		return jpeg.Decode(fs)
+	} else if fileExt == "png" {
+		return png.Decode(fs)
+	} else {
+		return nil, errors.New("invalid extension")
 	}
-	fs.Close()
+}
 
-	fs, err = os.OpenFile(filename+".jpg", os.O_CREATE|os.O_WRONLY, 0644)
+func writeImageToFile(img image.Image, filename string, fileExt Extension) error {
+	// openfile
+	fs, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		return errors.New("failed to open file")
 	}
+	defer fs.Close()
 
-	err = jpeg.Encode(fs, img, nil)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	// encode and write file
+	if fileExt == "jpg" || fileExt == "jpeg" {
+		return jpeg.Encode(fs, img, nil)
+	} else if fileExt == "png" {
+		return png.Encode(fs, img)
+	} else {
+		return errors.New("invalid extension")
 	}
-	fs.Close()
 }
