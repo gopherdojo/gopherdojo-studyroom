@@ -1,3 +1,4 @@
+#!/bin/sh
 # reset and create nested images file
 
 # delete old directory
