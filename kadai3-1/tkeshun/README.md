@@ -14,6 +14,17 @@
 
 単語リストは[NAWL(NEW ACADEMIC WORD LIST)](http://www.newgeneralservicelist.org/nawl-new-academic-word-list)を使用しました。
 
+errcheckによるチェックを行いました
+
+## オプション
+
 |オプション|内容|
 |--tl|制限時間(秒)|
 |-qty|単語を読み込む個数|
+
+## 使用方法
+
+```
+go build -o typingGame main.go 
+./typingGame -tl 60 -qty
+```

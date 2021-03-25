@@ -16,6 +16,9 @@ var tl *float64
 func init() {
 
 	qty = flag.Int("qty", 100, "対象個数を選ぶ")
+	if *qty > 900 {
+		*qty = 900
+	}
 	tl = flag.Float64("tl", 120, "制限時間(秒)を指定")
 }
 
