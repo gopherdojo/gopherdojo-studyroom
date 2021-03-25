@@ -24,26 +24,32 @@ func main() {
 		os.Exit(1)
 	}
 
-	// check flag is valid
-	if *flgInput != "jpg" && *flgInput != "jpeg" && *flgInput != "png" {
+	// check input flag is valid
+	switch *flgInput {
+	case "jpg", "jpeg", "png":
+		// nop
+	default: // invalid extension
 		fmt.Fprintln(os.Stderr, "error: "+*flgInput+": invalid input flag (should be jpg or png)")
 		os.Exit(1)
-	} else if *flgOutput != "jpg" && *flgOutput != "jpeg" && *flgOutput != "png" {
+	}
+
+	// check output flag is valid
+	switch *flgOutput {
+	case "jpg", "jpeg", "png":
+		// nop
+	default: // invalid extension
 		fmt.Fprintln(os.Stderr, "error: "+*flgOutput+": invalid output flag (should be jpg or png)")
 		os.Exit(1)
 	}
 
-	// convert all
-	convert(flag.Args()[0], *flgInput, *flgOutput)
-}
-
-func convert(dirpath string, inputFileExt string, outputFileExt string) {
-	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && filepath.Ext(path) == "."+inputFileExt {
-			erri := imgcnv.Convert(path, imgcnv.Extension(inputFileExt), imgcnv.Extension(outputFileExt))
-			if erri != nil {
-				fmt.Fprintln(os.Stdout, "error: "+path+": ", err)
-			}
+	// walk in directory and convert image files
+	err := filepath.Walk(flag.Args()[0], func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() || filepath.Ext(path) != "."+*flgInput {
+			return nil
+		}
+		erri := imgcnv.Convert(path, imgcnv.Extension(*flgInput), imgcnv.Extension(*flgOutput))
+		if erri != nil {
+			fmt.Fprintln(os.Stdout, "error: "+path+":", erri)
 		}
 		return nil
 	})

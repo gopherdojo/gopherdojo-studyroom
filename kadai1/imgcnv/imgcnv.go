@@ -12,34 +12,43 @@ import (
 
 type Extension string
 
-// Convert takes a filename of image and convert it to another imagefile of outputFileExt
-func Convert(filename string, inputFileExt Extension, outputFileExt Extension) error {
+// Convert takes a filename of image and convert it to another imagefile of out
+func Convert(filename string, in, out Extension) error {
 	// get file extension in lower case (to compare)
-	inputFileExt = Extension(strings.ToLower(string(inputFileExt)))
-	outputFileExt = Extension(strings.ToLower(string(outputFileExt)))
+	in = Extension(strings.ToLower(string(in)))
+	out = Extension(strings.ToLower(string(out)))
 
-	// check extension
-	if inputFileExt != "jpg" && inputFileExt != "jpeg" && inputFileExt != "png" {
-		return errors.New("invalid input file extension")
-	} else if outputFileExt != "jpg" && outputFileExt != "jpeg" && outputFileExt != "png" {
-		return errors.New("invalid output file extension")
+	// check input file extension
+	switch in {
+	case "jpg", "jpeg", "png":
+		// nop
+	default:
+		return errors.New(" invalid input file extension")
+	}
+
+	// check output file extension
+	switch out {
+	case "jpg", "jpeg", "png":
+		// nop
+	default: // error
+		return errors.New(" invalid input file extension")
 	}
 
 	// read and decode file
-	img, err := readImageFile(filename, inputFileExt)
+	img, err := readImageFile(filename, in)
 	if err != nil {
 		return err
 	}
 
 	// encode img and write to file
-	return writeImageToFile(img, filename+"."+string(outputFileExt), outputFileExt)
+	return writeImageToFile(img, filename+"."+string(out), out)
 }
 
 func readImageFile(filename string, fileExt Extension) (image.Image, error) {
 	// openfile
 	fs, err := os.Open(filename)
 	if err != nil {
-		return nil, errors.New("failed to open file")
+		return nil, errors.New(" failed to open file")
 	}
 	defer fs.Close()
 
@@ -49,7 +58,7 @@ func readImageFile(filename string, fileExt Extension) (image.Image, error) {
 	} else if fileExt == "png" {
 		return png.Decode(fs)
 	} else {
-		return nil, errors.New("invalid extension")
+		return nil, errors.New(" invalid extension")
 	}
 }
 
@@ -57,7 +66,7 @@ func writeImageToFile(img image.Image, filename string, fileExt Extension) error
 	// openfile
 	fs, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return errors.New("failed to open file")
+		return errors.New(" failed to open file")
 	}
 	defer fs.Close()
 
@@ -67,6 +76,6 @@ func writeImageToFile(img image.Image, filename string, fileExt Extension) error
 	} else if fileExt == "png" {
 		return png.Encode(fs, img)
 	} else {
-		return errors.New("invalid extension")
+		return errors.New(" invalid extension")
 	}
 }
