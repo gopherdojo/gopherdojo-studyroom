@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dai65527/gopherdojo-studyroom/kadai1/imageConverter"
+	"github.com/dai65527/gopherdojo-studyroom/kadai1/imgcnv"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 func convert(dirpath string, inputFileExt string, outputFileExt string) {
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(path) == "."+inputFileExt {
-			erri := imageConverter.Convert(path, imageConverter.Extension(inputFileExt), imageConverter.Extension(outputFileExt))
+			erri := imgcnv.Convert(path, imgcnv.Extension(inputFileExt), imgcnv.Extension(outputFileExt))
 			if erri != nil {
 				fmt.Fprintln(os.Stdout, "error: "+path+": ", err)
 			}

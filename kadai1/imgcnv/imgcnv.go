@@ -1,5 +1,5 @@
-// imageCoverter is a package of functions to convert images
-package imageConverter
+// imgcnv is a package of functions to convert images
+package imgcnv
 
 import (
 	"errors"
