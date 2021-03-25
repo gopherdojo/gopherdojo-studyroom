@@ -39,3 +39,24 @@ func input(r io.Reader) <-chan string {
 	}()
 	return ch
 }
+
+// textファイルを読み込んで、出題用wordのスライスを返す
+func importWords(fileName string) ([]string, error) {
+	var words []string
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return words, nil
+}
