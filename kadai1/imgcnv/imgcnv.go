@@ -62,13 +62,15 @@ func readImageFile(filename string, fileExt Extension) (image.Image, error) {
 	}
 }
 
-func writeImageToFile(img image.Image, filename string, fileExt Extension) error {
+func writeImageToFile(img image.Image, filename string, fileExt Extension) (err error) {
 	// openfile
 	fs, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return errors.New(" failed to open file")
+		return err
 	}
-	defer fs.Close()
+	defer func() {
+		err = fs.Close()
+	}()
 
 	// encode and write file
 	if fileExt == "jpg" || fileExt == "jpeg" {
