@@ -9,11 +9,13 @@ import (
 	"github.com/dai65527/gopherdojo-studyroom/kadai1/imageConverter"
 )
 
-var input = flag.String("i", "jpg", "input type (jpg or png, default: jpg)")
-var output = flag.String("o", "png", "jpg or png (jpg or png, default: png)")
-
 func main() {
+	// flags
+	var flgInput = flag.String("i", "jpg", "input type (jpg or png, default: jpg)")
+	var flgOutput = flag.String("o", "png", "jpg or png (jpg or png, default: png)")
 	flag.Parse()
+
+	// check input
 	if len(flag.Args()) != 1 {
 		fmt.Fprintln(os.Stderr, "error: invalid argument")
 		os.Exit(1)
@@ -21,28 +23,26 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error: "+flag.Args()[0]+": no such file or directory")
 		os.Exit(1)
 	}
-	convert(flag.Args()[0], isReverse())
-}
 
-func isReverse() bool {
-	if *input == "png" && (*output == "jpg" || *output == "jpeg") {
-		return true
-	} else if (*input == "jpg" || *input == "jpeg") && *output == "png" {
-		return false
-	} else {
-		fmt.Fprintln(os.Stderr, "error: invalid option")
+	// check flag is valid
+	if *flgInput != "jpg" && *flgInput != "jpeg" && *flgInput != "png" {
+		fmt.Fprintln(os.Stderr, "error: "+*flgInput+": invalid input flag (should be jpg or png)")
+		os.Exit(1)
+	} else if *flgOutput != "jpg" && *flgOutput != "jpeg" && *flgOutput != "png" {
+		fmt.Fprintln(os.Stderr, "error: "+*flgOutput+": invalid output flag (should be jpg or png)")
 		os.Exit(1)
 	}
-	return false
+
+	// convert all
+	convert(flag.Args()[0], *flgInput, *flgOutput)
 }
 
-func convert(dirpath string, isRev bool) {
+func convert(dirpath string, inputFileExt string, outputFileExt string) {
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			if isRev {
-				imageConverter.Png2jpg(path)
-			} else {
-				imageConverter.Jpg2png(path)
+		if !info.IsDir() && filepath.Ext(path) == "."+inputFileExt {
+			erri := imageConverter.Convert(path, imageConverter.Extension(inputFileExt), imageConverter.Extension(outputFileExt))
+			if erri != nil {
+				fmt.Fprintln(os.Stdout, "error: "+path+": ", err)
 			}
 		}
 		return nil
