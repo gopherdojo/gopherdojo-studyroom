@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func Conversion(diraName string, outDirectory string, beforeExt *string, afterExt *string) {
+func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *string) {
 	files, err := filepath.Glob(diraName + "*." + *beforeExt)
 	if err != nil {
 		log.Fatal(err)
