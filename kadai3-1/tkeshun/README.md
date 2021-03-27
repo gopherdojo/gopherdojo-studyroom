@@ -19,11 +19,13 @@ errcheckによるチェックを行いました
 ## オプション
 
 |オプション|内容|
+|----|----|
 |-qty|単語を読み込む個数|
 |-tl|制限時間(秒)の指定|
+
 ## 使用方法
 
 ```
 go build -o typingGame main.go 
-./typingGame  -qty 50
+./typingGame  -qty 50 -tl 20
 ```
