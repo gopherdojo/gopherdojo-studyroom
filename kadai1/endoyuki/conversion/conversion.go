@@ -37,11 +37,20 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 
 		switch *afterExt {
 		case "jpg":
-			jpeg.Encode(out, config, nil)
+			err := jpeg.Encode(out, config, nil)
+			if err != nil {
+				return err
+			}
 		case "png":
-			png.Encode(out, config)
+			err := png.Encode(out, config)
+			if err != nil {
+				return err
+			}
 		case "gif":
-			gif.Encode(out, config, nil)
+			err := gif.Encode(out, config, nil)
+			if err != nil {
+				return err
+			}
 		default:
 		}
 	}
