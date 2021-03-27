@@ -34,7 +34,10 @@ func main() {
 	hoge.inputDir = args[0]
 	hoge.outputDir = args[1]
 
-	conversion.Convert(hoge.inputDir, hoge.outputDir, hoge.beforeExt, hoge.afterExt)
+	err := conversion.Convert(hoge.inputDir, hoge.outputDir, hoge.beforeExt, hoge.afterExt)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func existDir(dirName string) {
