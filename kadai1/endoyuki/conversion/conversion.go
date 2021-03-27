@@ -5,6 +5,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +23,11 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 		if err != nil {
 			return err
 		}
-		defer img.Close()
+		defer func() {
+			if err := img.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
 
 		config, _, err := image.Decode(img)
 		if err != nil {
@@ -33,7 +38,11 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 		if err != nil {
 			return err
 		}
-		defer out.Close()
+		defer func() {
+			if err := out.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
 
 		switch *afterExt {
 		case "jpg":
