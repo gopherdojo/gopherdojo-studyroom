@@ -2,17 +2,17 @@ package conversion
 
 import (
 	"image"
+	"image/gif"
 	"image/jpeg"
-	_ "image/png"
-	"log"
+	"image/png"
 	"os"
 	"path/filepath"
 )
 
-func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *string) {
+func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *string) error {
 	files, err := filepath.Glob(diraName + "*." + *beforeExt)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, file := range files {
@@ -20,23 +20,32 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 
 		img, err := os.Open(file)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer img.Close()
 
 		config, _, err := image.Decode(img)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		out, err := os.Create(outDirectory + fileName + "." + *afterExt)
 		if err != nil {
-			log.Fatal()
+			return err
 		}
 		defer out.Close()
 
-		jpeg.Encode(out, config, nil)
+		switch *afterExt {
+		case "jpg":
+			jpeg.Encode(out, config, nil)
+		case "png":
+			png.Encode(out, config)
+		case "gif":
+			gif.Encode(out, config, nil)
+		default:
+		}
 	}
+	return err
 }
 
 func getFileNameWithoutExt(path string) string {
