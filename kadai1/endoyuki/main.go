@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -28,7 +29,10 @@ func main() {
 	}
 
 	for i := 0; i < len(args); i++ {
-		existDir(args[i])
+		err := existDir(args[i])
+		if err != nil {
+			log.Fatal(err)
+		}
 		args[i] = args[i] + dirPathFormating(args[i])
 	}
 	hoge.inputDir = args[0]
@@ -40,10 +44,15 @@ func main() {
 	}
 }
 
-func existDir(dirName string) {
-	if f, err := os.Stat(dirName); os.IsNotExist(err) || !f.IsDir() {
-		log.Fatal(err)
+func existDir(dirName string) error {
+	f, err := os.Stat(dirName)
+	if err != nil {
+		return err
 	}
+	if !f.IsDir() {
+		log.Fatal(fmt.Errorf("directory %v not exist", dirName))
+	}
+	return err
 }
 
 func dirPathFormating(dirPath string) string {
