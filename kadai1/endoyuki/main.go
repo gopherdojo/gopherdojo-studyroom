@@ -33,7 +33,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		args[i] = args[i] + dirPathFormating(args[i])
 	}
 	hoge.inputDir = args[0]
 	hoge.outputDir = args[1]
@@ -53,16 +52,4 @@ func existDir(dirName string) error {
 		log.Fatal(fmt.Errorf("directory %v not exist", dirName))
 	}
 	return err
-}
-
-func dirPathFormating(dirPath string) string {
-	trailChr := dirPath[len(dirPath)-1 : len(dirPath)]
-	switch trailChr {
-	case "/":
-		return ""
-	case "\\":
-		return ""
-	default:
-		return "/"
-	}
 }

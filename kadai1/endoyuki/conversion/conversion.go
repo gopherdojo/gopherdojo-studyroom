@@ -11,7 +11,7 @@ import (
 )
 
 func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *string) error {
-	files, err := filepath.Glob(diraName + "*." + *beforeExt)
+	files, err := filepath.Glob(filepath.Join(diraName, "*."+*beforeExt))
 	if err != nil {
 		return err
 	}
