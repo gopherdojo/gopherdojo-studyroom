@@ -63,7 +63,7 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 		default:
 		}
 	}
-	return err
+	return nil
 }
 
 func getFileNameWithoutExt(path string) string {

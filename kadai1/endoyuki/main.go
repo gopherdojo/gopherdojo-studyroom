@@ -51,5 +51,5 @@ func existDir(dirName string) error {
 	if !f.IsDir() {
 		log.Fatal(fmt.Errorf("directory %v not exist", dirName))
 	}
-	return err
+	return nil
 }
