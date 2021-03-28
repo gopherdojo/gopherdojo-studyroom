@@ -61,6 +61,8 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 				return err
 			}
 		default:
+			log.Printf("%v is an unsupported format", *afterExt)
+			return nil
 		}
 	}
 	return nil
