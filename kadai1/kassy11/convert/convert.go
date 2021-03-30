@@ -17,8 +17,11 @@ type ConvertImage struct {
 }
 
 func (img *ConvertImage) Do() {
-	err := os.Mkdir(img.OutputDirectory, 0777)
-	logError(err, "cannot create directory")
+	_, err := os.Stat(img.OutputDirectory)
+	if os.IsNotExist(err) {
+		err := os.Mkdir(img.OutputDirectory, 0777)
+		logError(err, "cannot create directory")
+	}
 	error := filepath.Walk(img.InputDirectory, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == "."+img.InputFormat {
 			file, err := os.Open(path)
