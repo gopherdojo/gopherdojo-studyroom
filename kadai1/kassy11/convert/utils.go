@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 )
 
+/*
+struct FormatType is to read image format property from config.json
+*/
 type FormatType struct {
 	Jpg  string `json: 'JPG'`
 	Jpeg string `json: 'JPEG'`

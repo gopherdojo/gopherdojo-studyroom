@@ -1,3 +1,6 @@
+/*
+Package convert is for converting image formats.
+*/
 package convert
 
 import (
@@ -9,6 +12,9 @@ import (
 	"path/filepath"
 )
 
+/*
+struct ConvertImage is for managing image information.
+*/
 type ConvertImage struct {
 	InputFormat     string
 	OutputFormat    string
@@ -16,6 +22,9 @@ type ConvertImage struct {
 	OutputDirectory string
 }
 
+/*
+func (img *ConvertImage) Do() is for converting.
+*/
 func (img *ConvertImage) Do() {
 	_, err := os.Stat(img.OutputDirectory)
 	if os.IsNotExist(err) {
