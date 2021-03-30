@@ -1,5 +1,0 @@
-package convert
-
-func Jpg() {
-
-}
