@@ -10,17 +10,17 @@ import (
 )
 
 type Hoge struct {
-	inputDir  string  //指定するディレクトリ
-	outputDir string  //出力先ディレクトリ
-	beforeExt *string //変換前の拡張子
-	afterExt  *string //変換後の拡張子
+	inputDir  string //指定するディレクトリ
+	outputDir string //出力先ディレクトリ
+	beforeExt string //変換前の拡張子
+	afterExt  string //変換後の拡張子
 }
 
 var hoge Hoge
 
 func main() {
-	hoge.beforeExt = flag.String("b", "jpg", "before Extension")
-	hoge.afterExt = flag.String("a", "png", "after Extension")
+	hoge.beforeExt = *flag.String("b", "jpg", "before Extension")
+	hoge.afterExt = *flag.String("a", "png", "after Extension")
 	flag.Parse()
 
 	args := flag.Args()

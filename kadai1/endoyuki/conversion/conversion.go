@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 )
 
-func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *string) error {
-	files, err := filepath.Glob(filepath.Join(diraName, "*."+*beforeExt))
+func Convert(diraName string, outDirectory string, beforeExt string, afterExt string) error {
+	files, err := filepath.Glob(filepath.Join(diraName, "*."+beforeExt))
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 			return err
 		}
 
-		out, err := os.Create(outDirectory + fileName + "." + *afterExt)
+		out, err := os.Create(outDirectory + fileName + "." + afterExt)
 		if err != nil {
 			return err
 		}
@@ -44,7 +44,7 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 			}
 		}()
 
-		switch *afterExt {
+		switch afterExt {
 		case "jpg":
 			err := jpeg.Encode(out, config, nil)
 			if err != nil {
@@ -61,7 +61,7 @@ func Convert(diraName string, outDirectory string, beforeExt *string, afterExt *
 				return err
 			}
 		default:
-			log.Printf("%v is an unsupported format", *afterExt)
+			log.Printf("%v is an unsupported format", afterExt)
 			return nil
 		}
 	}
