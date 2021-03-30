@@ -1,5 +1,9 @@
 ## kadai1-kassy11
 
+### Usage
+- `$ make`
+- `$ ./imgconv -i png -f jpg -o outputs ./images`
+
 ### 仕様
 - ディレクトリを指定する
 - 指定したディレクトリ以下のJPGファイルをPNGに変換（デフォルト）

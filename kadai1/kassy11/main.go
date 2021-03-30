@@ -8,34 +8,18 @@ import (
 	"github.com/kassy11/gopherdojo-studyroom/kadai1/kassy11/convert"
 )
 
-//type ConvertImage struct {
-//	inputFormat     string
-//	outputFormat    string
-//	inputDirectory  string
-//	outputDirectory string
-//}
+type ConvertImage struct {
+	inputFormat     string
+	outputFormat    string
+	inputDirectory  string
+	outputDirectory string
+}
 
-//type FormatName struct {
-//	Jpg string
-//	Png string
-//}
-//
-//var format FormatName
-//
-//func init() {
-//	file, err := os.Open("config.json")
-//	if err != nil {
-//		fmt.Fprintln(os.Stderr, "Cannot open config file")
-//		os.Exit(1)
-//	}
-//	decoder := json.NewDecoder(file)
-//	format = FormatName{}
-//	err = decoder.Decode(&format)
-//	if err != nil {
-//		fmt.Fprintln(os.Stderr, "Cannot get configuration from file")
-//		os.Exit(1)
-//	}
-//}
+var format *convert.FormatType
+
+func init() {
+	format = convert.LoadConfig()
+}
 
 func main() {
 	flag.Usage = func() {
@@ -47,8 +31,8 @@ func main() {
 	var inputFormat string
 	var outputFormat string
 	var outputDirectory string
-	flag.StringVar(&inputFormat, "i", "jpg", "-i <format(jpg or png))>")
-	flag.StringVar(&outputFormat, "f", "png", "-f <format(jpg or png)>")
+	flag.StringVar(&inputFormat, "i", format.Jpg, "-i <format(jpg or jpeg or png))>")
+	flag.StringVar(&outputFormat, "f", format.Png, "-f <format(jpg or jpeg or png)>")
 	flag.StringVar(&outputDirectory, "o", "output", "-o <directory name>")
 	flag.Parse()
 
@@ -60,7 +44,7 @@ func main() {
 
 	dir := flag.Arg(0)
 
-	if (inputFormat != "jpg" && inputFormat != "png") || (outputFormat != "jpg" && outputFormat != "png") {
+	if (inputFormat != format.Jpg && inputFormat != format.Jpeg && inputFormat != format.Png) || (outputFormat != format.Jpg && outputFormat != format.Jpeg && outputFormat != format.Png) {
 		fmt.Fprintln(os.Stderr, "imgconv: Invalid image format")
 		fmt.Fprintln(os.Stderr, "imgconv: try 'imgconv--help' for more information")
 		os.Exit(1)
