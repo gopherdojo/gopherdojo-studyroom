@@ -31,8 +31,10 @@ func (img *ConvertImage) Do() {
 		err := os.Mkdir(img.OutputDirectory, 0777)
 		logError(err, "cannot create directory")
 	}
+	var filecount int
 	error := filepath.Walk(img.InputDirectory, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == "."+img.InputFormat {
+			filecount++
 			file, err := os.Open(path)
 			logError(err, "Cannot open file")
 			defer file.Close()
@@ -57,6 +59,10 @@ func (img *ConvertImage) Do() {
 		}
 		return nil
 	})
+	if filecount == 0 {
+		fmt.Fprintf(os.Stderr, "Images of %v was not found in %v directory\n", img.InputFormat, img.InputDirectory)
+		os.Exit(1)
+	}
 	logError(error, "Error on filepath.Walk")
 	fmt.Println("Succuessfully convert image files")
 	fmt.Printf("Check %s directory\n", img.OutputDirectory)
