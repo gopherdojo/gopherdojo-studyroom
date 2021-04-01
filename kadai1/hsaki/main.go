@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	"hsaki/convert"
 )
@@ -15,8 +17,16 @@ var (
 
 func main() {
 	flag.Parse()
-	cvt := convert.NewConverter(*srcDir, *dstDir, *bExt, *aExt)
-	cvt.Do()
+	cvt, err := convert.NewConverter(*srcDir, *dstDir, *bExt, *aExt)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	err = cvt.Do()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
 	//fmt.Println(os.Args)
 
