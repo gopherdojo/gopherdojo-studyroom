@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/options"
 )
 
 type Download struct {
@@ -16,6 +17,7 @@ type Download struct {
 	URLs     []string
 	args     []string
 	timeout  int
+	filename string
 }
 
 func New() *Download {
@@ -26,7 +28,45 @@ func New() *Download {
 }
 
 func (d *Download) Run() error {
+	if err := d.Ready(); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (d *Download) Ready() error {
+	opts, err := d.parseOptions(os.Args[1:])
+	if err != nil {
+		return errors.New("failed to parse command line args")
+	}
+	if opts.Parallel > 2 {
+		d.parallel = opts.Parallel
+	}
+	if opts.Timeout > 0 {
+		d.timeout = opts.Timeout
+	}
+	if opts.Output != "" {
+		d.filename = opts.Output
+	}
+	if err := d.parseURLs(); err != nil {
+		return errors.New("failed to parse of url")
+	}
+	return nil
+}
+
+func (d *Download) parseOptions(argv []string) (*options.Options, error) {
+	var opt options.Options
+	o, err := opt.Parse(argv)
+	if err != nil {
+		return nil, errors.New("failed to parse command line options")
+	}
+
+	if opt.Help {
+		os.Stdout.Write(opt.Usage())
+		return nil, errors.New("this is usage")
+	}
+	d.args = o
+	return &opt, nil
 }
 
 func (d *Download) parseURLs() error {

@@ -16,17 +16,17 @@ type Options struct {
 	Timeout  int    `short:"t" long:"timuout"`
 }
 
-func (opt *Options) parse(argv []string) ([]string, error) {
+func (opt *Options) Parse(argv []string) ([]string, error) {
 	p := flags.NewParser(opt, flags.PrintErrors)
 	args, err := p.ParseArgs(argv)
 	if err != nil {
-		os.Stderr.Write(opt.usage())
+		os.Stderr.Write(opt.Usage())
 		return nil, errors.New("it is not comand")
 	}
 	return args, nil
 }
 
-func (opt *Options) usage() []byte {
+func (opt *Options) Usage() []byte {
 	buf := bytes.Buffer{}
 	msg := "Pdownload 1.0.0, parallel file download client\n"
 	fmt.Fprintf(&buf, msg+

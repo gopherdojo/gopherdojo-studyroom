@@ -1,8 +1,8 @@
 TODO
 ===
 
-- [x] 基礎情報についてのstructを作る(分割数、URL、タイムアウト)
-- [x] 入力された情報が正しいか判断する(govalidateのIsURLが使えそう。),URL
+- [] 基礎情報についてのstructを作る(分割数、URL、タイムアウト)
+- [] 入力された情報が正しいか判断する(govalidateのIsURLが使えそう。),URL
 - [] バイト数を分割する(分割数はオプションで指定可能にしたい。デフォルトはruntime.NumCPU)
 - [] それでHTTP requestを送る。調べてみた結果、HTTPのコードは206が正しければ返ってくる。requestはhttp.Clientを使う。
 - [] それぞれダウンロードする
