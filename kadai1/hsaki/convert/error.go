@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// ConvErrorのErrフィールドにいれるエラーたち
 var ErrSrcDirPath = errors.New("invalid src directory path")
 var ErrDstDirPath = errors.New("invalid dst directory path")
 var ErrExt = errors.New("invalid file extension")
@@ -15,6 +16,7 @@ var ErrOutputPath = errors.New("cannot get output filepath for")
 var ErrOutputFile = errors.New("cannot create output file")
 var ErrEncodeFile = errors.New("cannot encode img file")
 
+// convertパッケージの公開関数・公開メソッドが返すエラーは全てこの形
 type ConvError struct {
 	Err      error
 	FilePath string

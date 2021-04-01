@@ -1,7 +1,6 @@
 package convert
 
 import (
-	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -9,12 +8,14 @@ import (
 	"path/filepath"
 )
 
+// flagToExtNamesでは、コマンドの-a, -bオプションで与えられた画像形式がどの拡張子に対応するのかをmapで関連づけたものです。
 var flagToExtNames map[string][]string = map[string][]string{
 	"png":  {".png"},
 	"jpg":  {".jpg", ".jpeg"},
 	"jpeg": {".jpeg", ".jpg"},
 }
 
+// []string型の引数slice中に、要素elemがあるかどうかを判定する関数
 func contains(slice []string, elem string) bool {
 	for _, s := range slice {
 		if s == elem {
@@ -25,9 +26,13 @@ func contains(slice []string, elem string) bool {
 }
 
 type converter struct {
+	// srcDirPath, dstDirPath ... それぞれ変換前、変換後の画像を配置するディレクトリの絶対パス
+	// bext, aext ... それぞれコマンドオプションで与えられた変換前、変換後の画像形式名
 	srcDirPath, dstDirPath, bext, aext string
 }
 
+// ユーザーがコマンドのフラグで与えられた値の正当性を検証した上で、
+// その値を内部にもつconverter構造体を生成するコンストラクタ
 func NewConverter(srcDir, dstDir, bExt, aExt string) (*converter, error) {
 	srcDirAbsPath, err := absPath(srcDir)
 	if err != nil {
@@ -50,7 +55,10 @@ func NewConverter(srcDir, dstDir, bExt, aExt string) (*converter, error) {
 	return &converter{srcDirAbsPath, dstDirAbsPath, bExt, aExt}, nil
 }
 
+// レシーバーcが持つ条件で画像変換を実行するメソッド
 func (c *converter) Do() error {
+	// -srcで指定したディレクトリ以下の画像に対し
+	// 再帰的に画像変換をする
 	err := filepath.Walk(c.srcDirPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -64,8 +72,6 @@ func (c *converter) Do() error {
 			if contains(flagToExtNames[c.bext], filepath.Ext(path)) {
 				c.convert(path)
 			}
-			fmt.Println(path)
-			//return errors.New("fooooo!")
 			return nil
 		})
 
@@ -75,7 +81,9 @@ func (c *converter) Do() error {
 	return nil
 }
 
+// レシーバーcが持つ条件で、pathで与えられた画像ファイルの変換を行うメソッド
 func (c *converter) convert(path string) error {
+	// srcファイルを開いてimage.Image型にデコードする
 	file, err := os.Open(path)
 	if err != nil {
 		return &ConvError{ErrOpenFile, path}
@@ -87,6 +95,7 @@ func (c *converter) convert(path string) error {
 		return &ConvError{ErrCreateImg, path}
 	}
 
+	// 出力先のディレクトリ・ファイルの準備をする
 	newFileName, err := c.getOutputFileName(path)
 	if err != nil {
 		return &ConvError{ErrOutputPath, path}
@@ -102,6 +111,7 @@ func (c *converter) convert(path string) error {
 	}
 	defer newfile.Close()
 
+	// 指定拡張子で画像をエンコードする
 	switch c.aext {
 	case "png":
 		err = png.Encode(newfile, img)
@@ -117,7 +127,14 @@ func (c *converter) convert(path string) error {
 	return nil
 }
 
-// 入力パスから出力パス(拡張子あり)を返す
+// pathで与えられた画像ファイルを画像変換したあとの結果を
+// どのパスのファイルに配置するかを得る
+//
+// (例)
+// /User/myname/pic配下の.png画像 → /User/myname/result配下に.jpg変換する場合
+//
+// 引数path: /User/myname/pic/hoge.png  →  結果返り値: /User/myname/result/hoge.jpg
+// 引数path: /User/myname/pic/dir/foo.png  →  結果返り値: /User/myname/result/dir/foo.jpg
 func (c *converter) getOutputFileName(path string) (string, error) {
 	rel, err := filepath.Rel(c.srcDirPath, path)
 	if err != nil {
