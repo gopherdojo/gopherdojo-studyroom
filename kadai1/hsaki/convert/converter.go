@@ -3,11 +3,26 @@ package convert
 import (
 	"fmt"
 	"image"
-	_ "image/jpeg"
+	"image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
 )
+
+var flagToExtNames map[string][]string = map[string][]string{
+	"png":  {".png"},
+	"jpg":  {".jpg", ".jpeg"},
+	"jpeg": {".jpeg", ".jpg"},
+}
+
+func contains(slice []string, elem string) bool {
+	for _, s := range slice {
+		if s == elem {
+			return true
+		}
+	}
+	return false
+}
 
 type converter struct {
 	srcDirPath, dstDirPath, bext, aext string
@@ -29,7 +44,7 @@ func (c *converter) Do() {
 				return nil
 			}
 
-			if filepath.Ext(path) == ".jpg" {
+			if contains(flagToExtNames[c.bext], filepath.Ext(path)) {
 				c.convert(path)
 			}
 			return nil
@@ -54,22 +69,29 @@ func (c *converter) convert(path string) {
 		return
 	}
 
+	newFileName := c.getOutputFileName(path)
+	newFileDirName := filepath.Dir(newFileName)
+	if err := os.MkdirAll(newFileDirName, 0777); err != nil {
+		fmt.Println("3err: ", err)
+	}
+
+	newfile, _ := os.Create(newFileName)
+	defer newfile.Close()
+
 	switch c.aext {
 	case "png":
-		newFileName := c.getOutputFileName(path) + ".png"
-		newFileDirName := filepath.Dir(newFileName)
-		if err := os.MkdirAll(newFileDirName, 0777); err != nil {
-			fmt.Println("3err: ", err)
-		}
-
-		newfile, _ := os.Create(newFileName)
-		defer newfile.Close()
 		png.Encode(newfile, img)
+	case "jpg", "jpeg":
+		jpeg.Encode(newfile, img, &jpeg.Options{Quality: 75})
 	}
 }
 
-// 入力パスから出力パス(拡張子なし)を返す
+// 入力パスから出力パス(拡張子あり)を返す
 func (c *converter) getOutputFileName(path string) string {
 	rel, _ := filepath.Rel(c.srcDirPath, path)
-	return removeFileExt(filepath.Join(c.dstDirPath, rel))
+	fNameWithoutExt := removeFileExt(filepath.Join(c.dstDirPath, rel))
+
+	newExt := flagToExtNames[c.aext][0]
+
+	return fNameWithoutExt + newExt
 }
