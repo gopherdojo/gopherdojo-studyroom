@@ -1,27 +1,20 @@
 package download
 
 import (
-	"fmt"
-	"io/ioutil"
+	"errors"
 	"net/http"
-	"os"
+	"strconv"
 )
 
-func Get(url string) error {
-	req, err := http.NewRequest("GET", url, nil)
+func GetContentLength(url string) (size int, err error) {
+	res, err := http.Head(url)
 	if err != nil {
-		return err
+		return 0, err
 	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
+	cl, ok := res.Header["Content-Length"]
+	if !ok {
+		return 0, errors.New("Content-Length does not be found\n")
 	}
-	b, err := ioutil.ReadAll(res.Body)
-	defer res.Body.Close()
-	if err != nil {
-		return err
-	}
-	fmt.Fprintf(os.Stdout, "body:%s", b)
-	return nil
+	size, err = strconv.Atoi(cl[0])
+	return
 }
