@@ -1,6 +1,6 @@
 TODO
 ===
-- [] GET requestを送ってみる
+- [x] GET requestを送ってみる
 - [] ダウンロードしたものをファイルにする
 - [] HEADでコンテンツのサイズを確認する
 - [] range requestの実装
