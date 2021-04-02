@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/options"
@@ -16,7 +17,7 @@ type Download struct {
 	parallel int
 	URLs     []string
 	args     []string
-	timeout  int
+	timeout  time.Duration
 	filename string
 }
 
@@ -29,6 +30,12 @@ func New() *Download {
 
 func (d *Download) Run() error {
 	if err := d.Ready(); err != nil {
+		return err
+	}
+	if err := d.Download(); err != nil {
+		return err
+	}
+	if err := d.MergeFiles(); err != nil {
 		return err
 	}
 	return nil
@@ -51,6 +58,14 @@ func (d *Download) Ready() error {
 	if err := d.parseURLs(); err != nil {
 		return errors.New("failed to parse of url")
 	}
+	return nil
+}
+
+func (d *Download) Download() error {
+	return nil
+}
+
+func (d *Download) MergeFiles() error {
 	return nil
 }
 

@@ -5,15 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/jessevdk/go-flags"
 )
 
 type Options struct {
-	Help     bool   `short:"h" long:"help"`
-	Parallel int    `short:"p" long:"parallel"`
-	Output   string `short:"o" long:"output"`
-	Timeout  int    `short:"t" long:"timuout"`
+	Help     bool          `short:"h" long:"help"`
+	Parallel int           `short:"p" long:"parallel"`
+	Output   string        `short:"o" long:"output"`
+	Timeout  time.Duration `short:"t" long:"timuout"`
 }
 
 func (opt *Options) Parse(argv []string) ([]string, error) {
