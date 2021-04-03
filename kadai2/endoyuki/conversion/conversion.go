@@ -34,7 +34,7 @@ func Convert(diraName string, outDirectory string, beforeExt string, afterExt st
 			return err
 		}
 
-		out, err := os.Create(outDirectory + fileName + "." + afterExt)
+		out, err := os.Create(filepath.Join(outDirectory, fileName+"."+afterExt))
 		if err != nil {
 			return err
 		}
