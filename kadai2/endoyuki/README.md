@@ -6,6 +6,13 @@
 - テーブル駆動テストを行う
 - テストヘルパーを作ってみる
 
+### テストのカバレッジを取ってみる
+
+```bash
+$ go test -coverprofile=profile ./conversion/
+ok      endoyuki/conversion     0.385s  coverage: 73.5% of statements
+```
+
 ## コマンドの概要
 
 - ディレクトリを指定する
