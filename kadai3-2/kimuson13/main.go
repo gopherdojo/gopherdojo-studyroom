@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/download"
 )
@@ -13,5 +14,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "something happen: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("size: %v", size)
+	fmt.Printf("size: %v\n", size)
+	num := runtime.NumCPU()
+	fmt.Printf("NumCPU: %v\n", num)
+	parallel := size / num
+	fmt.Printf("Parallel: %v", parallel)
 }
