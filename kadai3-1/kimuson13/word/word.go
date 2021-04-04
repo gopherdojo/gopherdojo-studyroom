@@ -1,6 +1,11 @@
 package word
 
-var WordList = []string{
+import (
+	"math/rand"
+	"time"
+)
+
+var wordList = []string{
 	"cat",
 	"dog",
 	"rabbit",
@@ -52,4 +57,15 @@ var WordList = []string{
 	"flamingo",
 	"crocodile",
 	"panda",
+}
+
+func MakeQuiz() []string {
+	rand.Seed(time.Now().UnixNano())
+	quiz := rand.Perm(len(wordList))
+	var quizlist []string
+	for _, q := range quiz {
+		word := wordList[q]
+		quizlist = append(quizlist, word)
+	}
+	return quizlist
 }
