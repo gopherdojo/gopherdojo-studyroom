@@ -46,7 +46,7 @@ io.Reader を実装している型ならなんでもまとめられる。
 - コマンドライン引数がある場合：引数のパスのファイルの内容を読み取る。複数 OK。
 - io.Readerを使い抽象化することで、読み取り→表示の実装では読み取り先を意識しなくてよくなる
 
-ソース（import、エラー処理等は省略。全体は mycat.go 参照）
+ソース（import、エラー処理等は省略。全体は mycat/mycat.go 参照）
 
 ```go
 func main() {
@@ -70,7 +70,11 @@ func main() {
 
 	// io.Readerで抽象化しているのでここから先は読み取り元を意識しなくてもよい
 	buf := make([]byte, 128)
-	for n, err := reader.Read(buf); err != io.EOF; {
+	for {
+		n, err := reader.Read(buf)
+		if err == io.EOF {
+			break
+		}
 		os.Stdout.Write(buf[:n])
 	}
 }
