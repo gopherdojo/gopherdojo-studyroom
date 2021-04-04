@@ -23,7 +23,7 @@ func Convert(filename string, in, out Extension) error {
 	case "jpg", "jpeg", "png":
 		// nop
 	default:
-		return errors.New(" invalid input file extension")
+		return errors.New("invalid input file extension")
 	}
 
 	// check output file extension
@@ -31,7 +31,7 @@ func Convert(filename string, in, out Extension) error {
 	case "jpg", "jpeg", "png":
 		// nop
 	default: // error
-		return errors.New(" invalid input file extension")
+		return errors.New("invalid output file extension")
 	}
 
 	// read and decode file
@@ -48,7 +48,7 @@ func readImageFile(filename string, fileExt Extension) (image.Image, error) {
 	// openfile
 	fs, err := os.Open(filename)
 	if err != nil {
-		return nil, errors.New(" failed to open file")
+		return nil, errors.New("failed to open file")
 	}
 	defer fs.Close()
 
@@ -58,7 +58,7 @@ func readImageFile(filename string, fileExt Extension) (image.Image, error) {
 	} else if fileExt == "png" {
 		return png.Decode(fs)
 	} else {
-		return nil, errors.New(" invalid extension")
+		return nil, errors.New("invalid extension")
 	}
 }
 
@@ -78,6 +78,6 @@ func writeImageToFile(img image.Image, filename string, fileExt Extension) (err 
 	} else if fileExt == "png" {
 		return png.Encode(fs, img)
 	} else {
-		return errors.New(" invalid extension")
+		return errors.New("invalid extension")
 	}
 }
