@@ -86,6 +86,24 @@ func main() {
 
 ## テスト
 
+### 実行
+
+```sh
+$ cd imgcnv
+$ go test
+PASS
+ok      github.com/dai65527/gopherdojo-studyroom/kadai1/imgcnv  0.293s
+```
+
+### カバレッジ
+
+89.7%
+
+```sh
+$ go test -coverprofile=profile github.com/dai65527/gopherdojo-studyroom/kadai1/imgcnv 
+ok      github.com/dai65527/gopherdojo-studyroom/kadai1/imgcnv  0.707s  coverage: 89.7% of statements
+```
+
 ## 機能
 
 コマンドライン引数に指定したディレクトリ以下の画像ファイルを変換します。
