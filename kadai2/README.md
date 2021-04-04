@@ -50,14 +50,21 @@ io.Reader を実装している型ならなんでもまとめられる。
 
 ```go
 func main() {
-    // 読み取り元をio.Readerに代入する
+	flag.Parse()
+
+	// 読み取り元をio.Readerに代入する
 	var reader io.Reader
 	if len(flag.Args()) == 0 {
-		reader = os.Stdin       // 引数がない場合は標準入力から読み取る
+		reader = os.Stdin // 引数がない場合は標準入力から読み取る
 	} else {
 		for i := 0; i < len(flag.Args()); i++ {
-			fs, err := os.Open(flag.Args()[i])   // 引数がある場合はファイルから読み取る
-			reader = io.MultiReader(reader, fs)  // fsをio.Readerに抽象化することで、一つのreaderにまとめることができる
+			fs, err := os.Open(flag.Args()[i]) // 引数がある場合はファイルから読み取る
+			defer fs.Close()
+			if i == 0 {
+				reader = fs
+			} else {
+				reader = io.MultiReader(reader, fs) // fsをio.Readerに抽象化することで、一つのreaderにまとめることができる
+			}
 		}
 	}
 
