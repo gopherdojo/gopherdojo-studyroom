@@ -15,10 +15,7 @@ func Convert(diraName string, outDirectory string, beforeExt string, afterExt st
 	if err != nil {
 		return err
 	}
-
 	for _, file := range files {
-		fileName := getFileNameWithoutExt(file)
-
 		img, err := os.Open(file)
 		if err != nil {
 			return err
@@ -28,13 +25,11 @@ func Convert(diraName string, outDirectory string, beforeExt string, afterExt st
 				log.Fatal(err)
 			}
 		}()
-
 		config, _, err := image.Decode(img)
 		if err != nil {
 			return err
 		}
-
-		out, err := os.Create(filepath.Join(outDirectory, fileName+"."+afterExt))
+		out, err := os.Create(filepath.Join(outDirectory, getFileNameWithoutExt(file)+"."+afterExt))
 		if err != nil {
 			return err
 		}

@@ -27,7 +27,6 @@ func main() {
 	if len(args) != 2 {
 		log.Fatal("wrong number of arguments")
 	}
-
 	for i := 0; i < len(args); i++ {
 		err := existDir(args[i])
 		if err != nil {

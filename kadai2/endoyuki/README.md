@@ -10,7 +10,7 @@
 
 ```bash
 $ go test -coverprofile=profile ./conversion/
-ok      endoyuki/conversion     0.385s  coverage: 73.5% of statements
+ok      endoyuki/conversion     0.219s  coverage: 72.7% of statements
 ```
 
 ## コマンドの概要
