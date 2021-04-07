@@ -1,0 +1,8 @@
+convert
+profile
+*.png
+*.jpg
+*.jpeg
+!image.png
+!image.jpg
+!image.jpeg
