@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -40,9 +42,9 @@ func timer(ch chan<- int, timesec time.Duration) {
 
 // scanInput scans a word from console and write to channel
 func scanInput(ch chan<- string) {
-	var input string
-	fmt.Scan(&input)
-	ch <- input
+	sc := bufio.NewScanner(os.Stdin)
+	sc.Scan()
+	ch <- sc.Text()
 }
 
 func main() {
@@ -70,7 +72,7 @@ func main() {
 			// check input and add score
 			if word == input {
 				fmt.Println("OK :)")
-				score += 10
+				score += 1
 			} else {
 				fmt.Println("KO :(")
 			}
@@ -82,11 +84,11 @@ func main() {
 	}
 
 	// output results to console
-	fmt.Printf("Score: %d: ", score)
+	fmt.Printf("Score: %d/10: ", score)
 	switch {
-	case score >= 80:
+	case score >= 8:
 		fmt.Printf("Awesome :D\n")
-	case score >= 50:
+	case score >= 5:
 		fmt.Printf("OK :)\n")
 	default:
 		fmt.Printf("KO :(\n")
