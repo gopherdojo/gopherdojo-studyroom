@@ -8,15 +8,15 @@ type Typing struct {
 	Point int
 }
 
-func (t Typing) plus() {
+func (t *Typing) plus() {
 	t.Point += 1
 }
 
-func (t Typing) getPoint() int {
+func (t *Typing) getPoint() int {
 	return t.Point
 }
 
-func (t Typing) check(input string) bool {
+func (t *Typing) check(input string) bool {
 	if t.Word == input {
 		return true
 	} else {
@@ -24,7 +24,7 @@ func (t Typing) check(input string) bool {
 	}
 }
 
-func (t Typing) shuffle() {
+func (t *Typing) shuffle() {
 	i := rand.Intn(len(t.Words))
 	t.Word = t.Words[i]
 }

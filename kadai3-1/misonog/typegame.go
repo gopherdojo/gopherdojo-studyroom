@@ -12,17 +12,35 @@ func run() error {
 	in := input(os.Stdin)
 	timelimit := time.After(10 * time.Second)
 
+	words, err := importWords("word_list.txt")
+	if err != nil {
+		return err
+	}
+
+	typing := &Typing{Words: words}
+	typing.shuffle()
+
 	for {
+		fmt.Println(typing.Word)
 		fmt.Print(">")
 
 		select {
 		case word := <-in:
-			fmt.Println(word)
+			if typing.check(word) {
+				fmt.Println("+1")
+				fmt.Println()
+				typing.plus()
+			} else {
+				fmt.Println("Wrong input")
+				fmt.Println()
+			}
+			typing.shuffle()
+
 		case <-timelimit:
 			fmt.Println()
 			fmt.Println("-----")
 			fmt.Println("Finish!")
-			fmt.Printf("Result: %v points.\n", 5)
+			fmt.Printf("Result: %v points.\n", typing.getPoint())
 			return nil
 		}
 	}
@@ -41,10 +59,10 @@ func input(r io.Reader) <-chan string {
 }
 
 // textファイルを読み込んで、出題用wordのスライスを返す
-func importWords(fileName string) ([]string, error) {
+func importWords(filePath string) ([]string, error) {
 	var words []string
 
-	f, err := os.Open(fileName)
+	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
