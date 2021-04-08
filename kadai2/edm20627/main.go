@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edm20627/gopherdojo-studyroom/kadai1/edm20627/imageconvert"
+	"github.com/edm20627/gopherdojo-studyroom/kadai2/edm20627/imageconvert"
 )
 
 var ci = imageconvert.ConvertImage{}
