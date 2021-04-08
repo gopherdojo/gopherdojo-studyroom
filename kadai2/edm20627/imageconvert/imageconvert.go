@@ -14,13 +14,17 @@ import (
 var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
 
 type ConvertImage struct {
-	filepaths    []string
+	Filepaths    []string
 	From, To     string
 	DeleteOption bool
 }
 
 // Get the target files for image conversion.
 func (ci *ConvertImage) Get(dirs []string) error {
+	if len(dirs) == 0 {
+		return errors.New("Need to specify directory or file")
+	}
+
 	for _, dir := range dirs {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
@@ -30,7 +34,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 				if info.IsDir() || filepath.Ext(path)[1:] != ci.From {
 					return nil
 				}
-				ci.filepaths = append(ci.filepaths, path)
+				ci.Filepaths = append(ci.Filepaths, path)
 				return nil
 			})
 		if err != nil {
@@ -42,7 +46,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 
 // Perform image conversion.
 func (ci *ConvertImage) Convert() error {
-	for _, path := range ci.filepaths {
+	for _, path := range ci.Filepaths {
 		err := convert(path, ci.To, ci.DeleteOption)
 		if err != nil {
 			return err
