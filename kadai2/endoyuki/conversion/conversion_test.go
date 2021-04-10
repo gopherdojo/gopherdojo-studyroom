@@ -14,11 +14,11 @@ func TestConvert(t *testing.T) {
 		name  string
 		input args
 	}{
-		{name: "convert png from jpg", input: args{diraName: "../image", outDirectory: "../output", beforeExt: "jpg", afterExt: "png"}},
-		{name: "convert jpg from png", input: args{diraName: "../image", outDirectory: "../output", beforeExt: "png", afterExt: "jpg"}},
-		{name: "convert gif from jpg", input: args{diraName: "../image", outDirectory: "../output", beforeExt: "jpg", afterExt: "gif"}},
-		{name: "convert gif from png", input: args{diraName: "../image", outDirectory: "../output", beforeExt: "png", afterExt: "gif"}},
-		{name: "convert hoge from png", input: args{diraName: "../image", outDirectory: "../output", beforeExt: "png", afterExt: "hoge"}},
+		{name: "convert png from jpg", input: args{diraName: "../testdata", outDirectory: "../output", beforeExt: "jpg", afterExt: "png"}},
+		{name: "convert jpg from png", input: args{diraName: "../testdata", outDirectory: "../output", beforeExt: "png", afterExt: "jpg"}},
+		{name: "convert gif from jpg", input: args{diraName: "../testdata", outDirectory: "../output", beforeExt: "jpg", afterExt: "gif"}},
+		{name: "convert gif from png", input: args{diraName: "../testdata", outDirectory: "../output", beforeExt: "png", afterExt: "gif"}},
+		{name: "convert hoge from png", input: args{diraName: "../testdata", outDirectory: "../output", beforeExt: "png", afterExt: "hoge"}},
 	}
 	for _, c := range cases {
 		c := c
@@ -36,7 +36,7 @@ func TestGetFileNameWithoutExt(t *testing.T) {
 		input  string
 		output string
 	}{
-		{name: "get filename without ext", input: "./image/sample1.jpg", output: "sample"},
+		{name: "get filename without ext", input: "./testdata/sample1.jpg", output: "sample"},
 	}
 	for _, c := range cases {
 		c := c
