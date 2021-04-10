@@ -38,5 +38,5 @@ ok      endoyuki/conversion     0.219s  coverage: 72.7% of statements
 以下コマンドを実行する
 
 ```bash
-$ go run main.go ./image/ ./output/
+$ go run main.go ./testdata/ ./output/
 ```
