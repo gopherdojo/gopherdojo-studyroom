@@ -1,0 +1,68 @@
+package conversion
+
+import (
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
+	"log"
+	"os"
+	"path/filepath"
+)
+
+func Convert(diraName string, outDirectory string, beforeExt string, afterExt string) error {
+	files, err := filepath.Glob(filepath.Join(diraName, "*."+beforeExt))
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		img, err := os.Open(file)
+		if err != nil {
+			return err
+		}
+		defer func() {
+			if err := img.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+		config, _, err := image.Decode(img)
+		if err != nil {
+			return err
+		}
+		out, err := os.Create(filepath.Join(outDirectory, getFileNameWithoutExt(file)+"."+afterExt))
+		if err != nil {
+			return err
+		}
+		defer func() {
+			if err := out.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+
+		switch afterExt {
+		case "jpg":
+			err := jpeg.Encode(out, config, nil)
+			if err != nil {
+				return err
+			}
+		case "png":
+			err := png.Encode(out, config)
+			if err != nil {
+				return err
+			}
+		case "gif":
+			err := gif.Encode(out, config, nil)
+			if err != nil {
+				return err
+			}
+		default:
+			log.Printf("%v is an unsupported format", afterExt)
+			return nil
+		}
+	}
+	return nil
+}
+
+func getFileNameWithoutExt(path string) string {
+	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
+}

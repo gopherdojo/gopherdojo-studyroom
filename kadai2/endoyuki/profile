@@ -1,0 +1,26 @@
+mode: set
+endoyuki/conversion/conversion.go:13.93,15.16 2 1
+endoyuki/conversion/conversion.go:18.2,18.29 1 1
+endoyuki/conversion/conversion.go:63.2,63.12 1 1
+endoyuki/conversion/conversion.go:15.16,17.3 1 0
+endoyuki/conversion/conversion.go:18.29,20.17 2 1
+endoyuki/conversion/conversion.go:23.3,23.16 1 1
+endoyuki/conversion/conversion.go:28.3,29.17 2 1
+endoyuki/conversion/conversion.go:32.3,33.17 2 1
+endoyuki/conversion/conversion.go:36.3,36.16 1 1
+endoyuki/conversion/conversion.go:42.3,42.19 1 1
+endoyuki/conversion/conversion.go:20.17,22.4 1 0
+endoyuki/conversion/conversion.go:23.16,24.38 1 1
+endoyuki/conversion/conversion.go:24.38,26.5 1 0
+endoyuki/conversion/conversion.go:29.17,31.4 1 0
+endoyuki/conversion/conversion.go:33.17,35.4 1 0
+endoyuki/conversion/conversion.go:36.16,37.38 1 1
+endoyuki/conversion/conversion.go:37.38,39.5 1 0
+endoyuki/conversion/conversion.go:43.14,45.18 2 1
+endoyuki/conversion/conversion.go:48.14,50.18 2 1
+endoyuki/conversion/conversion.go:53.14,55.18 2 1
+endoyuki/conversion/conversion.go:58.11,60.14 2 1
+endoyuki/conversion/conversion.go:45.18,47.5 1 0
+endoyuki/conversion/conversion.go:50.18,52.5 1 0
+endoyuki/conversion/conversion.go:55.18,57.5 1 0
+endoyuki/conversion/conversion.go:66.48,68.2 1 1
