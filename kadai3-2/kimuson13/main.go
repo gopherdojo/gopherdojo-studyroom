@@ -1,22 +1,21 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/download"
 )
 
 func main() {
-	size, err := download.GetContentLength("https://www.naoshima.net/wp-content/uploads/2020/06/786619bb442b57802bccc419e9d2e381.pdf")
+	flag.Parse()
+	url := flag.Arg(0)
+	ctx := context.Background()
+	err := download.Run(url, ctx)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "something happen: %v", err)
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
-	fmt.Printf("size: %v\n", size)
-	num := runtime.NumCPU()
-	fmt.Printf("NumCPU: %v\n", num)
-	parallel := size / num
-	fmt.Printf("Parallel: %v", parallel)
 }
