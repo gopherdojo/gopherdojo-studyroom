@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 
@@ -10,12 +9,20 @@ import (
 )
 
 func main() {
-	flag.Parse()
-	url := flag.Arg(0)
-	ctx := context.Background()
-	err := download.Run(url, ctx)
+	err := setup(os.Args[1:])
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
+}
+
+func setup(args []string) error {
+	var options download.Options
+	ctx := context.Background()
+	opts, err := options.Parse(args)
+	if err != nil {
+		return err
+	}
+
+	return download.New(opts).Run(ctx)
 }
