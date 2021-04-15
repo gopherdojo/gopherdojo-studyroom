@@ -1,11 +1,22 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"reflect"
 	"testing"
 )
+
+func TestInput(t *testing.T) {
+	t.Parallel()
+	buf := bytes.NewBufferString("test")
+	expected := "test"
+	actual := <-input(buf)
+	if actual != expected {
+		t.Errorf(`expected="%s" actual="%s"`, expected, actual)
+	}
+}
 
 func TestImportWords(t *testing.T) {
 	t.Helper()
