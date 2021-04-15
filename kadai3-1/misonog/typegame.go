@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-func run() error {
-	in := input(os.Stdin)
+func run(in <-chan string, w io.Writer) error {
+	// in := input(os.Stdin)
 	timelimit := time.After(10 * time.Second)
 
 	words, err := importWords("word_list.txt")
@@ -21,7 +21,8 @@ func run() error {
 	typing.shuffle()
 
 	for {
-		fmt.Println(typing.Word)
+		fmt.Fprintln(w, typing.Word)
+		// fmt.Println(typing.Word)
 		fmt.Print(">")
 
 		select {
