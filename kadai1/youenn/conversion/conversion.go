@@ -28,7 +28,7 @@ func IsSupported(tp string) bool {
 }
 
 //check if two type names are actually same type
-func IsSameType(tp1 string, tp2 string) bool {
+func IsConvertible(tp1 string, tp2 string) bool {
 	if !IsSupported(tp1) || !IsSupported(tp2) {
 		return false
 	}
@@ -36,7 +36,7 @@ func IsSameType(tp1 string, tp2 string) bool {
 }
 
 //Convert a picture from one type to another type
-func ConvertPic(info ConvertInfo) bool {
+func ConvertPic(info ConvertInfo) error {
 	var srcImage image.Image
 	path := info.path
 	newFileName := strings.TrimSuffix(path, filepath.Ext(path)) + "." + PicType2String[info.dst]
@@ -45,7 +45,7 @@ func ConvertPic(info ConvertInfo) bool {
 	srcFile, err := os.Open(path)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Cannot open "+path)
-		return false
+		return err
 	}
 	defer srcFile.Close()
 
@@ -53,22 +53,26 @@ func ConvertPic(info ConvertInfo) bool {
 	switch PicType2String[info.src] {
 	case "jpeg", "jpg":
 		srcImage, err = jpeg.Decode(srcFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, path + " encode error")
+			return err
+		}
 	case "png":
 		srcImage, err = png.Decode(srcFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, path + " encode error")
+			return err
+		}
 	default:
 		fmt.Fprintln(os.Stderr, "Parameter error.")
-		return false
-	}
-	if err != nil {
-		fmt.Fprintln(os.Stderr, path+" decode error")
-		return false
+		return err
 	}
 
 	//Open Destination file
 	dstFile, err := os.Create(newFileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot create "+newFileName)
-		return false
+		return err
 	}
 	defer dstFile.Close()
 
@@ -76,14 +80,22 @@ func ConvertPic(info ConvertInfo) bool {
 	switch PicType2String[info.dst] {
 	case "jpeg":
 		err = jpeg.Encode(dstFile, srcImage, nil)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot encode " + newFileName)
+			return err
+		}
 	case "png":
 		err = png.Encode(dstFile, srcImage)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot encode " + newFileName)
+			return err
+		}
 	default:
 		fmt.Fprintln(os.Stderr, "Parameter error.")
-		return false
+		return err
 	}
 
-	return true
+	return nil
 }
 
 //recursively walk through a directory, convert picture from src type to dst type
@@ -93,14 +105,18 @@ func WalkConvert(targetPath string, src string, dst string) int {
 	err := filepath.Walk(targetPath,
 		func(path string, info os.FileInfo, err error) error {
 			ext := fileutil.GetPureExt(path)
-			if IsSameType(ext, src) {
-				success := ConvertPic(ConvertInfo{path: path, src: SupportedFormat[src], dst: SupportedFormat[dst]})
-				if success {
-					cnt++
-					if errDelete := os.Remove(path); errDelete != nil {
-						fmt.Fprintln(os.Stderr, "fail to delete "+path)
-					}
-				}
+			if !IsConvertible(ext, src) {
+				return nil
+			}
+
+			err = ConvertPic(ConvertInfo{path: path, src: SupportedFormat[src], dst: SupportedFormat[dst]})
+			if err != nil {
+				return err
+			}
+
+			cnt++
+			if errDelete := os.Remove(path); errDelete != nil {
+				fmt.Fprintln(os.Stderr, "fail to delete "+path)
 			}
 			return nil
 		})

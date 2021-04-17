@@ -27,9 +27,9 @@ func IsDir(path string) bool {
 }
 
 //Get file extension without .
-func GetPureExt(path string) string{
+func GetPureExt(path string) string {
 	ext := filepath.Ext(path)
-	if len(ext) > 0{
+	if len(ext) > 0 {
 		ext = ext[1:]
 	}
 	return ext
