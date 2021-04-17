@@ -84,38 +84,6 @@ func (d *Downloader) Download(contentLength int, ctx context.Context) error {
 	return nil
 }
 
-//func Download(url string, contentLength, parallel int, ctx context.Context) error {
-//	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-//	defer cancel()
-//
-//	if err := os.Mkdir("tempdir", 0755); err != nil {
-//		return err
-//	}
-//
-//	split := contentLength / parallel
-//	grp, ctx := errgroup.WithContext(ctx)
-//	for i := 0; i < parallel; i++ {
-//		r := MakeRange(i, split, parallel, contentLength)
-//		tempfile := fmt.Sprintf("tempdir/tempfile.%d.%d", parallel, r.number)
-//		file, err := os.Create(tempfile)
-//		if err != nil {
-//			return err
-//		}
-//		defer file.Close()
-//		filename := file.Name()
-//		grp.Go(func() error {
-//			err := Requests(r, url, filename)
-//			return err
-//		})
-//	}
-//
-//	if err := grp.Wait(); err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
-
 func (d *Downloader) checkContentLength(ctx context.Context) (int, error) {
 	fmt.Fprintf(os.Stdout, "Start HEAD request to check Content-Length\n")
 
@@ -147,38 +115,6 @@ func (d *Downloader) checkContentLength(ctx context.Context) (int, error) {
 
 	return contentLength, nil
 }
-
-//func checkContentLength(url string, ctx context.Context) (int, error) {
-//	fmt.Fprintf(os.Stdout, "Start HEAD request to check Content-Length\n")
-//
-//	req, err := http.NewRequest("HEAD", url, nil)
-//	if err != nil {
-//		return 0, err
-//	}
-//	req = req.WithContext(ctx)
-//
-//	res, err := http.DefaultClient.Do(req)
-//	if err != nil {
-//		return 0, err
-//	}
-//
-//	acceptRange := res.Header.Get("Accept-Ranges")
-//	fmt.Fprintf(os.Stdout, "got: Accept-Ranges: %s\n", acceptRange)
-//	if acceptRange == "" {
-//		return 0, errors.New("Accept-Range is not bytes")
-//	}
-//	if acceptRange != "bytes" {
-//		return 0, errors.New("it is not content")
-//	}
-//
-//	contentLength := int(res.ContentLength)
-//	fmt.Fprintf(os.Stdout, "got: Content-Length: %v\n", contentLength)
-//	if contentLength < 1 {
-//		return 0, errors.New("it does not have Content-Length")
-//	}
-//
-//	return contentLength, nil
-//}
 
 func MakeRange(i, split, parallel, contentLength int) Range {
 	low := split * i

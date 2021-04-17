@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/download"
+	"github.com/kimuson13/gopherdojo-studyroom/kimuson13/interrupt"
 )
 
 func main() {
@@ -19,6 +20,9 @@ func main() {
 func setup(args []string) error {
 	var options download.Options
 	ctx := context.Background()
+	ctx, cancel := interrupt.Listen(ctx)
+	defer cancel()
+
 	opts, err := options.Parse(args)
 	if err != nil {
 		return err
