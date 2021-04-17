@@ -13,6 +13,11 @@ import (
 // Supported extensions.
 var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
 
+var (
+	ErrNotSpecified = errors.New("Need to specify directory or file")
+	ErrMotDirectory = errors.New("Specify directory or file is not directory")
+)
+
 type ConvertImage struct {
 	Filepaths    []string
 	From, To     string
@@ -22,14 +27,14 @@ type ConvertImage struct {
 // Get the target files for image conversion.
 func (ci *ConvertImage) Get(dirs []string) error {
 	if len(dirs) == 0 {
-		return errors.New("Need to specify directory or file")
+		return ErrNotSpecified
 	}
 
 	for _, dir := range dirs {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
 				if info == nil {
-					return errors.New(path + " is not directory")
+					return ErrMotDirectory
 				}
 				if info.IsDir() || filepath.Ext(path)[1:] != ci.From {
 					return nil
