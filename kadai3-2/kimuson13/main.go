@@ -10,20 +10,21 @@ import (
 )
 
 func main() {
-	err := setup(os.Args[1:])
+	err := setUp(os.Args[1:])
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 }
 
-func setup(args []string) error {
+//setUp function preparate for running in main package
+func setUp(args []string) error {
 	var options download.Options
 	ctx := context.Background()
 	ctx, cancel := interrupt.Listen(ctx)
 	defer cancel()
 
-	opts, err := options.Parse(args)
+	opts, err := options.Parse(args...)
 	if err != nil {
 		return err
 	}

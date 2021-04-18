@@ -15,12 +15,13 @@ type Options struct {
 }
 
 // Parse method parses options
-func (opts *Options) Parse(args []string) (*Options, error) {
-	parallel := flag.Int("p", runtime.NumCPU(), "download files with parallel")
-	timeout := flag.Int("t", 30, "timeout for this second")
-	filename := flag.String("f", "paralleldownload", "save the fiel as this name")
-	flag.Parse()
-	u, err := url.Parse(flag.Arg(0))
+func (opts *Options) Parse(args ...string) (*Options, error) {
+	flg := flag.NewFlagSet("parallelDownload", flag.ExitOnError)
+	parallel := flg.Int("p", runtime.NumCPU(), "separate Content-Length with this argument")
+	timeout := flg.Int("t", 30, "timeout for this second")
+	filename := flg.String("f", "paralleldownload", "save the file as this name")
+	flg.Parse(args)
+	u, err := url.Parse(flg.Arg(0))
 	if err != nil {
 		return nil, err
 	}
