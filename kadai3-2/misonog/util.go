@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Data struct has file of relational data
 type Data struct {
@@ -8,6 +10,20 @@ type Data struct {
 	filesize     uint
 	dirname      string
 	fullfilename string
+}
+
+// Utils interface indicate function
+type Utils interface {
+	// like setter
+	SetFileName(string)
+	SetFileSize(uint)
+	SetFullFileName(string, string)
+
+	// like getter
+	FileName() string
+	FileSize() uint
+	DirName() string
+	FullFileName() string
 }
 
 // FileName get from Data structs member
@@ -48,5 +64,3 @@ func (d *Data) SetFullFileName(dir, filename string) {
 		d.fullfilename = fmt.Sprintf("%s/%s", dir, filename)
 	}
 }
-
-// TODO: URLFileName()とSetDirName()の実装が必要か検討
