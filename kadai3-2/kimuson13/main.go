@@ -13,6 +13,11 @@ func main() {
 	err := setUp(os.Args[1:])
 	if err != nil {
 		fmt.Println("Error:", err)
+		if f, err := os.Stat("tempdir"); os.IsExist(err) || f.IsDir() {
+			if err := os.RemoveAll("tempdir"); err != nil {
+				fmt.Println("Error:", err)
+			}
+		}
 		os.Exit(1)
 	}
 }
