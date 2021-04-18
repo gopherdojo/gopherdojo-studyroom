@@ -3,6 +3,7 @@ package interrupt
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +17,9 @@ func Listen(ctx context.Context) (context.Context, func()) {
 		select {
 		case <-ch:
 			fmt.Println("interrupt")
-			os.RemoveAll("tempdir")
+			if err := os.RemoveAll("tempdir"); err != nil {
+				log.Fatal("Error:", err)
+			}
 			cancel()
 		}
 	}()
