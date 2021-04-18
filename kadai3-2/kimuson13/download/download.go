@@ -12,6 +12,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// Donwnloader struct
 type Downloader struct {
 	parallel int
 	timeout  int
@@ -19,12 +20,14 @@ type Downloader struct {
 	url      string
 }
 
+// Rnage struct
 type Range struct {
 	low    int
 	high   int
 	number int
 }
 
+// New for download package
 func New(opts *Options) *Downloader {
 	return &Downloader{
 		parallel: opts.Parallel,
@@ -34,6 +37,7 @@ func New(opts *Options) *Downloader {
 	}
 }
 
+// Run excecute method in download package
 func (d *Downloader) Run(ctx context.Context) error {
 	if err := d.Preparate(); err != nil {
 		return err
@@ -55,6 +59,7 @@ func (d *Downloader) Run(ctx context.Context) error {
 	return nil
 }
 
+//Preparate method define the variables to Donwload
 func (d *Downloader) Preparate() error {
 	if d.parallel < 1 {
 		d.parallel = 2
@@ -67,6 +72,7 @@ func (d *Downloader) Preparate() error {
 	return nil
 }
 
+// CheckContentLength method gets the Content-Length want to download
 func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
 	fmt.Fprintf(os.Stdout, "Start HEAD request to check Content-Length\n")
 
@@ -99,6 +105,7 @@ func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
 	return contentLength, nil
 }
 
+// Download method does split-download with goroutine
 func (d *Downloader) Download(contentLength int, ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(d.timeout)*time.Second)
 	defer cancel()
@@ -132,6 +139,7 @@ func (d *Downloader) Download(contentLength int, ctx context.Context) error {
 	return nil
 }
 
+// MakeRange function distributes Content-Length for split-download
 func MakeRange(i, split, parallel, contentLength int) Range {
 	low := split * i
 	high := low + split - 1
@@ -146,6 +154,7 @@ func MakeRange(i, split, parallel, contentLength int) Range {
 	}
 }
 
+// Requests function sends GET request
 func Requests(r Range, url, filename string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -177,6 +186,7 @@ func Requests(r Range, url, filename string) error {
 	return nil
 }
 
+// MergeFile method merges tempfiles to new file
 func (d *Downloader) MergeFile(parallel, contentLength int) error {
 	fmt.Println("\nmerging files...")
 	filename := d.filename

@@ -9,6 +9,7 @@ import (
 	"syscall"
 )
 
+// Listen function check canceled or not
 func Listen(ctx context.Context) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 	ch := make(chan os.Signal)

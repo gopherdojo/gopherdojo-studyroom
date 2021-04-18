@@ -6,6 +6,7 @@ import (
 	"runtime"
 )
 
+// Options struct
 type Options struct {
 	Parallel int
 	Timeout  int
@@ -13,6 +14,7 @@ type Options struct {
 	URL      string
 }
 
+// Parse method parses options
 func (opts *Options) Parse(args []string) (*Options, error) {
 	parallel := flag.Int("p", runtime.NumCPU(), "download files with parallel")
 	timeout := flag.Int("t", 30, "timeout for this second")
