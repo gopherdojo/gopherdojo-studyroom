@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Start(r io.Reader, w io.Writer, words []string, gameTime time.Duration) {
+func Start(r io.Reader, w io.Writer, words []string, gameTime time.Duration) int {
 	var score int
 	timeLimit := time.After(gameTime)
 	ch := input(r)
@@ -28,6 +28,7 @@ L:
 		}
 	}
 	fmt.Fprintln(w, "score: ", score)
+	return score
 }
 
 func input(r io.Reader) <-chan string {
