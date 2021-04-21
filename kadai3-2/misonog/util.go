@@ -14,6 +14,8 @@ type Data struct {
 
 // Utils interface indicate function
 type Utils interface {
+	MakeRange(uint, uint, uint) Range
+
 	// like setter
 	SetFileName(string)
 	SetFileSize(uint)
@@ -62,5 +64,20 @@ func (d *Data) SetFullFileName(dir, filename string) {
 		d.fullfilename = filename
 	} else {
 		d.fullfilename = fmt.Sprintf("%s/%s", dir, filename)
+	}
+}
+
+// MakeRange will return Range struct to download function
+func (d *Data) MakeRange(i, split, procs uint) Range {
+	low := split * i
+	high := low + split - 1
+	if i == procs-1 {
+		high = d.FileSize()
+	}
+
+	return Range{
+		low:   low,
+		high:  high,
+		woker: i,
 	}
 }
