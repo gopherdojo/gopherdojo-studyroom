@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -34,7 +35,6 @@ func setUp() {
 	})
 
 	ts = httptest.NewServer(mux)
-	// defer ts.Close()
 }
 
 func tearDown() {
@@ -47,5 +47,30 @@ func TestCheck(t *testing.T) {
 
 	if err := p.Check(); err != nil {
 		t.Errorf("failed to check header: %s", err)
+	}
+}
+
+func TestDownload(t *testing.T) {
+	p := New()
+	p.URL = ts.URL
+	p.Utils = &Data{
+		filename: "header.jpg",
+		dirname:  "testdata/test_download",
+	}
+
+	if err := p.Check(); err != nil {
+		t.Errorf("failed to check header: %s", err)
+	}
+
+	if err := p.Download(); err != nil {
+		t.Errorf("failed to download: %s", err)
+	}
+
+	for i := 0; i < p.Procs; i++ {
+		filename := fmt.Sprintf("testdata/test_download/header.jpg.%d.%d", p.Procs, i)
+		_, err := os.Stat(filename)
+		if err != nil {
+			t.Errorf("file not exist: %s", err)
+		}
 	}
 }

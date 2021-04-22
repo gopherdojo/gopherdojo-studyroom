@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -49,12 +50,22 @@ func (p *Pdownload) Check() error {
 	return nil
 }
 
+// Download method distributes the task to each goroutine
 func (p *Pdownload) Download() error {
-	// procs := uint(p.Procs)
-	// filesize := p.FileSize()
+	procs := uint(p.Procs)
+	filesize := p.FileSize()
 
-	// split := filesize / procs
-	// grp, ctx := errgroup.WithContext(context.Background())
+	// calculate split file size
+	split := filesize / procs
+
+	grp, _ := errgroup.WithContext(context.Background())
+
+	p.Assignment(grp, procs, split)
+
+	// wait for Assignment method
+	if err := grp.Wait(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -134,23 +145,4 @@ func (p Pdownload) MakeResponse(r Range, url string) (*http.Response, error) {
 	}
 
 	return http.DefaultClient.Do(req)
-}
-
-func download(filename string, dirname string, url string) error {
-	res, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	filepath := fmt.Sprintf("%s/%s", dirname, filename)
-
-	out, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	io.Copy(out, res.Body)
-	return nil
 }
