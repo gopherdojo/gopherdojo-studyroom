@@ -74,3 +74,18 @@ func TestDownload(t *testing.T) {
 		}
 	}
 }
+
+// utils.goにあるメソッドをテストするのは違和感があるがこのファイルの中でテストを行う
+func TestMergeFiles(t *testing.T) {
+	p := New()
+	p.URL = ts.URL
+	p.Utils = &Data{
+		filename:     "header.jpg",
+		dirname:      "testdata/test_download",
+		fullfilename: "testdata/test_download/header.jpg",
+	}
+
+	if err := p.MergeFiles(p.Procs); err != nil {
+		t.Errorf("failed to MergeFiles: %s", err)
+	}
+}

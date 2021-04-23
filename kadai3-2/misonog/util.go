@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 )
 
 // Data struct has file of relational data
@@ -15,6 +17,7 @@ type Data struct {
 // Utils interface indicate function
 type Utils interface {
 	MakeRange(uint, uint, uint) Range
+	MergeFiles(int) error
 
 	// like setter
 	SetFileName(string)
@@ -80,4 +83,34 @@ func (d *Data) MakeRange(i, split, procs uint) Range {
 		high:  high,
 		woker: i,
 	}
+}
+
+// MergeFiles function merege file after split download
+func (d *Data) MergeFiles(procs int) error {
+	filename := d.filename
+	dirname := d.dirname
+
+	mergefile, err := os.Create(d.fullfilename)
+	if err != nil {
+		return err
+	}
+	defer mergefile.Close()
+
+	var f string
+	for i := 0; i < procs; i++ {
+		f = fmt.Sprintf("%s/%s.%d.%d", dirname, filename, procs, i)
+		subfp, err := os.Open(f)
+		if err != nil {
+			return err
+		}
+
+		io.Copy(mergefile, subfp)
+		subfp.Close()
+
+		if err := os.Remove(f); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
