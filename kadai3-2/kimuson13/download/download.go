@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -37,11 +38,31 @@ func New(opts *Options) *Downloader {
 	}
 }
 
-// Run excecute method in download package
-func (d *Downloader) Run(ctx context.Context) error {
-	if err := d.Preparate(); err != nil {
+func CreateTempdir() error {
+	if err := os.Mkdir("tempdir", 0755); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func DeleteTempdir() {
+	err := os.RemoveAll("tempdir")
+	if err != nil {
+		log.Println("can't remove the tempdir", err)
+	}
+}
+
+// Run excecute method in download package
+func (d *Downloader) Run(ctx context.Context) error {
+	if err := d.Validation(); err != nil {
+		return err
+	}
+
+	if err := CreateTempdir(); err != nil {
+		return err
+	}
+	defer DeleteTempdir()
 
 	contentLength, err := d.CheckContentLength(ctx)
 	if err != nil {
@@ -60,13 +81,13 @@ func (d *Downloader) Run(ctx context.Context) error {
 }
 
 //Preparate method define the variables to Donwload
-func (d *Downloader) Preparate() error {
+func (d *Downloader) Validation() error {
 	if d.parallel < 1 {
-		d.parallel = 2
+		return errors.New("the parallel number needs to be bigger than 1")
 	}
 
 	if d.timeout < 1 {
-		d.timeout = 5
+		return errors.New("the timeout needs to be bigeer than 1")
 	}
 
 	return nil
@@ -74,12 +95,15 @@ func (d *Downloader) Preparate() error {
 
 // CheckContentLength method gets the Content-Length want to download
 func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
-	fmt.Fprintf(os.Stdout, "Start HEAD request to check Content-Length\n")
+	if _, err := fmt.Fprintf(os.Stdout, "Start HEAD request to check Content-Length\n"); err != nil {
+		return 0, err
+	}
 
 	req, err := http.NewRequest("HEAD", d.url, nil)
 	if err != nil {
 		return 0, err
 	}
+
 	req = req.WithContext(ctx)
 
 	res, err := http.DefaultClient.Do(req)
@@ -88,16 +112,23 @@ func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
 	}
 
 	acceptRange := res.Header.Get("Accept-Ranges")
-	fmt.Fprintf(os.Stdout, "got: Accept-Ranges: %s\n", acceptRange)
+	if _, err := fmt.Fprintf(os.Stdout, "got: Accept-Ranges: %s\n", acceptRange); err != nil {
+		return 0, err
+	}
+
 	if acceptRange == "" {
 		return 0, errors.New("Accept-Range is not bytes")
 	}
+
 	if acceptRange != "bytes" {
 		return 0, errors.New("it is not content")
 	}
 
 	contentLength := int(res.ContentLength)
-	fmt.Fprintf(os.Stdout, "got: Content-Length: %v\n", contentLength)
+	if _, err := fmt.Fprintf(os.Stdout, "got: Content-Length: %v\n", contentLength); err != nil {
+		return 0, err
+	}
+
 	if contentLength < 1 {
 		return 0, errors.New("it does not have Content-Length")
 	}
@@ -110,22 +141,17 @@ func (d *Downloader) Download(contentLength int, ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(d.timeout)*time.Second)
 	defer cancel()
 
-	if err := os.Mkdir("tempdir", 0755); err != nil {
-		return err
-	}
-
 	parallel := d.parallel
 	split := contentLength / parallel
 	grp, ctx := errgroup.WithContext(ctx)
 	for i := 0; i < parallel; i++ {
 		r := MakeRange(i, split, parallel, contentLength)
 		tempfile := fmt.Sprintf("tempdir/tempfile.%d.%d", parallel, r.number)
-		file, err := os.Create(tempfile)
+		filename, err := CreateTempfile(tempfile)
 		if err != nil {
 			return err
 		}
-		defer file.Close()
-		filename := file.Name()
+
 		grp.Go(func() error {
 			err := Requests(r, d.url, filename)
 			return err
@@ -137,6 +163,22 @@ func (d *Downloader) Download(contentLength int, ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func CreateTempfile(name string) (string, error) {
+	file, err := os.Create(name)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Println("can't close the "+name, err)
+		}
+	}()
+
+	return file.Name(), nil
 }
 
 // MakeRange function distributes Content-Length for split-download
@@ -161,13 +203,21 @@ func Requests(r Range, url, filename string) error {
 		return err
 	}
 	req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", r.low, r.high))
-	fmt.Fprintf(os.Stdout, "start GET request: bytes=%d-%d\n", r.low, r.high)
+	if _, err := fmt.Fprintf(os.Stdout, "start GET request: bytes=%d-%d\n", r.low, r.high); err != nil {
+		return err
+	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return errors.New("error is here")
 	}
-	defer res.Body.Close()
+
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			log.Println("the response body can't close", err)
+		}
+	}()
 
 	if res.StatusCode != http.StatusPartialContent {
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
@@ -177,7 +227,12 @@ func Requests(r Range, url, filename string) error {
 	if err != nil {
 		return err
 	}
-	defer output.Close()
+	defer func() {
+		err := output.Close()
+		if err != nil {
+			log.Println("can't close the tempfile", err)
+		}
+	}()
 
 	_, err = io.Copy(output, res.Body)
 	if err != nil {
@@ -194,24 +249,41 @@ func (d *Downloader) MergeFile(parallel, contentLength int) error {
 	if err != nil {
 		return err
 	}
-	defer fh.Close()
 
-	var n string
+	defer func() {
+		err := fh.Close()
+		if err != nil {
+			log.Println("can't close the download file!", err)
+		}
+	}()
+
 	for i := 0; i < parallel; i++ {
-		n = fmt.Sprintf("tempdir/tempfile.%d.%d", parallel, i)
-		sub, err := os.Open(n)
-		if err != nil {
+		if err := Merger(parallel, i, fh); err != nil {
 			return err
 		}
-		_, err = io.Copy(fh, sub)
-		if err != nil {
-			return err
-		}
-		sub.Close()
 	}
-	if err := os.RemoveAll("tempdir"); err != nil {
+
+	fmt.Println("complete parallel donwload")
+	return nil
+}
+
+func Merger(parallel, i int, fh *os.File) error {
+	f := fmt.Sprintf("tempdir/tempfile.%d.%d", parallel, i)
+	sub, err := os.Open(f)
+	if err != nil {
 		return err
 	}
-	fmt.Println("complete parallel donwload!")
+
+	_, err = io.Copy(fh, sub)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err := sub.Close()
+		if err != nil {
+			log.Println("can't close the "+f, err)
+		}
+	}()
 	return nil
 }

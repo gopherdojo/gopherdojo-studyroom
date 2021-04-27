@@ -20,7 +20,9 @@ func (opts *Options) Parse(args ...string) (*Options, error) {
 	parallel := flg.Int("p", runtime.NumCPU(), "separate Content-Length with this argument")
 	timeout := flg.Int("t", 30, "timeout for this second")
 	filename := flg.String("f", "paralleldownload", "save the file as this name")
-	flg.Parse(args)
+	if err := flg.Parse(args); err != nil {
+		return nil, err
+	}
 	u, err := url.Parse(flg.Arg(0))
 	if err != nil {
 		return nil, err
