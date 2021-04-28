@@ -1,6 +1,6 @@
 BINARY_NAME=pdownload
 
-all: build
+all: test build
 
 build:
 	go build -o $(BINARY_NAME)

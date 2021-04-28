@@ -2,7 +2,10 @@ package main
 
 import (
 	"errors"
+	"flag"
+	"fmt"
 	"net/url"
+	"os"
 	"runtime"
 )
 
@@ -24,6 +27,10 @@ func New() *Pdownload {
 }
 
 func (pdownload *Pdownload) Run() error {
+	if err := pdownload.Ready(); err != nil {
+		return err
+	}
+
 	if err := pdownload.Check(); err != nil {
 		return err
 	}
@@ -35,6 +42,29 @@ func (pdownload *Pdownload) Run() error {
 	if err := pdownload.Utils.MergeFiles(pdownload.Procs); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (pdownload *Pdownload) Ready() error {
+	var targetDir string
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	flag.StringVar(&targetDir, "d", pwd, "path to the directory to save the downloaded file, filename will be taken from url")
+	flag.Parse()
+
+	if err := pdownload.parseURL(flag.Args()); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(targetDir); os.IsNotExist(err) {
+		return fmt.Errorf("target directory is not exist: %v", err)
+	}
+	pdownload.TargetDir = targetDir
 
 	return nil
 }
