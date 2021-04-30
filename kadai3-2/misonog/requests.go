@@ -24,7 +24,7 @@ func isLastProc(i, procs uint) bool {
 }
 
 // Check method check be able to range access.
-func (p *Pdownload) Check() error {
+func (p *Pdownload) Check(dir string) error {
 	res, err := http.Head(p.URL)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (p *Pdownload) Check() error {
 	}
 	p.SetFileName(filename)
 	p.SetFullFileName(p.TargetDir, filename)
-	p.Utils.SetDirName(p.TargetDir)
+	p.Utils.SetDirName(dir)
 
 	p.SetFileSize(uint(res.ContentLength))
 

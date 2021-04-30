@@ -31,7 +31,13 @@ func (pdownload *Pdownload) Run() error {
 		return err
 	}
 
-	if err := pdownload.Check(); err != nil {
+	dir, err := os.MkdirTemp(pdownload.TargetDir, "")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(dir)
+
+	if err := pdownload.Check(dir); err != nil {
 		return err
 	}
 
