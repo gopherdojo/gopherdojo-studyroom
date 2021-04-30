@@ -24,18 +24,21 @@ func isLastProc(i, procs uint) bool {
 }
 
 // Check method check be able to range access.
-func (p *Pdownload) Check(dir string) error {
+func (p *Pdownload) Check(ctx context.Context, dir string) (context.Context, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	res, err := http.Head(p.URL)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.Header.Get("Accept-Ranges") != "bytes" {
-		return fmt.Errorf("not supported range access: %s", p.URL)
+		return nil, fmt.Errorf("not supported range access: %s", p.URL)
 	}
 
 	if res.ContentLength <= 0 {
-		return errors.New("invalid content length")
+		return nil, errors.New("invalid content length")
 	}
 
 	filename := p.Utils.FileName()
@@ -48,18 +51,18 @@ func (p *Pdownload) Check(dir string) error {
 
 	p.SetFileSize(uint(res.ContentLength))
 
-	return nil
+	return ctx, nil
 }
 
 // Download method distributes the task to each goroutine
-func (p *Pdownload) Download() error {
+func (p *Pdownload) Download(ctx context.Context) error {
 	procs := uint(p.Procs)
 	filesize := p.FileSize()
 
 	// calculate split file size
 	split := filesize / procs
 
-	grp, _ := errgroup.WithContext(context.Background())
+	grp, _ := errgroup.WithContext(ctx)
 
 	p.Assignment(grp, procs, split)
 

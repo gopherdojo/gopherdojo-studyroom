@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"net/url"
 	"os"
 	"runtime"
+
+	"github.com/misonog/gopherdojo-studyroom/kadai3-2/misonog/termination"
 )
 
 // Pdownload structs
@@ -27,6 +30,11 @@ func New() *Pdownload {
 }
 
 func (pdownload *Pdownload) Run() error {
+	ctx := context.Background()
+
+	ctx, clean := termination.Listen(ctx, os.Stdout)
+	defer clean()
+
 	if err := pdownload.Ready(); err != nil {
 		return err
 	}
@@ -35,13 +43,16 @@ func (pdownload *Pdownload) Run() error {
 	if err != nil {
 		return err
 	}
-	defer os.RemoveAll(dir)
+	clean = func() { os.RemoveAll(dir) }
+	defer clean()
+	termination.CleanFunc(clean)
 
-	if err := pdownload.Check(dir); err != nil {
+	ctx, err = pdownload.Check(ctx, dir)
+	if err != nil {
 		return err
 	}
 
-	if err := pdownload.Download(); err != nil {
+	if err := pdownload.Download(ctx); err != nil {
 		return err
 	}
 
