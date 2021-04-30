@@ -22,6 +22,7 @@ type Utils interface {
 	// like setter
 	SetFileName(string)
 	SetFileSize(uint)
+	SetDirName(string)
 	SetFullFileName(string, string)
 
 	// like getter
@@ -59,6 +60,11 @@ func (d *Data) SetFileName(filename string) {
 // SetFileSize set to Data structs member
 func (d *Data) SetFileSize(size uint) {
 	d.filesize = size
+}
+
+// SetDirName set to Data structs member
+func (d *Data) SetDirName(dir string) {
+	d.dirname = dir
 }
 
 // SetFullFileName set to Data structs member

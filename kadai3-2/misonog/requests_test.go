@@ -53,9 +53,9 @@ func TestCheck(t *testing.T) {
 func TestDownload(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
+	p.TargetDir = "testdata/test_download"
 	p.Utils = &Data{
 		filename: "header.jpg",
-		dirname:  "testdata/test_download",
 	}
 
 	if err := p.Check(); err != nil {

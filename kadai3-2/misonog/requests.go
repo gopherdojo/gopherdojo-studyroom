@@ -44,6 +44,7 @@ func (p *Pdownload) Check() error {
 	}
 	p.SetFileName(filename)
 	p.SetFullFileName(p.TargetDir, filename)
+	p.Utils.SetDirName(p.TargetDir)
 
 	p.SetFileSize(uint(res.ContentLength))
 
