@@ -12,20 +12,24 @@ import (
 	"github.com/misonog/gopherdojo-studyroom/kadai3-2/misonog/termination"
 )
 
+const TIMEOUT = 10
+
 // Pdownload structs
 type Pdownload struct {
 	Utils
 	URL       string
 	TargetDir string
 	Procs     int
+	timeout   int
 	useragent string
 	referer   string
 }
 
 func New() *Pdownload {
 	return &Pdownload{
-		Utils: &Data{},
-		Procs: runtime.NumCPU(), // default
+		Utils:   &Data{},
+		Procs:   runtime.NumCPU(), // default
+		timeout: TIMEOUT,
 	}
 }
 
@@ -65,6 +69,7 @@ func (pdownload *Pdownload) Run() error {
 
 func (pdownload *Pdownload) Ready() error {
 	var targetDir string
+	var timeout int
 
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -72,6 +77,7 @@ func (pdownload *Pdownload) Ready() error {
 	}
 
 	flag.StringVar(&targetDir, "d", pwd, "path to the directory to save the downloaded file, filename will be taken from url")
+	flag.IntVar(&timeout, "t", TIMEOUT, "timeout of checking request in seconds")
 	flag.Parse()
 
 	if err := pdownload.parseURL(flag.Args()); err != nil {
@@ -82,6 +88,7 @@ func (pdownload *Pdownload) Ready() error {
 		return fmt.Errorf("target directory is not exist: %v", err)
 	}
 	pdownload.TargetDir = targetDir
+	pdownload.timeout = timeout
 
 	return nil
 }

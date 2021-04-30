@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -25,7 +26,7 @@ func isLastProc(i, procs uint) bool {
 
 // Check method check be able to range access.
 func (p *Pdownload) Check(ctx context.Context, dir string) (context.Context, error) {
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(p.timeout)*time.Second)
 	defer cancel()
 
 	res, err := http.Head(p.URL)

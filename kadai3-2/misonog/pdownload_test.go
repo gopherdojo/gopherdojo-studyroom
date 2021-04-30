@@ -14,6 +14,8 @@ func TestRun(t *testing.T) {
 		"pdownload",
 		"-d",
 		"testdata/test_download",
+		"-t",
+		"30",
 		fmt.Sprintf("%s/%s", url, "header.jpg"),
 	}
 
