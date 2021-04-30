@@ -1,8 +1,31 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"testing"
 )
+
+// requests_test.goで作成しているテストサーバを利用してテストを行う
+func TestRun(t *testing.T) {
+	url := ts.URL
+
+	os.Args = []string{
+		"pdownload",
+		"-d",
+		"testdata/test_download",
+		fmt.Sprintf("%s/%s", url, "header.jpg"),
+	}
+
+	p := New()
+	if err := p.Run(); err != nil {
+		t.Errorf("failed to Run: %s", err)
+	}
+
+	if err := os.Remove(p.FullFileName()); err != nil {
+		t.Errorf("failed to remove of result file: %s", err)
+	}
+}
 
 func TestParseURL(t *testing.T) {
 
