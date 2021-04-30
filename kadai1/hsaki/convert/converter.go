@@ -46,20 +46,20 @@ type Converter struct {
 func NewConverter(srcDir, dstDir, bExt, aExt string) (*Converter, error) {
 	srcDirAbsPath, err := absPath(srcDir)
 	if err != nil {
-		return nil, &ConvError{ErrSrcDirPath, srcDir}
+		return nil, &ConvError{Err: err, Code: InValidSrcDirPath, FilePath: srcDir}
 	}
 
 	dstDirAbsPath, err := absPath(dstDir)
 	if err != nil {
-		return nil, &ConvError{ErrDstDirPath, dstDir}
+		return nil, &ConvError{Err: err, Code: InValidDstDirPath, FilePath: dstDir}
 	}
 
 	if _, ok := flagToExtNames[bExt]; !ok {
-		return nil, &ConvError{ErrExt, bExt}
+		return nil, &ConvError{Err: ErrExt, Code: InValidExt, FilePath: bExt}
 	}
 
 	if _, ok := flagToExtNames[aExt]; !ok {
-		return nil, &ConvError{ErrExt, aExt}
+		return nil, &ConvError{Err: ErrExt, Code: InValidExt, FilePath: aExt}
 	}
 
 	return &Converter{srcDirPath: srcDirAbsPath, dstDirPath: dstDirAbsPath, bext: bExt, aext: aExt}, nil
@@ -72,7 +72,7 @@ func (c *Converter) Do() error {
 	err := filepath.Walk(c.srcDirPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				return &ConvError{ErrAccessFile, path}
+				return &ConvError{Err: err, Code: FileAccessFail, FilePath: path}
 			}
 
 			if info.IsDir() {
@@ -99,28 +99,28 @@ func (c *Converter) convert(path string) error {
 	// srcファイルを開いてimage.Image型にデコードする
 	file, err := os.Open(path)
 	if err != nil {
-		return &ConvError{ErrOpenFile, path}
+		return &ConvError{Err: err, Code: FileOpenFail, FilePath: path}
 	}
 	defer file.Close()
 
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return &ConvError{ErrCreateImg, path}
+		return &ConvError{Err: err, Code: ImgCreateFail, FilePath: path}
 	}
 
 	// 出力先のディレクトリ・ファイルの準備をする
 	newFileName, err := c.getOutputFileName(path)
 	if err != nil {
-		return &ConvError{ErrOutputPath, path}
+		return &ConvError{Err: err, Code: InValidOutputPath, FilePath: path}
 	}
 	newFileDirName := filepath.Dir(newFileName)
 	if err := os.MkdirAll(newFileDirName, 0777); err != nil {
-		return &ConvError{ErrDstDirPath, c.dstDirPath}
+		return &ConvError{Err: err, Code: InValidDstDirPath, FilePath: c.dstDirPath}
 	}
 
 	newfile, err := os.Create(newFileName)
 	if err != nil {
-		return &ConvError{ErrOutputFile, newFileName}
+		return &ConvError{Err: err, Code: FileOutputFail, FilePath: newFileName}
 	}
 	defer func() {
 		err := newfile.Close()
@@ -134,12 +134,12 @@ func (c *Converter) convert(path string) error {
 	case PNG:
 		err = png.Encode(newfile, img)
 		if err != nil {
-			return &ConvError{ErrEncodeFile, newFileName}
+			return &ConvError{Err: err, Code: FileEncodeFail, FilePath: newFileName}
 		}
 	case JPG, JPEG:
 		err = jpeg.Encode(newfile, img, &jpeg.Options{Quality: 75})
 		if err != nil {
-			return &ConvError{ErrEncodeFile, newFileName}
+			return &ConvError{Err: err, Code: FileEncodeFail, FilePath: newFileName}
 		}
 	}
 	return nil
