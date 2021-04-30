@@ -6,4 +6,4 @@ build:
 	go build -o $(BINARY_NAME)
 
 test:
-	go test -v ./
+	go test -v ./...
