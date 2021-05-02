@@ -28,7 +28,10 @@ func TestGet(t *testing.T) {
 
 	for _, c := range success_cases {
 		for _, path := range c.expected {
-			testCreateImage(t, path, c.from)
+			err := testCreateImage(t, path, c.from)
+			if err != nil {
+				t.Fatal("Failed to create the test image")
+			}
 			defer testRemoveTestdata(t)
 		}
 	}
@@ -81,7 +84,10 @@ func TestConvert(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			for _, path := range c.filepaths {
-				testCreateImage(t, path, c.from)
+				err := testCreateImage(t, path, c.from)
+				if err != nil {
+					t.Fatal("Failed to create the test image")
+				}
 				defer testRemoveTestdata(t)
 			}
 			ci := imageconvert.ConvertImage{Filepaths: c.filepaths, To: c.to}
