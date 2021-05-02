@@ -56,7 +56,7 @@ func TestGet(t *testing.T) {
 		expected  error
 	}{
 		{name: "occurred ErrNotSpecified", dirs: []string{}, from: "jpg", expected: imageconvert.ErrNotSpecified},
-		{name: "occurred ErrMotDirectory", dirs: []string{"../non_testdata"}, from: "jpg", expected: imageconvert.ErrMotDirectory},
+		{name: "occurred ErrNotDirectory", dirs: []string{"../non_testdata"}, from: "jpg", expected: imageconvert.ErrNotDirectory},
 	}
 
 	for _, c := range failure_cases {

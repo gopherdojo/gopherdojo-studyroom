@@ -15,7 +15,7 @@ var SupportedFormat = []string{"png", "jpg", "jpeg", "gif"}
 
 var (
 	ErrNotSpecified = errors.New("Need to specify directory or file")
-	ErrMotDirectory = errors.New("Specify directory or file is not directory")
+	ErrNotDirectory = errors.New("Specify directory or file is not directory")
 )
 
 type ConvertImage struct {
@@ -34,7 +34,7 @@ func (ci *ConvertImage) Get(dirs []string) error {
 		err := filepath.Walk(dir,
 			func(path string, info os.FileInfo, err error) error {
 				if info == nil {
-					return ErrMotDirectory
+					return ErrNotDirectory
 				}
 				if info.IsDir() || filepath.Ext(path)[1:] != ci.From {
 					return nil
