@@ -62,16 +62,16 @@ func (ci *ConvertImage) Convert() error {
 
 // Check for supported extensions.
 func (ci *ConvertImage) Valid() bool {
+	var fromSupported, toSupported bool
 	for _, v := range SupportedFormat {
 		if v == ci.From {
-			for _, v := range SupportedFormat {
-				if v == ci.To {
-					return true
-				}
-			}
+			fromSupported = true
+		}
+		if v == ci.To {
+			toSupported = true
 		}
 	}
-	return false
+	return fromSupported && toSupported
 }
 
 func convert(path string, to string, deleteOption bool) error {
