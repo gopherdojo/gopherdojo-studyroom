@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"net/url"
 	"os"
@@ -33,13 +32,13 @@ func New() *Pdownload {
 	}
 }
 
-func (pdownload *Pdownload) Run() error {
+func (pdownload *Pdownload) Run(args []string, targetDir string, timeout int) error {
 	ctx := context.Background()
 
 	ctx, clean := termination.Listen(ctx, os.Stdout)
 	defer clean()
 
-	if err := pdownload.Ready(); err != nil {
+	if err := pdownload.Ready(args, targetDir, timeout); err != nil {
 		return err
 	}
 
@@ -67,20 +66,8 @@ func (pdownload *Pdownload) Run() error {
 	return nil
 }
 
-func (pdownload *Pdownload) Ready() error {
-	var targetDir string
-	var timeout int
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	flag.StringVar(&targetDir, "d", pwd, "path to the directory to save the downloaded file, filename will be taken from url")
-	flag.IntVar(&timeout, "t", TIMEOUT, "timeout of checking request in seconds")
-	flag.Parse()
-
-	if err := pdownload.parseURL(flag.Args()); err != nil {
+func (pdownload *Pdownload) Ready(args []string, targetDir string, timeout int) error {
+	if err := pdownload.parseURL(args); err != nil {
 		return err
 	}
 

@@ -9,18 +9,12 @@ import (
 // requests_test.goで作成しているテストサーバを利用してテストを行う
 func TestRun(t *testing.T) {
 	url := ts.URL
-
-	os.Args = []string{
-		"pdownload",
-		"-d",
-		"testdata/test_download",
-		"-t",
-		"30",
-		fmt.Sprintf("%s/%s", url, "header.jpg"),
-	}
+	args := []string{fmt.Sprintf("%s/%s", url, "header.jpg")}
+	targetDir := "testdata/test_download"
+	timeout := 30
 
 	p := New()
-	if err := p.Run(); err != nil {
+	if err := p.Run(args, targetDir, timeout); err != nil {
 		t.Errorf("failed to Run: %s", err)
 	}
 
