@@ -105,11 +105,13 @@ func TestValid(t *testing.T) {
 		to       string
 		expected bool
 	}{
-		{name: "jpg to png", from: "jpg", to: "png", expected: true},
-		{name: "png to jpg", from: "png", to: "jpg", expected: true},
-		{name: "jpeg to gif", from: "jpeg", to: "gif", expected: true},
-		{name: "gif to jpeg", from: "gif", to: "jpeg", expected: true},
-		{name: "hoge to fuga", from: "hoge", to: "fuga", expected: false},
+		{name: "jpg to png (true to true)", from: "jpg", to: "png", expected: true},
+		{name: "png to jpg (true to true)", from: "png", to: "jpg", expected: true},
+		{name: "jpeg to gif (true to true)", from: "jpeg", to: "gif", expected: true},
+		{name: "gif to jpeg (true to true)", from: "gif", to: "jpeg", expected: true},
+		{name: "jpg to fuga (true to false)", from: "jpg", to: "fuga", expected: false},
+		{name: "hoge to jpg (false to true)", from: "hoge", to: "jpg", expected: false},
+		{name: "hoge to fuga (false to false)", from: "hoge", to: "fuga", expected: false},
 	}
 
 	for _, c := range cases {
