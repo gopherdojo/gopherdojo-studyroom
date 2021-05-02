@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const TESTDIR = "testdata/test_download"
+const testDir = "testdata/test_download"
 
 var (
 	dir      string
@@ -43,7 +43,7 @@ func setUp() {
 
 	ts = httptest.NewServer(mux)
 
-	dir, mkdirErr = os.MkdirTemp(TESTDIR, "")
+	dir, mkdirErr = os.MkdirTemp(testDir, "")
 	if mkdirErr != nil {
 		panic(mkdirErr)
 	}
@@ -66,7 +66,7 @@ func TestCheck(t *testing.T) {
 func TestDownload(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
-	p.TargetDir = TESTDIR
+	p.TargetDir = testDir
 	p.Utils = &Data{
 		filename: "header.jpg",
 	}
@@ -94,7 +94,7 @@ func TestDownload(t *testing.T) {
 func TestMergeFiles(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
-	p.TargetDir = TESTDIR
+	p.TargetDir = testDir
 	p.Utils = &Data{
 		filename:     "header.jpg",
 		fullfilename: "testdata/test_download/header.jpg",
