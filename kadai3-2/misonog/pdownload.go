@@ -7,11 +7,10 @@ import (
 	"net/url"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/misonog/gopherdojo-studyroom/kadai3-2/misonog/termination"
 )
-
-const TIMEOUT = 10
 
 // Pdownload structs
 type Pdownload struct {
@@ -19,7 +18,7 @@ type Pdownload struct {
 	URL       string
 	TargetDir string
 	Procs     int
-	timeout   int
+	timeout   time.Duration
 	useragent string
 	referer   string
 }
@@ -28,11 +27,11 @@ func New() *Pdownload {
 	return &Pdownload{
 		Utils:   &Data{},
 		Procs:   runtime.NumCPU(), // default
-		timeout: TIMEOUT,
+		timeout: timeout,
 	}
 }
 
-func (pdownload *Pdownload) Run(args []string, targetDir string, timeout int) error {
+func (pdownload *Pdownload) Run(args []string, targetDir string, timeout time.Duration) error {
 	ctx := context.Background()
 
 	ctx, clean := termination.Listen(ctx, os.Stdout)
@@ -66,7 +65,7 @@ func (pdownload *Pdownload) Run(args []string, targetDir string, timeout int) er
 	return nil
 }
 
-func (pdownload *Pdownload) Ready(args []string, targetDir string, timeout int) error {
+func (pdownload *Pdownload) Ready(args []string, targetDir string, timeout time.Duration) error {
 	if err := pdownload.parseURL(args); err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 // requests_test.goで作成しているテストサーバを利用してテストを行う
@@ -11,7 +12,7 @@ func TestRun(t *testing.T) {
 	url := ts.URL
 	args := []string{fmt.Sprintf("%s/%s", url, "header.jpg")}
 	targetDir := "testdata/test_download"
-	timeout := 30
+	timeout := 30 * time.Second
 
 	p := New()
 	if err := p.Run(args, targetDir, timeout); err != nil {
