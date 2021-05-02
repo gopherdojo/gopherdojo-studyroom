@@ -31,9 +31,7 @@ func New() *Pdownload {
 	}
 }
 
-func (pdownload *Pdownload) Run(args []string, targetDir string, timeout time.Duration) error {
-	ctx := context.Background()
-
+func (pdownload *Pdownload) Run(ctx context.Context, args []string, targetDir string, timeout time.Duration) error {
 	ctx, clean := termination.Listen(ctx, os.Stdout)
 	defer clean()
 

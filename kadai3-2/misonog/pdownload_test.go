@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -9,13 +10,15 @@ import (
 
 // requests_test.goで作成しているテストサーバを利用してテストを行う
 func TestRun(t *testing.T) {
+	ctx := context.Background()
+
 	url := ts.URL
 	args := []string{fmt.Sprintf("%s/%s", url, "header.jpg")}
 	targetDir := "testdata/test_download"
 	timeout := 30 * time.Second
 
 	p := New()
-	if err := p.Run(args, targetDir, timeout); err != nil {
+	if err := p.Run(ctx, args, targetDir, timeout); err != nil {
 		t.Errorf("failed to Run: %s", err)
 	}
 

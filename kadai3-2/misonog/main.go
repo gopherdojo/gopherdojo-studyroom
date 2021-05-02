@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -10,6 +11,8 @@ import (
 const timeout = 10 * time.Second
 
 func main() {
+	ctx := context.Background()
+
 	var targetDir string
 	var timeout time.Duration
 
@@ -23,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	cli := New()
-	if err := cli.Run(flag.Args(), targetDir, timeout); err != nil {
+	if err := cli.Run(ctx, flag.Args(), targetDir, timeout); err != nil {
 		log.Fatal(err)
 	}
 }
