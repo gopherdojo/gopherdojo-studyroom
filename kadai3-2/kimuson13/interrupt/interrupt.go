@@ -18,8 +18,10 @@ func Listen(ctx context.Context) (context.Context, func()) {
 		select {
 		case <-ch:
 			fmt.Println("interrupt")
-			if err := os.RemoveAll("tempdir"); err != nil {
-				log.Fatal("Error:", err)
+			if f, err := os.Stat("tempdir"); os.IsExist(err) || f.IsDir() {
+				if err := os.RemoveAll("tempdir"); err != nil {
+					log.Fatal("err:", err)
+				}
 			}
 			cancel()
 		}

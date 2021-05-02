@@ -13,6 +13,14 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+var (
+	ErrValidateParallelism   = errors.New("the parallel number needs to be bigger than 1")
+	ErrValidateTimeout       = errors.New("the timeout needs to be bigeer than 0")
+	ErrNotIncludeRangeAccess = errors.New("the response does not include Accept-Range header")
+	ErrNotContent            = errors.New("it is not content")
+	ErrNoContentLength       = errors.New("it does not have Content-Length")
+)
+
 // Donwnloader struct
 type Downloader struct {
 	parallel int
@@ -82,12 +90,12 @@ func (d *Downloader) Run(ctx context.Context) error {
 
 //Preparate method define the variables to Donwload
 func (d *Downloader) Validation() error {
-	if d.parallel < 1 {
-		return errors.New("the parallel number needs to be bigger than 1")
+	if d.parallel <= 1 {
+		return ErrValidateParallelism
 	}
 
 	if d.timeout < 1 {
-		return errors.New("the timeout needs to be bigeer than 1")
+		return ErrValidateTimeout
 	}
 
 	return nil
@@ -117,11 +125,11 @@ func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
 	}
 
 	if acceptRange == "" {
-		return 0, errors.New("Accept-Range is not bytes")
+		return 0, ErrNotIncludeRangeAccess
 	}
 
 	if acceptRange != "bytes" {
-		return 0, errors.New("it is not content")
+		return 0, ErrNotContent
 	}
 
 	contentLength := int(res.ContentLength)
@@ -130,7 +138,7 @@ func (d *Downloader) CheckContentLength(ctx context.Context) (int, error) {
 	}
 
 	if contentLength < 1 {
-		return 0, errors.New("it does not have Content-Length")
+		return 0, ErrNoContentLength
 	}
 
 	return contentLength, nil
@@ -209,7 +217,7 @@ func Requests(r Range, url, filename string) error {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return errors.New("error is here")
+		return err
 	}
 
 	defer func() {
