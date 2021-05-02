@@ -62,9 +62,9 @@ func (p *Pdownload) Download(ctx context.Context) error {
 	// calculate split file size
 	split := filesize / procs
 
-	grp, _ := errgroup.WithContext(ctx)
+	grp, ctx := errgroup.WithContext(ctx)
 
-	p.Assignment(grp, procs, split)
+	p.Assignment(grp, ctx, procs, split)
 
 	// wait for Assignment method
 	if err := grp.Wait(); err != nil {
@@ -74,7 +74,7 @@ func (p *Pdownload) Download(ctx context.Context) error {
 	return nil
 }
 
-func (p Pdownload) Assignment(grp *errgroup.Group, procs, split uint) {
+func (p Pdownload) Assignment(grp *errgroup.Group, ctx context.Context, procs, split uint) {
 	filename := p.FileName()
 	dirname := p.DirName()
 
@@ -100,17 +100,18 @@ func (p Pdownload) Assignment(grp *errgroup.Group, procs, split uint) {
 
 		// execute get request
 		grp.Go(func() error {
-			return p.Requests(r, filename, dirname, p.URL)
+			return p.Requests(ctx, r, filename, dirname, p.URL)
 		})
 	}
 
 }
 
 // Requests method will download the file
-func (p Pdownload) Requests(r Range, filename, dirname, url string) error {
-	res, err := p.MakeResponse(r, url)
+func (p Pdownload) Requests(ctx context.Context, r Range, filename, dirname, url string) error {
+	res, err := p.MakeResponse(ctx, r, url)
 	if err != nil {
-		return fmt.Errorf("failed to split get requests: %d", r.woker)
+		// return fmt.Errorf("failed to split get requests: %d", r.woker)
+		return err
 	}
 	defer res.Body.Close()
 
@@ -130,9 +131,10 @@ func (p Pdownload) Requests(r Range, filename, dirname, url string) error {
 }
 
 // MakeResponse return *http.Respnse include context and range header
-func (p Pdownload) MakeResponse(r Range, url string) (*http.Response, error) {
+func (p Pdownload) MakeResponse(ctx context.Context, r Range, url string) (*http.Response, error) {
 	// create get request
 	req, err := http.NewRequest("GET", url, nil)
+	// req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split NewRequest for get: %d", r.woker)
 	}
