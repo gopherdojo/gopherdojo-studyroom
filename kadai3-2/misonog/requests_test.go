@@ -58,7 +58,7 @@ func TestCheck(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
 
-	if _, err := p.Check(context.Background(), dir); err != nil {
+	if err := p.Check(context.Background(), dir); err != nil {
 		t.Errorf("failed to check header: %s", err)
 	}
 }
@@ -71,12 +71,12 @@ func TestDownload(t *testing.T) {
 		filename: "header.jpg",
 	}
 
-	ctx, err := p.Check(context.Background(), dir)
+	err := p.Check(context.Background(), dir)
 	if err != nil {
 		t.Errorf("failed to check header: %s", err)
 	}
 
-	if err := p.Download(ctx); err != nil {
+	if err := p.Download(context.Background()); err != nil {
 		t.Errorf("failed to download: %s", err)
 	}
 
@@ -100,12 +100,12 @@ func TestMergeFiles(t *testing.T) {
 		fullfilename: "testdata/test_download/header.jpg",
 	}
 
-	ctx, err := p.Check(context.Background(), dir)
+	err := p.Check(context.Background(), dir)
 	if err != nil {
 		t.Errorf("failed to check header: %s", err)
 	}
 
-	if err := p.Download(ctx); err != nil {
+	if err := p.Download(context.Background()); err != nil {
 		t.Errorf("failed to download: %s", err)
 	}
 

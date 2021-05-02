@@ -32,6 +32,8 @@ func New() *Pdownload {
 }
 
 func (pdownload *Pdownload) Run(ctx context.Context, args []string, targetDir string, timeout time.Duration) error {
+	var cancel context.CancelFunc
+
 	ctx, clean := termination.Listen(ctx, os.Stdout)
 	defer clean()
 
@@ -47,7 +49,10 @@ func (pdownload *Pdownload) Run(ctx context.Context, args []string, targetDir st
 	defer clean()
 	termination.CleanFunc(clean)
 
-	ctx, err = pdownload.Check(ctx, dir)
+	ctx, cancel = context.WithTimeout(ctx, pdownload.timeout)
+	defer cancel()
+
+	err = pdownload.Check(ctx, dir)
 	if err != nil {
 		return err
 	}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 
+	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -24,21 +25,18 @@ func isLastProc(i, procs uint) bool {
 }
 
 // Check method check be able to range access.
-func (p *Pdownload) Check(ctx context.Context, dir string) (context.Context, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.timeout)
-	defer cancel()
-
-	res, err := http.Head(p.URL)
+func (p *Pdownload) Check(ctx context.Context, dir string) error {
+	res, err := ctxhttp.Head(ctx, http.DefaultClient, p.URL)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if res.Header.Get("Accept-Ranges") != "bytes" {
-		return nil, fmt.Errorf("not supported range access: %s", p.URL)
+		return fmt.Errorf("not supported range access: %s", p.URL)
 	}
 
 	if res.ContentLength <= 0 {
-		return nil, errors.New("invalid content length")
+		return errors.New("invalid content length")
 	}
 
 	filename := p.Utils.FileName()
@@ -51,7 +49,7 @@ func (p *Pdownload) Check(ctx context.Context, dir string) (context.Context, err
 
 	p.SetFileSize(uint(res.ContentLength))
 
-	return ctx, nil
+	return nil
 }
 
 // Download method distributes the task to each goroutine
@@ -133,8 +131,8 @@ func (p Pdownload) Requests(ctx context.Context, r Range, filename, dirname, url
 // MakeResponse return *http.Respnse include context and range header
 func (p Pdownload) MakeResponse(ctx context.Context, r Range, url string) (*http.Response, error) {
 	// create get request
-	req, err := http.NewRequest("GET", url, nil)
-	// req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	// req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split NewRequest for get: %d", r.woker)
 	}
