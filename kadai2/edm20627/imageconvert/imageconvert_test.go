@@ -1,7 +1,10 @@
 package imageconvert_test
 
 import (
+	"errors"
+	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/edm20627/gopherdojo-studyroom/kadai2/edm20627/imageconvert"
@@ -55,21 +58,40 @@ func TestGet(t *testing.T) {
 
 func TestConvert(t *testing.T) {
 	cases := []struct {
-		name      string
-		filepaths []string
-		from      string
-		to        string
+		name         string
+		filepaths    []string
+		from         string
+		to           string
+		deleteOption bool
 	}{
-		{name: "jpg to png", filepaths: []string{"../testdata/img_1.jpg"}, from: "jpg", to: "png"},
-		{name: "png to gif", filepaths: []string{"../testdata/img_2.png"}, from: "png", to: "gif"},
-		{name: "gif to jpg", filepaths: []string{"../testdata/img_3.gif"}, from: "gif", to: "jpg"},
+		{name: "jpg to png", filepaths: []string{"../testdata/img_1.jpg"}, from: "jpg", to: "png", deleteOption: false},
+		{name: "png to gif", filepaths: []string{"../testdata/img_2.png"}, from: "png", to: "gif", deleteOption: false},
+		{name: "gif to jpg", filepaths: []string{"../testdata/img_3.gif"}, from: "gif", to: "jpg", deleteOption: false},
+		{name: "jpg to png", filepaths: []string{"../testdata/img_1.jpg"}, from: "jpg", to: "png", deleteOption: true},
+		{name: "png to gif", filepaths: []string{"../testdata/img_2.png"}, from: "png", to: "gif", deleteOption: true},
+		{name: "gif to jpg", filepaths: []string{"../testdata/img_3.gif"}, from: "gif", to: "jpg", deleteOption: true},
 	}
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			ci := imageconvert.ConvertImage{Filepaths: c.filepaths, To: c.to}
+			imageconvert.OsRemove = func(path string) error {
+				for _, filepath := range c.filepaths {
+					if path == filepath {
+						return nil
+					}
+				}
+				return errors.New("failed to delete for conversion source image")
+			}
+
+			ci := imageconvert.ConvertImage{Filepaths: c.filepaths, To: c.to, DeleteOption: c.deleteOption}
 			if actual := ci.Convert(); actual != nil {
 				t.Error(actual)
+			}
+			for _, filepath := range c.filepaths {
+				targetFile := strings.Replace(filepath, c.from, c.to, 1)
+				if err := os.Remove(targetFile); err != nil {
+					t.Fatal(err)
+				}
 			}
 		})
 	}
