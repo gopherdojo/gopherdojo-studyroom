@@ -71,7 +71,7 @@ func (pdownload *Pdownload) Ready(args []string, targetDir string, timeout time.
 	}
 
 	if _, err := os.Stat(targetDir); os.IsNotExist(err) {
-		return fmt.Errorf("target directory is not exist: %v", err)
+		return fmt.Errorf("target directory is not exist: %w", err)
 	}
 	pdownload.TargetDir = targetDir
 	pdownload.timeout = timeout

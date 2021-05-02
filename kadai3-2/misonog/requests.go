@@ -123,7 +123,9 @@ func (p Pdownload) Requests(r Range, filename, dirname, url string) error {
 	}
 	defer output.Close()
 
-	io.Copy(output, res.Body)
+	if _, err := io.Copy(output, res.Body); err != nil {
+		return err
+	}
 
 	return nil
 }
