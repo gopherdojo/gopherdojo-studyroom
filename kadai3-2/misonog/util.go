@@ -18,36 +18,6 @@ type Data struct {
 type Utils interface {
 	MakeRange(uint, uint, uint) Range
 	MergeFiles(int) error
-
-	// like setter
-	SetFileName(string)
-	SetFileSize(uint)
-	SetDirName(string)
-	SetFullFileName(string, string)
-}
-
-// SetFileName set to Data structs member
-func (d *Data) SetFileName(filename string) {
-	d.filename = filename
-}
-
-// SetFileSize set to Data structs member
-func (d *Data) SetFileSize(size uint) {
-	d.filesize = size
-}
-
-// SetDirName set to Data structs member
-func (d *Data) SetDirName(dir string) {
-	d.dirname = dir
-}
-
-// SetFullFileName set to Data structs member
-func (d *Data) SetFullFileName(dir, filename string) {
-	if dir == "" {
-		d.fullfilename = filename
-	} else {
-		d.fullfilename = fmt.Sprintf("%s/%s", dir, filename)
-	}
 }
 
 // mergeFiles function merege file after split download
