@@ -15,12 +15,16 @@ import (
 // Pdownload structs
 type Pdownload struct {
 	Utils
-	URL       string
-	TargetDir string
-	Procs     int
-	timeout   time.Duration
-	useragent string
-	referer   string
+	URL          string
+	TargetDir    string
+	Procs        int
+	timeout      time.Duration
+	useragent    string
+	referer      string
+	filename     string
+	filesize     uint
+	dirname      string
+	fullfilename string
 }
 
 func New() *Pdownload {
@@ -61,7 +65,10 @@ func (pdownload *Pdownload) Run(ctx context.Context, args []string, targetDir st
 		return err
 	}
 
-	if err := pdownload.Utils.MergeFiles(pdownload.Procs); err != nil {
+	// if err := pdownload.Utils.MergeFiles(pdownload.Procs); err != nil {
+	// 	return err
+	// }
+	if err := mergeFiles(pdownload.Procs, pdownload.filename, pdownload.dirname, pdownload.fullfilename); err != nil {
 		return err
 	}
 
@@ -99,4 +106,27 @@ func (pdownload *Pdownload) parseURL(args []string) error {
 	}
 
 	return nil
+}
+
+func (pdownload *Pdownload) setFullFileName(dir, filename string) {
+	if dir == "" {
+		pdownload.fullfilename = filename
+	} else {
+		pdownload.fullfilename = fmt.Sprintf("%s/%s", dir, filename)
+	}
+}
+
+// makeRange will return Range struct to download function
+func (pdownload *Pdownload) makeRange(i, split, procs uint) Range {
+	low := split * i
+	high := low + split - 1
+	if i == procs-1 {
+		high = pdownload.filesize
+	}
+
+	return Range{
+		low:   low,
+		high:  high,
+		woker: i,
+	}
 }

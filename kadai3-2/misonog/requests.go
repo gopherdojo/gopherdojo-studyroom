@@ -43,11 +43,15 @@ func (p *Pdownload) Check(ctx context.Context, dir string) error {
 	if filename == "" {
 		filename = path.Base(p.URL)
 	}
-	p.SetFileName(filename)
-	p.SetFullFileName(p.TargetDir, filename)
-	p.Utils.SetDirName(dir)
+	// p.SetFileName(filename)
+	// p.SetFullFileName(p.TargetDir, filename)
+	// p.Utils.SetDirName(dir)
+	p.filename = filename
+	p.setFullFileName(p.TargetDir, filename)
+	p.dirname = dir
+	p.filesize = uint(res.ContentLength)
 
-	p.SetFileSize(uint(res.ContentLength))
+	// p.SetFileSize(uint(res.ContentLength))
 
 	return nil
 }
@@ -55,7 +59,8 @@ func (p *Pdownload) Check(ctx context.Context, dir string) error {
 // Download method distributes the task to each goroutine
 func (p *Pdownload) Download(ctx context.Context) error {
 	procs := uint(p.Procs)
-	filesize := p.FileSize()
+	// filesize := p.FileSize()
+	filesize := p.filesize
 
 	// calculate split file size
 	split := filesize / procs
@@ -73,14 +78,17 @@ func (p *Pdownload) Download(ctx context.Context) error {
 }
 
 func (p Pdownload) Assignment(grp *errgroup.Group, ctx context.Context, procs, split uint) {
-	filename := p.FileName()
-	dirname := p.DirName()
+	// filename := p.FileName()
+	// dirname := p.DirName()
+	filename := p.filename
+	dirname := p.dirname
 
 	for i := uint(0); i < procs; i++ {
 		partName := fmt.Sprintf("%s/%s.%d.%d", dirname, filename, procs, i)
 
 		// make range
-		r := p.Utils.MakeRange(i, split, procs)
+		// r := p.Utils.MakeRange(i, split, procs)
+		r := p.makeRange(i, split, procs)
 		if info, err := os.Stat(partName); err == nil {
 			infosize := uint(info.Size())
 			// check if the part is fully downloaded

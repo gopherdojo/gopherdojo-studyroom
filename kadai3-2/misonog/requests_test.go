@@ -82,7 +82,7 @@ func TestDownload(t *testing.T) {
 
 	for i := 0; i < p.Procs; i++ {
 		// filename := fmt.Sprintf("testdata/test_download/header.jpg.%d.%d", p.Procs, i)
-		filename := fmt.Sprintf(p.DirName()+"/header.jpg.%d.%d", p.Procs, i)
+		filename := fmt.Sprintf(p.dirname+"/header.jpg.%d.%d", p.Procs, i)
 		_, err := os.Stat(filename)
 		if err != nil {
 			t.Errorf("file not exist: %s", err)
@@ -109,7 +109,10 @@ func TestMergeFiles(t *testing.T) {
 		t.Errorf("failed to download: %s", err)
 	}
 
-	if err := p.MergeFiles(p.Procs); err != nil {
+	// if err := p.MergeFiles(p.Procs); err != nil {
+	// 	t.Errorf("failed to MergeFiles: %s", err)
+	// }
+	if err := mergeFiles(p.Procs, p.filename, p.dirname, p.fullfilename); err != nil {
 		t.Errorf("failed to MergeFiles: %s", err)
 	}
 }

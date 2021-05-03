@@ -22,7 +22,7 @@ func TestRun(t *testing.T) {
 		t.Errorf("failed to Run: %s", err)
 	}
 
-	if err := os.Remove(p.FullFileName()); err != nil {
+	if err := os.Remove(p.fullfilename); err != nil {
 		t.Errorf("failed to remove of result file: %s", err)
 	}
 }
