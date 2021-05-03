@@ -43,15 +43,10 @@ func (p *Pdownload) Check(ctx context.Context, dir string) error {
 	if filename == "" {
 		filename = path.Base(p.URL)
 	}
-	// p.SetFileName(filename)
-	// p.SetFullFileName(p.TargetDir, filename)
-	// p.Utils.SetDirName(dir)
 	p.filename = filename
 	p.setFullFileName(p.TargetDir, filename)
 	p.dirname = dir
 	p.filesize = uint(res.ContentLength)
-
-	// p.SetFileSize(uint(res.ContentLength))
 
 	return nil
 }
@@ -59,7 +54,6 @@ func (p *Pdownload) Check(ctx context.Context, dir string) error {
 // Download method distributes the task to each goroutine
 func (p *Pdownload) Download(ctx context.Context) error {
 	procs := uint(p.Procs)
-	// filesize := p.FileSize()
 	filesize := p.filesize
 
 	// calculate split file size
@@ -78,8 +72,6 @@ func (p *Pdownload) Download(ctx context.Context) error {
 }
 
 func (p Pdownload) Assignment(grp *errgroup.Group, ctx context.Context, procs, split uint) {
-	// filename := p.FileName()
-	// dirname := p.DirName()
 	filename := p.filename
 	dirname := p.dirname
 
@@ -87,7 +79,6 @@ func (p Pdownload) Assignment(grp *errgroup.Group, ctx context.Context, procs, s
 		partName := fmt.Sprintf("%s/%s.%d.%d", dirname, filename, procs, i)
 
 		// make range
-		// r := p.Utils.MakeRange(i, split, procs)
 		r := p.makeRange(i, split, procs)
 		if info, err := os.Stat(partName); err == nil {
 			infosize := uint(info.Size())
@@ -116,8 +107,7 @@ func (p Pdownload) Assignment(grp *errgroup.Group, ctx context.Context, procs, s
 func (p Pdownload) Requests(ctx context.Context, r Range, filename, dirname, url string) error {
 	res, err := p.MakeResponse(ctx, r, url)
 	if err != nil {
-		// return fmt.Errorf("failed to split get requests: %d", r.woker)
-		return err
+		return fmt.Errorf("failed to split get requests: %d", r.woker)
 	}
 	defer res.Body.Close()
 
@@ -139,7 +129,6 @@ func (p Pdownload) Requests(ctx context.Context, r Range, filename, dirname, url
 // MakeResponse return *http.Respnse include context and range header
 func (p Pdownload) MakeResponse(ctx context.Context, r Range, url string) (*http.Response, error) {
 	// create get request
-	// req, err := http.NewRequest("GET", url, nil)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split NewRequest for get: %d", r.woker)

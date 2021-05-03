@@ -28,7 +28,6 @@ func TestRun(t *testing.T) {
 }
 
 func TestParseURL(t *testing.T) {
-
 	cases := []struct {
 		name     string
 		input    []string

@@ -63,9 +63,6 @@ func (pdownload *Pdownload) Run(ctx context.Context, args []string, targetDir st
 		return err
 	}
 
-	// if err := pdownload.Utils.MergeFiles(pdownload.Procs); err != nil {
-	// 	return err
-	// }
 	if err := mergeFiles(pdownload.Procs, pdownload.filename, pdownload.dirname, pdownload.fullfilename); err != nil {
 		return err
 	}
