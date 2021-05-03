@@ -76,36 +76,7 @@ func (d *Data) SetFullFileName(dir, filename string) {
 	}
 }
 
-// MergeFiles function merege file after split download
-func (d *Data) MergeFiles(procs int) error {
-	filename := d.filename
-	dirname := d.dirname
-
-	mergefile, err := os.Create(d.fullfilename)
-	if err != nil {
-		return err
-	}
-	defer mergefile.Close()
-
-	var f string
-	for i := 0; i < procs; i++ {
-		f = fmt.Sprintf("%s/%s.%d.%d", dirname, filename, procs, i)
-		subfp, err := os.Open(f)
-		if err != nil {
-			return err
-		}
-
-		io.Copy(mergefile, subfp)
-		subfp.Close()
-
-		if err := os.Remove(f); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
+// mergeFiles function merege file after split download
 func mergeFiles(procs int, filename, dirname, fullfilename string) error {
 	mergefile, err := os.Create(fullfilename)
 	if err != nil {
