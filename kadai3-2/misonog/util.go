@@ -24,32 +24,6 @@ type Utils interface {
 	SetFileSize(uint)
 	SetDirName(string)
 	SetFullFileName(string, string)
-
-	// like getter
-	FileName() string
-	FileSize() uint
-	DirName() string
-	FullFileName() string
-}
-
-// FileName get from Data structs member
-func (d Data) FileName() string {
-	return d.filename
-}
-
-// FileSize get from Data structs member
-func (d Data) FileSize() uint {
-	return d.filesize
-}
-
-// DirName get from Data structs member
-func (d Data) DirName() string {
-	return d.dirname
-}
-
-// FullFileName get from Data structs member
-func (d Data) FullFileName() string {
-	return d.fullfilename
 }
 
 // SetFileName set to Data structs member
