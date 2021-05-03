@@ -14,7 +14,6 @@ import (
 
 // Pdownload structs
 type Pdownload struct {
-	Utils
 	URL          string
 	TargetDir    string
 	Procs        int
@@ -29,7 +28,6 @@ type Pdownload struct {
 
 func New() *Pdownload {
 	return &Pdownload{
-		// Utils:   &Data{},
 		Procs:   runtime.NumCPU(), // default
 		timeout: timeout,
 	}

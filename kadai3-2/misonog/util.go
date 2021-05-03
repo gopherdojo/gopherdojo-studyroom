@@ -6,12 +6,6 @@ import (
 	"os"
 )
 
-// Utils interface indicate function
-type Utils interface {
-	MakeRange(uint, uint, uint) Range
-	MergeFiles(int) error
-}
-
 // mergeFiles function merege file after split download
 func mergeFiles(procs int, filename, dirname, fullfilename string) error {
 	mergefile, err := os.Create(fullfilename)
