@@ -67,9 +67,7 @@ func TestDownload(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
 	p.TargetDir = testDir
-	p.Utils = &Data{
-		filename: "header.jpg",
-	}
+	p.filename = "header.jpg"
 
 	err := p.Check(context.Background(), dir)
 	if err != nil {
@@ -95,10 +93,8 @@ func TestMergeFiles(t *testing.T) {
 	p := New()
 	p.URL = ts.URL
 	p.TargetDir = testDir
-	p.Utils = &Data{
-		filename:     "header.jpg",
-		fullfilename: "testdata/test_download/header.jpg",
-	}
+	p.filename = "header.jpg"
+	p.fullfilename = "testdata/test_download/header.jpg"
 
 	err := p.Check(context.Background(), dir)
 	if err != nil {

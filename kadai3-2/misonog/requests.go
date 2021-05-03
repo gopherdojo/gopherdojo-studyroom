@@ -39,7 +39,7 @@ func (p *Pdownload) Check(ctx context.Context, dir string) error {
 		return errors.New("invalid content length")
 	}
 
-	filename := p.Utils.FileName()
+	filename := p.filename
 	if filename == "" {
 		filename = path.Base(p.URL)
 	}

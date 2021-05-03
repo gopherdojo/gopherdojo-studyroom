@@ -29,7 +29,7 @@ type Pdownload struct {
 
 func New() *Pdownload {
 	return &Pdownload{
-		Utils:   &Data{},
+		// Utils:   &Data{},
 		Procs:   runtime.NumCPU(), // default
 		timeout: timeout,
 	}

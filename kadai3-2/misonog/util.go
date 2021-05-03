@@ -76,21 +76,6 @@ func (d *Data) SetFullFileName(dir, filename string) {
 	}
 }
 
-// MakeRange will return Range struct to download function
-func (d *Data) MakeRange(i, split, procs uint) Range {
-	low := split * i
-	high := low + split - 1
-	if i == procs-1 {
-		high = d.FileSize()
-	}
-
-	return Range{
-		low:   low,
-		high:  high,
-		woker: i,
-	}
-}
-
 // MergeFiles function merege file after split download
 func (d *Data) MergeFiles(procs int) error {
 	filename := d.filename
