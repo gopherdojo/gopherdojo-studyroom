@@ -6,14 +6,6 @@ import (
 	"os"
 )
 
-// Data struct has file of relational data
-type Data struct {
-	filename     string
-	filesize     uint
-	dirname      string
-	fullfilename string
-}
-
 // Utils interface indicate function
 type Utils interface {
 	MakeRange(uint, uint, uint) Range
