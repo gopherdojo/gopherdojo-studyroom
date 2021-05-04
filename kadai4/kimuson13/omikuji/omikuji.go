@@ -17,7 +17,7 @@ type Omikuji struct {
 	Today  string `json:"today"`
 }
 
-func pickOmikuji(t time.Time) string {
+func PickOmikuji(t time.Time) string {
 	var i int
 	_, month, date := t.Date()
 	if month == time.January {
@@ -31,13 +31,13 @@ func pickOmikuji(t time.Time) string {
 	return r
 }
 
-var layout = "2006-01-02"
+var Layout = "2006-01-02"
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	today := time.Now()
-	todayStr := today.Format(layout)
-	result := pickOmikuji(today)
+	todayStr := today.Format(Layout)
+	result := PickOmikuji(today)
 	omikuji := &Omikuji{Result: result, Today: todayStr}
 
 	var buf bytes.Buffer
@@ -55,7 +55,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func Run() {
 	rand.Seed(time.Now().UnixNano())
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", Handler)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
