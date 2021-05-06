@@ -18,8 +18,6 @@ var (
 	ErrNotDirectory = errors.New("Specify directory or file is not directory")
 )
 
-var OsRemove = os.Remove
-
 type ConvertImage struct {
 	Filepaths    []string
 	From, To     string
@@ -110,7 +108,7 @@ func convert(path string, to string, deleteOption bool) error {
 	}
 
 	if deleteOption {
-		if err := OsRemove(path); err != nil {
+		if err := os.Remove(path); err != nil {
 			return err
 		}
 	}
