@@ -71,14 +71,14 @@ func main() {
 		case input := <-chInput:
 			// check input and add score
 			if word == input {
-				fmt.Println("OK :)")
+				fmt.Printf("OK :)\n")
 				score += 1
 			} else {
-				fmt.Println("KO :(")
+				fmt.Printf("KO :(\n")
 			}
 		case <-chTimer:
 			// times up
-			fmt.Println("\nTimes up!!")
+			fmt.Printf("\nTimes up!!\n")
 			i = math.MaxInt32 - 1 // set i biggest int to break loop
 		}
 	}
