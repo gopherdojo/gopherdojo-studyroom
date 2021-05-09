@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestHandler(t *testing.T) {
@@ -40,6 +41,29 @@ func TestHandler(t *testing.T) {
 			if c.fixedResult && c.expected != res.Result {
 				t.Errorf("want omikujiResult.Result = %v, got %v",
 					res.Result, c.expected)
+			}
+		})
+	}
+}
+
+func TestIsShogatsu(t *testing.T) {
+	cases := []struct {
+		name     string
+		input    time.Time
+		expected bool
+	}{
+		{name: "nil", expected: false},
+		{name: "shogatsu 1/1", input: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC), expected: true},
+		{name: "shogatsu 1/2", input: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC), expected: true},
+		{name: "not shogatsu", input: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), expected: false},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			if actual := isShogatsu(c.input); actual != c.expected {
+				t.Errorf("want isShogatsu(%v) = %v, got %v",
+					c.input, c.expected, actual)
 			}
 		})
 	}
