@@ -32,4 +32,3 @@ $ make
 ```bash
 $ make test
 ```
-- 
