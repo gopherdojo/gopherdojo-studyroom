@@ -1,4 +1,4 @@
 *.exe
 test/*_converted.*
 test/*/*_converted.*
-main
+converter
