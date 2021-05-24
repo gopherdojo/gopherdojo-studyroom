@@ -1,4 +1,3 @@
-*.exe
-test/*_converted.*
-test/*/*_converted.*
-converter
+testdata/*_converted.*
+testdata/*/*_converted.*
+bin

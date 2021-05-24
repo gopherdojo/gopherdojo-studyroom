@@ -1,13 +1,13 @@
-NAME := converter
+NAME := bin/converter
 
 all:
 	go build -o $(NAME)
 
 test: clean all
-	./test.sh ./converter ./test
+	./test.sh ./bin/converter ./testdata
 
 clean:
-	rm -rf converter ./test/*_converted.*
-	rm -rf ./test/test/*_converted.*
+	rm -rf converter ./testdata/*_converted.*
+	rm -rf ./testdata/testdata/*_converted.*
 
 .PHONY: test clean

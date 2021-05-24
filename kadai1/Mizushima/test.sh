@@ -18,6 +18,8 @@ for ext1 in ${list[@]}; do
       converted="${path}/test01_converted.${ext2}"
       if [ -e $converted ]; then
         echo "${exe} -pre ${ext1} -post ${ext2} ${path} ...passed"
+      else 
+        echo "${exe} -pre ${ext1} -post ${ext2} ${path} ...failed"
       fi
     fi
   done

@@ -34,7 +34,7 @@ $ make
 ```
 2. ディレクトリを指定して実行
 ```bash
-$ ./converter [directory] [options...]
+$ ./bin/converter [directory] [options...]
 ```
 
 

@@ -1,9 +1,10 @@
 package main
 
 import (
-	picconvert "Mizushima/pic-conv"
 	"flag"
 	"log"
+
+	picconvert "main/picconvert"
 )
 
 var preFormat string
@@ -15,43 +16,43 @@ func init() {
 	flag.Parse()
 }
 
-func isCorresponds(format string) bool {
+// isSupportedFormat returns true if "format" is supported, othrewise returns false.
+func isSupportedFormat(format string) bool {
 	ext := []string{"jpg", "jpeg", "png", "gif"}
-
-	var flag bool = false
 
 	for _, e := range ext {
 		if e == format {
-			flag = true
+			return true
 		}
 	}
-
-	if !flag {
-		return false
-	}
-	return true
+	return false
 }
 
-// errHandler occur errors.
-func errHandler() {
+// validate occurs a error if there is something wrong with 
+// the entered parameters.
+func validate() {
 	if preFormat == afterFormat {
-		log.Fatal("arguments of -pre and -post are same.")
+		log.Fatal("the parameter of -pre is same as that of -post.")
 	}
 
 	if len(flag.Args()) == 0 {
 		log.Fatal("please input the path.")
 	}
 
-	if !isCorresponds(preFormat) {
+	if !isSupportedFormat(preFormat) {
 		log.Fatal(preFormat, " is not supported.")
-	} else if !isCorresponds(afterFormat) {
+	} else if !isSupportedFormat(afterFormat) {
 		log.Fatal(afterFormat, " is not supported.")
 	}
 }
 
 func main() {
 	// fmt.Println("converting" ,preFormat, "to", afterFormat)
-	errHandler()
+	validate()
 	c := picconvert.NewPicConverter(flag.Args()[0], preFormat, afterFormat)
-	c.Conv()
+	err := c.Conv()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }

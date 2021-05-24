@@ -5,14 +5,12 @@ import (
 	"image"
 	"image/gif"
 	"image/jpeg"
-	_ "image/jpeg"
 	"image/png"
-	"log"
 	"os"
 	"path/filepath"
 )
 
-// PicConverter is User-defined type for converting
+// PicConverter is user-defined type for converting
 // a picture file format has root path, pre-conversion format,
 // and after-conversion format.
 type PicConverter struct {
@@ -21,61 +19,63 @@ type PicConverter struct {
 	AfterFormat string
 }
 
-// Conv converts picture file format.
-func (p *PicConverter) Conv() {
+// Conv converts the picture file format.
+func (p *PicConverter) Conv() error {
 	files, err := glob(p.Path, p.PreFormat)
 
 	if err != nil {
-		log.Fatal("could not find the file path.")
+		return err
 	}
 
 	if files == nil {
-		log.Fatal("there's no image file.")
+		return fmt.Errorf("there's no %s file.", p.PreFormat)
 	}
 
-	// prosessing for each files
+	// prosessing for each file.
 	for _, file := range files {
 		// fmt.Println("from:", file)
 		f, err := os.Open(file)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, " the file could not open.")
-			os.Exit(1)
+			return err
 		}
 		defer f.Close()
 
 		// reading the image file.
 		img, _, err := image.Decode(f)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to convert image files.")
-			os.Exit(1)
+			return err
 		}
 
 		// creating filepath for output.
-		output, err := os.Create(baseName(file) +
-			"_converted" +
-			"." +
-			p.AfterFormat)
+		output, err := os.Create(fmt.Sprintf(
+			"%s_converted.%s",
+			baseName(file), p.AfterFormat))
+
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to create the file.")
-			os.Exit(1)
+			return err
 		}
 
 		// converting the file.
-		if p.AfterFormat == "png" {
+		switch p.AfterFormat {
+		case "png":
 			err = png.Encode(output, img)
-		} else if p.AfterFormat == "jpg" || p.AfterFormat == "jpeg" {
+		case "jpg":
+		case "jpeg":
 			err = jpeg.Encode(output, img, nil)
-		} else if p.AfterFormat == "gif" {
+		case "gif":
 			err = gif.Encode(output, img, nil)
+		default:
+			err = fmt.Errorf("%s is not supported.", p.AfterFormat)
 		}
 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			continue
+			return err
 		}
 
 		fmt.Printf("converted %s\n", output.Name())
 	}
+
+	return nil
 }
 
 // NewPicConverter is the constructor for a PicConverter.
@@ -93,7 +93,7 @@ func NewPicConverter(Path string, PreFormat string, AfterFormat string) *PicConv
 	return res
 }
 
-// glob returns a slice of file path where format.
+// glob returns a slice of the file paths that meets the "format".
 func glob(path string, format []string) ([]string, error) {
 	var res []string
 
@@ -101,7 +101,7 @@ func glob(path string, format []string) ([]string, error) {
 	for _, f := range format {
 		err = filepath.Walk(path,
 			func(path string, info os.FileInfo, err error) error {
-				if filepath.Ext(path) == "."+f {
+				if filepath.Ext(path) == "."+f && !info.IsDir() {
 					res = append(res, path)
 				}
 				return nil
