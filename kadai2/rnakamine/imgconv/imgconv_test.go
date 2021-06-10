@@ -5,6 +5,8 @@ import (
 )
 
 func TestGetConvertImages(t *testing.T) {
+	t.Parallel()
+
 	dir := "../testdata"
 	cases := []struct {
 		from, to string
@@ -40,10 +42,10 @@ func TestGetConvertImages(t *testing.T) {
 		images, _ := GetConvertImages(dir, c.from, c.to)
 		for index, image := range images {
 			if image.FromPath != c.expected[index].FromPath {
-				t.Errorf("FromPath=%s, want %s", image.FromPath, c.expected[index].FromPath)
+				t.Fatalf("FromPath=%s, want %s", image.FromPath, c.expected[index].FromPath)
 			}
 			if image.ToPath != c.expected[index].ToPath {
-				t.Errorf("ToPath=%s, want %s", image.ToPath, c.expected[index].ToPath)
+				t.Fatalf("ToPath=%s, want %s", image.ToPath, c.expected[index].ToPath)
 			}
 		}
 	}

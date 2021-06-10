@@ -14,11 +14,11 @@ func TestRun_parseError(t *testing.T) {
 
 	status := cli.Run(args)
 	if status != ExitCodeError {
-		t.Errorf("expected=%d, actual=%d", status, ExitCodeError)
+		t.Fatalf("expected=%d, actual=%d", status, ExitCodeError)
 	}
 
 	expected := "flag provided but not defined: -foo"
 	if !strings.Contains(errStream.String(), expected) {
-		t.Errorf("expected %s to contain %s", errStream.String(), expected)
+		t.Fatalf("expected %s to contain %s", errStream.String(), expected)
 	}
 }
