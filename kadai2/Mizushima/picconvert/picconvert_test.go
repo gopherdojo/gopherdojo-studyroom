@@ -53,10 +53,6 @@ func TestPicConverter_Conv(t *testing.T) {
 
 }
 
-func Testglob(t *testing.T) {
-	
-}
-
 func testCopyDir(t *testing.T, srcDir, distDir string) {
 	t.Helper()
 
