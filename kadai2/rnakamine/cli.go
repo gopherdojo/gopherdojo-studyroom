@@ -2,13 +2,17 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"strings"
 
 	"github.com/rnakamine/gopherdojo-studyroom/kadai2/rnakamine/imgconv"
+)
+
+const (
+	ExitCodeOK    = 0
+	ExitCodeError = 1
 )
 
 var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
@@ -19,7 +23,7 @@ type CLI struct {
 }
 
 // Run invokes the CLI with the given arguments.
-func (c *CLI) Run(args []string) error {
+func (c *CLI) Run(args []string) int {
 
 	flags := flag.NewFlagSet("imgconv", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -33,30 +37,31 @@ func (c *CLI) Run(args []string) error {
 	flags.BoolVar(&del, "del", false, "Delete the original image.")
 
 	if err := flags.Parse(args[1:]); err != nil {
-		return err
+		fmt.Fprintln(c.errStream, err)
+		return ExitCodeError
 	}
 
 	if dir == "" {
-		return errors.New("Directory is not specified.")
+		fmt.Fprintln(c.errStream, "Directory is not specified.")
+		return ExitCodeError
 	}
 
 	if !checkFormat(from) || !checkFormat(to) {
-		return errors.New("Unsupported format. Supported formats are jpg, jpeg, png and gif.")
+		fmt.Fprintln(c.errStream, "Unsupported format. Supported formats are jpg, jpeg, png and gif.")
+		return ExitCodeError
 	}
 
 	var deleteOption bool
 	if del {
-		_, err := fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
-		if err != nil {
-			return err
-		}
+		fmt.Fprintln(c.outStream, "Do you really want to delete the original image? (Y/N)")
 		in := bufio.NewScanner(c.inStream)
 		in.Scan()
 		answer := in.Text()
 		if answer == "y" || answer == "Y" {
 			deleteOption = true
 		} else {
-			return errors.New("It suspends processing.")
+			fmt.Fprintln(c.errStream, "It suspends processing.")
+			return ExitCodeError
 		}
 	} else {
 		deleteOption = false
@@ -64,19 +69,19 @@ func (c *CLI) Run(args []string) error {
 
 	images, err := imgconv.GetConvertImages(dir, from, to)
 	if err != nil {
-		return err
+		fmt.Fprintln(c.errStream, err)
+		return ExitCodeError
 	}
+
 	for _, img := range images {
-		_, err := fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
-		if err != nil {
-			return err
-		}
+		fmt.Fprintf(c.outStream, "Converting.. %s -> %s\n", img.FromPath, img.ToPath)
 		if err := img.Convert(deleteOption); err != nil {
-			return err
+			fmt.Fprintln(c.errStream, err)
+			return ExitCodeError
 		}
 	}
 
-	return nil
+	return ExitCodeOK
 }
 
 // CheckFormat is determine if the correct image is in the correct format.
