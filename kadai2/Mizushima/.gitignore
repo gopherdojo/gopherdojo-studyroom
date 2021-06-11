@@ -1,0 +1,4 @@
+testdata/*_converted.*
+testdata/*/*_converted.*
+bin
+*/profile
