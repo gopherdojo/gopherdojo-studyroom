@@ -18,7 +18,9 @@
 
 
 ### 対応している画像フォーマット
-- png, jpeg(jpg), gif
+- png
+- jpeg(jpg)
+- gif
 
 
 ### 使い方
@@ -28,7 +30,7 @@ $ make
 ```
 2. ディレクトリを指定して実行
 ```bash
-$ ./bin/converter [directory] [options...]
+$ ./bin/converter [options...]
 ```
 
 
