@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	picconvert "main/picconvert"
+	picconvert "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai1/Mizushima/picconvert"
 )
 
 var preFormat string
