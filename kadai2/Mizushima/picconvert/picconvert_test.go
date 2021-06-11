@@ -11,7 +11,6 @@ import (
 	picconvert "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai2/Mizushima/picconvert"
 )
 
-
 func TestGlob(t *testing.T) {
 	tmpTestDir := "../testdata"
 
@@ -54,7 +53,7 @@ func TestGlob(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			actual, err := picconvert.Glob(c.path, c.format)
 			// if actual != nil { fmt.Println(actual) }
-			if !reflect.DeepEqual(actual, c.expected1) && 
+			if !reflect.DeepEqual(actual, c.expected1) &&
 				!(len(actual) == 0 && len(c.expected1) == 0) &&
 				(err == nil && c.expected2 == nil) {
 				t.Errorf("want Glob(%s, %s) = (%v, nil), got %v, nil", c.path, c.format, c.expected1, actual)
