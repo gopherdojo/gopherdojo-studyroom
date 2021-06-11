@@ -1,3 +1,7 @@
+// Package picconvert implements a picture format converter
+// for command line tool in main package.
+//
+
 package picconvert
 
 import (

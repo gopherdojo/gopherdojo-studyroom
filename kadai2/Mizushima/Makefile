@@ -1,14 +1,25 @@
-NAME := bin/converter
+# 
+# 原典：https://frasco.io/golang-dont-afraid-of-makefiles-785f3ec7eb32
+# 
 
-all:
-	go build -o $(NAME)
+BINARY_NAME := bin/converter
+GOCMD=go
+GOBUILD=$(GOCMD) build
+GOCLEAN=$(GOCMD) clean
+GOTEST=$(GOCMD) test
+GOGET=$(GOCMD) get
 
-test: clean all 
-	cd ./picconvert; go test -v -cover
+all: build
+
+build:
+	$(GOBUILD) -o $(BINARY_NAME) -v
+
+test: clean all
+	$(GOTEST) -v -cover
+	cd ./picconvert; $(GOTEST) -v -cover
 
 clean:
-	rm -rf ./testdata/*_converted.*
-	rm -rf ./testdata/testdata/*_converted.*
-	rm -rf ./bin/*
+	$(GOCLEAN)
+	rm -rf $(BINARY_NAME)
 
 .PHONY: test clean

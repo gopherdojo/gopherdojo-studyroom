@@ -41,6 +41,12 @@ func TestGlob(t *testing.T) {
 			expected1: []string{tmpTestDir + "/test01.gif", tmpTestDir + "/" + filepath.Base(tmpTestDir) + "/test01.gif"},
 			expected2: nil,
 		},
+		{name: "xls files",
+			path:      tmpTestDir,
+			format:    []string{"xls"},
+			expected1: []string{},
+			expected2: nil,
+		},
 	}
 
 	for _, c := range cases {
@@ -48,8 +54,13 @@ func TestGlob(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			actual, err := picconvert.Glob(c.path, c.format)
 			// if actual != nil { fmt.Println(actual) }
-			if !reflect.DeepEqual(actual, c.expected1) && (err == nil && c.expected2 == nil) {
-				t.Errorf("want Glob(%s, %s) = %v, got %v", c.path, c.format, c.expected1, actual)
+			if !reflect.DeepEqual(actual, c.expected1) && 
+				!(len(actual) == 0 && len(c.expected1) == 0) &&
+				(err == nil && c.expected2 == nil) {
+				t.Errorf("want Glob(%s, %s) = (%v, nil), got %v, nil", c.path, c.format, c.expected1, actual)
+			} else if !reflect.DeepEqual(actual, c.expected1) && (err != nil && c.expected2 != nil) {
+				t.Errorf("want Glob(%s, %s) = (%v, %v), got %v, %v",
+					c.path, c.format, c.expected1, c.expected2.Error(), actual, err.Error())
 			}
 		})
 	}
@@ -90,7 +101,7 @@ func TestPicConverter_Conv(t *testing.T) {
 		})
 	}
 
-	testDeleteConveterd(t, tmpTestDir)
+	defer testDeleteConveterd(t, tmpTestDir)
 }
 
 // testDeleteConveterd returns a slice of the file paths that meets the "format".
