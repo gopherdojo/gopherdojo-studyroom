@@ -22,3 +22,25 @@ func TestRun_parseError(t *testing.T) {
 		t.Fatalf("expected %s to contain %s", errStream.String(), expected)
 	}
 }
+
+func TestCheckFormat(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		ext    string
+		expect bool
+	}{
+		{ext: "jpg", expect: true},
+		{ext: "jpeg", expect: true},
+		{ext: "png", expect: true},
+		{ext: "gif", expect: true},
+		{ext: "txt", expect: false},
+	}
+
+	for _, tt := range tests {
+		b := checkFormat(tt.ext)
+		if b != tt.expect {
+			t.Fatal("hogehoge")
+		}
+	}
+}
