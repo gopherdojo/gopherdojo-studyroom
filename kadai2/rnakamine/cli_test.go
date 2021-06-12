@@ -14,12 +14,12 @@ func TestRun_parseError(t *testing.T) {
 
 	status := cli.Run(args)
 	if status != ExitCodeError {
-		t.Fatalf("expected=%d, actual=%d", status, ExitCodeError)
+		t.Fatalf("ExitStatus=%d, want %d", status, ExitCodeError)
 	}
 
-	expected := "flag provided but not defined: -foo"
-	if !strings.Contains(errStream.String(), expected) {
-		t.Fatalf("expected %s to contain %s", errStream.String(), expected)
+	expect := "flag provided but not defined: -foo"
+	if !strings.Contains(errStream.String(), expect) {
+		t.Fatalf("Output=%s, want %s", errStream.String(), expect)
 	}
 }
 
@@ -38,9 +38,9 @@ func TestCheckFormat(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		b := checkFormat(tt.ext)
-		if b != tt.expect {
-			t.Fatal("hogehoge")
+		truth := checkFormat(tt.ext)
+		if truth != tt.expect {
+			t.Fatalf(`checkFormat("%s") = %t, want %t`, tt.ext, truth, tt.expect)
 		}
 	}
 }
