@@ -1,8 +1,33 @@
 package imgconv
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	testTmpPath, err := ioutil.TempDir("./", "test-tmp-path")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("testTmpPath: %s\n", testTmpPath)
+
+	code := m.Run()
+
+	if err := os.RemoveAll(testTmpPath); err != nil {
+		log.Fatal(err)
+	}
+
+	os.Exit(code)
+}
+
+func TestConvert(t *testing.T) {
+	t.Log("TestConvert")
+}
 
 func TestGetConvertImages(t *testing.T) {
 	t.Parallel()
