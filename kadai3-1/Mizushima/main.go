@@ -4,14 +4,24 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
+	"time"
 )
 
 func main() {
+
+	words := []string{ "ahoaho", "bakabaka", "unkounko" }
+	rand.Seed(time.Now().UnixNano())
 	ch := input(os.Stdin)
 	for {
-		fmt.Print(">")
-		fmt.Println(<-ch)
+		idx := rand.Intn(3)
+		fmt.Printf("> %s\n", words[idx])
+		if <-ch == words[idx] {
+			fmt.Println("> しぇいかい")
+		} else {
+			fmt.Println("> ぶっぶー")
+		}
 	}
 }
 
