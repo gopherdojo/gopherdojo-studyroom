@@ -16,13 +16,13 @@ func TestMain(m *testing.M) {
 
 	fmt.Printf("testTmpPath: %s\n", testTmpPath)
 
-	code := m.Run()
+	exitCode := m.Run()
 
 	if err := os.RemoveAll(testTmpPath); err != nil {
 		log.Fatal(err)
 	}
 
-	os.Exit(code)
+	os.Exit(exitCode)
 }
 
 func TestConvert(t *testing.T) {
