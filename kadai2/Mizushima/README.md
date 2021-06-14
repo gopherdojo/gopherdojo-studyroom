@@ -45,6 +45,9 @@ $ make clean
 ```
 
 ### テスト結果
+main_test.go : 73.1%  
+picconvert_test.go : 87.8% 
+
 ```bash
 === RUN   TestIsSupportedFormat
 === RUN   TestIsSupportedFormat/jpg
