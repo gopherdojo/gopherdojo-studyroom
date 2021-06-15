@@ -8,7 +8,7 @@ import (
 	"github.com/otiai10/copy"
 )
 
-var tmpTestDirectory = "tmp-test-dir"
+var tmpTestDirectory = "tmp-test-dir/"
 
 func TestMain(m *testing.M) {
 	// setup
@@ -37,24 +37,24 @@ func TestGetConvertImages(t *testing.T) {
 			from: "jpg",
 			to:   "png",
 			expect: []ConvertImage{
-				{FromPath: "tmp-test-dir/A.jpg", ToPath: "tmp-test-dir/A.png"},
-				{FromPath: "tmp-test-dir/B.jpg", ToPath: "tmp-test-dir/B.png"},
+				{FromPath: tmpTestDirectory + "A.jpg", ToPath: tmpTestDirectory + "A.png"},
+				{FromPath: tmpTestDirectory + "B.jpg", ToPath: tmpTestDirectory + "B.png"},
 			},
 		},
 		{
 			from: "png",
 			to:   "jpg",
 			expect: []ConvertImage{
-				{FromPath: "tmp-test-dir/C.png", ToPath: "tmp-test-dir/C.jpg"},
-				{FromPath: "tmp-test-dir/D.png", ToPath: "tmp-test-dir/D.jpg"},
+				{FromPath: tmpTestDirectory + "C.png", ToPath: tmpTestDirectory + "C.jpg"},
+				{FromPath: tmpTestDirectory + "D.png", ToPath: tmpTestDirectory + "D.jpg"},
 			},
 		},
 		{
 			from: "gif",
 			to:   "png",
 			expect: []ConvertImage{
-				{FromPath: "tmp-test-dir/sub/E.gif", ToPath: "tmp-test-dir/sub/E.png"},
-				{FromPath: "tmp-test-dir/sub/F.gif", ToPath: "tmp-test-dir/sub/F.png"},
+				{FromPath: tmpTestDirectory + "sub/E.gif", ToPath: tmpTestDirectory + "sub/E.png"},
+				{FromPath: tmpTestDirectory + "sub/F.gif", ToPath: tmpTestDirectory + "sub/F.png"},
 			},
 		},
 	}
@@ -80,19 +80,19 @@ func TestConvert(t *testing.T) {
 		deleteOption, fromExist, toExist bool
 	}{
 		{
-			convertImage: ConvertImage{FromPath: "tmp-test-dir/A.jpg", ToPath: "tmp-test-dir/A.png"},
+			convertImage: ConvertImage{FromPath: tmpTestDirectory + "A.jpg", ToPath: tmpTestDirectory + "A.png"},
 			deleteOption: true,
 			fromExist:    false,
 			toExist:      true,
 		},
 		{
-			convertImage: ConvertImage{FromPath: "tmp-test-dir/C.png", ToPath: "tmp-test-dir/C.jpg"},
+			convertImage: ConvertImage{FromPath: tmpTestDirectory + "C.png", ToPath: tmpTestDirectory + "C.jpg"},
 			deleteOption: false,
 			fromExist:    true,
 			toExist:      true,
 		},
 		{
-			convertImage: ConvertImage{FromPath: "tmp-test-dir/sub/E.gif", ToPath: "tmp-test-dir/sub/E.png"},
+			convertImage: ConvertImage{FromPath: tmpTestDirectory + "sub/E.gif", ToPath: tmpTestDirectory + "sub/E.png"},
 			deleteOption: true,
 			fromExist:    false,
 			toExist:      true,
