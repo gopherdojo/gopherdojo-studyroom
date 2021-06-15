@@ -3,8 +3,10 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -12,7 +14,13 @@ import (
 
 func main() {
 
-	words := []string{"ahoaho", "bakabaka", "unkounko"}
+	words, err := readCSV("./words.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(words)
+
 	rand.Seed(time.Now().UnixNano())
 
 	bc := context.Background()
@@ -29,10 +37,14 @@ func main() {
 
 	for {
 
-		idx := rand.Intn(3)
+		idx := rand.Intn(len(words))
 		fmt.Printf("> %s\n", words[idx])
 
 		select {
+		case <-ctx.Done():
+			fmt.Println("\n終了!")
+			fmt.Printf("%d問正解です!\n", score)
+			return
 		case <-time.After(1 * time.Second):
 			if <-ch == words[idx] {
 				fmt.Println("> しぇえか～い")
@@ -40,10 +52,6 @@ func main() {
 			} else {
 				fmt.Println("> ぶっぶー")
 			}
-		case <-ctx.Done():
-			fmt.Println("\n終了!")
-			fmt.Printf("%d問正解です!\n", score)
-			return
 		}
 	}
 }
@@ -63,4 +71,29 @@ func input(r io.Reader) <-chan string {
 	}()
 	// TODO: チャネルを返す
 	return ch
+}
+
+func readCSV(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	csvFile := csv.NewReader(file)
+	csvFile.TrimLeadingSpace = true
+
+	var ret []string
+	var row []string
+
+	for {
+		row, err = csvFile.Read()
+		if err != nil {
+			break
+		}
+		
+		ret = append(ret, row...)
+	}
+
+	return ret, nil
 }
