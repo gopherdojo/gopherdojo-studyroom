@@ -65,6 +65,7 @@ func TestGetConvertImages(t *testing.T) {
 			if image.FromPath != tt.expect[index].FromPath {
 				t.Errorf("FromPath=%s, want %s", image.FromPath, tt.expect[index].FromPath)
 			}
+
 			if image.ToPath != tt.expect[index].ToPath {
 				t.Errorf("ToPath=%s, want %s", image.ToPath, tt.expect[index].ToPath)
 			}
