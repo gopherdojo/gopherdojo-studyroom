@@ -60,7 +60,11 @@ func TestGetConvertImages(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		images, _ := GetConvertImages(tmpTestDirectory, tt.from, tt.to)
+		images, err := GetConvertImages(tmpTestDirectory, tt.from, tt.to)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		for index, image := range images {
 			if image.FromPath != tt.expect[index].FromPath {
 				t.Errorf("FromPath=%s, want %s", image.FromPath, tt.expect[index].FromPath)
@@ -101,7 +105,10 @@ func TestConvert(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt.convertImage.Convert(tt.deleteOption)
+		err := tt.convertImage.Convert(tt.deleteOption)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		fromExist := testFileExist(t, tt.convertImage.FromPath)
 		if fromExist != tt.fromExist {
