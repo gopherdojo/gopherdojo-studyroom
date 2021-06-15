@@ -103,19 +103,20 @@ func TestConvert(t *testing.T) {
 	for _, tt := range tests {
 		tt.convertImage.Convert(tt.deleteOption)
 
-		fromExist := fileExist(tt.convertImage.FromPath)
+		fromExist := testFileExist(t, tt.convertImage.FromPath)
 		if fromExist != tt.fromExist {
 			t.Errorf("fromExist=%t, want %t", fromExist, tt.fromExist)
 		}
 
-		toExist := fileExist(tt.convertImage.ToPath)
+		toExist := testFileExist(t, tt.convertImage.ToPath)
 		if toExist != tt.toExist {
 			t.Errorf("toExist=%t, want %t", toExist, tt.toExist)
 		}
 	}
 }
 
-func fileExist(filename string) bool {
+func testFileExist(t *testing.T, filename string) bool {
+	t.Helper()
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
