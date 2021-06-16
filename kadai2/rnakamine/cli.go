@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rnakamine/gopherdojo-studyroom/kadai2/rnakamine/imgconv"
+	imgconv "github.com/rnakamine/gopherdojo-studyroom/kadai2/rnakamine/lib"
 )
 
 const (
