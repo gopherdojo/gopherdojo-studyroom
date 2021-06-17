@@ -11,7 +11,7 @@ import (
 
 func TestGame(t *testing.T) {
 	t.Helper()
-	
+
 	cases := []struct {
 		name     string
 		tm       time.Duration
@@ -19,35 +19,35 @@ func TestGame(t *testing.T) {
 		expected int
 	}{
 		{
-			name:     "No typo",
-			tm:       3 * time.Second,
-			ans:      []string{
-				"America", 
-				"American", 
-				"Angle", 
-				"April", 
-				"August", 
-				"Bacon", 
-				"Barber", 
-				"Battery", 
-				"Bible", 
+			name: "No typo",
+			tm:   3 * time.Second,
+			ans: []string{
+				"America",
+				"American",
+				"Angle",
+				"April",
+				"August",
+				"Bacon",
+				"Barber",
+				"Battery",
+				"Bible",
 				"Bill",
 			},
 			expected: 10,
 		},
 		{
-			name:     "One typo",
-			tm:       3 * time.Second,
-			ans:      []string{
-				"America", 
-				"American", 
-				"typo", 
-				"April", 
-				"August", 
-				"Bacon", 
-				"Barber", 
-				"Battery", 
-				"Bible", 
+			name: "One typo",
+			tm:   3 * time.Second,
+			ans: []string{
+				"America",
+				"American",
+				"typo",
+				"April",
+				"August",
+				"Bacon",
+				"Barber",
+				"Battery",
+				"Bible",
 				"Bill",
 			},
 			expected: 9,

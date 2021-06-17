@@ -48,7 +48,7 @@ func Game(r io.Reader, w io.Writer, wordsPath string, t time.Duration, isTest bo
 	for {
 
 		word = words[indices[idx]]
-		
+
 		_, err = fmt.Fprintf(w, "> %s\n", word)
 		if err != nil {
 			return -1, err
@@ -63,7 +63,7 @@ func Game(r io.Reader, w io.Writer, wordsPath string, t time.Duration, isTest bo
 				return -1, err
 			}
 			return score, nil
-		case  ans := <-ch:
+		case ans := <-ch:
 			// fmt.Printf("ans: %s\n", ans)
 			// fmt.Printf("word: %s\n", word)
 			if ans == word {
