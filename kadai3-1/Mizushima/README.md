@@ -36,3 +36,18 @@ $ make test
 ```bash
 $ make clean
 ```
+
+### ディレクトリ構成
+```
+.
+├─ gamedata
+│   └─ words.csv
+├─ typing
+│   └─ typing.go
+│   └─ typing_test.go
+├─ .gitignore
+├─ go.mod
+├─ main.go
+├─ Makefile
+└─ README.md
+```
