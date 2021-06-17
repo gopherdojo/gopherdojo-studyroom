@@ -2,74 +2,98 @@ package typing
 
 import (
 	"bufio"
-	"bytes"
-	"context"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
 )
 
+func Game(r io.Reader, w io.Writer, wordsPath string, t time.Duration, isTest bool) (int, error) {
 
-
-func Game(r io.Reader, w io.Writer) {
-	
-	words, err := readCSV("./gamedata/words.csv")
+	words, err := readCSV(wordsPath)
 	if err != nil {
-		log.Fatal(err)
+		return -1, err
 	}
 
-	fmt.Println(words)
+	limit := time.After(t)
 
 	rand.Seed(time.Now().UnixNano())
+	var indices []int
+	if !isTest {
+		indices = rand.Perm(len(words))
+	} else {
+		indices = incSlice(len(words))
+	}
 
-	bc := context.Background()
-	t := 20 * time.Second
-	ctx, cancel := context.WithTimeout(bc, t)
-	defer cancel()
+	if !isTest {
+		_, err = fmt.Fprintln(w, "> Typing game start\nPlease type the displayed word")
+		if err != nil {
+			return -1, err
+		}
 
-	fmt.Println("> タイピングゲームを始めましゅ")
-	fmt.Println("> 英単語が出てきますので、同じ単語をタイプしてくだしゃい!")
-	fmt.Println("> 制限時間は20秒です")
+		_, err = fmt.Fprintf(w, "> Time limit is %d seconds\n", int(t.Seconds()))
+		if err != nil {
+			return -1, err
+		}
+	}
 
-	ch := input(os.Stdin)
+	ch := input(r)
 	score := 0
+	var idx int = 0
+	var word string
 
 	for {
 
-		idx := rand.Intn(len(words))
-		fmt.Printf("> %s\n", words[idx])
+		word = words[indices[idx]]
+		
+		_, err = fmt.Fprintf(w, "> %s\n", word)
+		if err != nil {
+			return -1, err
+		}
+
+		idx++
 
 		select {
-		case <-ctx.Done():
-			fmt.Println("\n終了!")
-			fmt.Printf("%d問正解です!\n", score)
-			return
-		case <-time.After(1 * time.Second):
-			if <-ch == words[idx] {
-				fmt.Println("> しぇえか～い")
+		case <-limit:
+			_, err = fmt.Fprintf(w, "\nGame ends!\nThe number of correct answers is %d\n", score)
+			if err != nil {
+				return -1, err
+			}
+			return score, nil
+		case  ans := <-ch:
+			// fmt.Printf("ans: %s\n", ans)
+			// fmt.Printf("word: %s\n", word)
+			if ans == word {
+				if !isTest {
+					_, err = fmt.Fprintln(w, "> しぇえか～い")
+					if err != nil {
+						return -1, err
+					}
+				}
 				score++
 			} else {
-				fmt.Println("> ぶっぶー")
+				if !isTest {
+					_, err = fmt.Fprintln(w, "> ぶっぶー")
+					if err != nil {
+						return -1, err
+					}
+				}
 			}
 		}
 	}
 }
 
 func input(r io.Reader) <-chan string {
-	// TODO: チャネルを作る
 	ch := make(chan string)
 	go func() {
 		s := bufio.NewScanner(r)
 		for s.Scan() {
-			str := s.Text()
-			ch <- str
+			ch <- s.Text()
 		}
-		close(ch)
+		// close(ch)
 	}()
 	return ch
 }
@@ -79,7 +103,12 @@ func readCSV(path string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	csvFile := csv.NewReader(file)
 	csvFile.TrimLeadingSpace = true
@@ -92,24 +121,17 @@ func readCSV(path string) ([]string, error) {
 		if err != nil {
 			break
 		}
-		
+
 		ret = append(ret, row...)
 	}
 
 	return ret, nil
 }
 
-func GetStdoutAsString(f func()) string {
-  tmpStdout := os.Stdout
-  defer func() {
-    os.Stdout = tmpStdout
-  }()
-  r, w, _ := os.Pipe()
-  os.Stdout = w
-
-  f()
-  w.Close()
-  var buf bytes.Buffer
-  buf.ReadFrom(r)
-  return strings.TrimRight(buf.String(), "\n")
+func incSlice(n int) []int {
+	var res []int
+	for i := 0; i < n; i++ {
+		res = append(res, i)
+	}
+	return res
 }
