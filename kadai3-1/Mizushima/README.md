@@ -10,6 +10,7 @@
  | --- | --- | --- |
  | -limit | ゲーム全体の制限時間を秒数で設定する | 20 |
 
+
 ### インストール方法
 ```bash
 go get github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-1/Mizushima
