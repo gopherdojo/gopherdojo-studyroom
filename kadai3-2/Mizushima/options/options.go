@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jessevdk/go-flags"
+	flags "github.com/jessevdk/go-flags"
 	"github.com/pkg/errors"
 )
 
