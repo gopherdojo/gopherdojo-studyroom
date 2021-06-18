@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,18 +14,27 @@ import (
 )
 
 const size = 4 //分割の数
-var url = "https://www.robots.ox.ac.uk/~vgg/data/paintings/painting_dataset_2014.xlsx"
-var fileph = "./painting_dataset_2014.xlsx"
 var muex sync.Mutex
 var wg = sync.WaitGroup{}
+var t int
+var url, fileph, dpath, spath string
+
+func init() {
+	flag.IntVar(&t, "t", 10, "制限時間m")
+	flag.StringVar(&dpath, "p", "https://www.robots.ox.ac.uk/~vgg/data/paintings/painting_dataset_2014.xlsx", "ダウンローダアドレス")
+	flag.StringVar(&spath, "s", "./painting_dataset_2014.xlsx", "保存アドレスとname")
+	flag.Parse()
+}
 
 func main() {
-	fmt.Println("ダウンロードスタート...")
+	fmt.Println("ダウンロードスタート...制限時間", t, "m")
+	url = dpath
+	fileph = spath
 	datetime := time.Now()
 	fmt.Println(datetime)
 	filelen := Getfilelen()
 	fmt.Println("ファイルサイズ：", calculatelen(filelen))
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(t)*time.Minute)
 	file, err := os.Create(fileph)
 	if err != nil {
 		panic(err)
