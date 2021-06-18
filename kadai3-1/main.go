@@ -2,15 +2,18 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"os"
 	"time"
 )
 
 var t int
+var wordsPath = "./word.csv"
 
 //制限時間をオプションにする
 func init() {
@@ -45,7 +48,10 @@ func main() {
 
 //英単語をランダムに取り出す
 func RandomWord() (word string) {
-	words := []string{"banana", "apple", "milk", "fruits", "cat", "car", "elephant", "unbralla", "interface", "tissues", "format"}
+	words, err := readCSV(wordsPath)
+	if err != nil {
+		panic(err)
+	}
 	rand.Seed(time.Now().Unix())
 	num := rand.Intn(len(words))
 	return words[num]
@@ -59,4 +65,32 @@ func imp(r io.Reader) <-chan string {
 	wordCh <- scanner.Text()
 	//close(wordCh)
 	return wordCh
+}
+
+func readCSV(path string) ([]string, error) {
+	var ret []string
+	var row []string
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	csvFile := csv.NewReader(file)
+	csvFile.TrimLeadingSpace = true
+
+	for {
+		row, err = csvFile.Read()
+		if err != nil {
+			break
+		}
+		ret = append(ret, row...)
+	}
+
+	return ret, nil
 }
