@@ -1,62 +1,39 @@
+/*This is a training code for learning Go language.
+And this code can change the format of images as you like*/
 package main
 
 import (
 	"bufio"
-	"flag"
+	"convert"
 	"fmt"
-	"io"
-	"math/rand"
 	"os"
-	"time"
+	"strings"
 )
 
-var t int
-
-//制限時間をオプションにする
-func init() {
-	flag.IntVar(&t, "t", 20, "制限時間s")
-	flag.Parse()
+type oriPath struct {
+	inputPA  string
+	outputPA string
 }
 
 func main() {
-	fmt.Println("タイピングゲームが始まった！制限時間", t, "s")
-	num, score := 0, 0
-	timeout := time.After(time.Second * time.Duration(t))
-	for sign := true; sign == true; {
-		word := RandomWord()
-		num++
-		fmt.Println("単語NO:", num, "この英単語をタイピングしてください：", word)
-		c := imp(os.Stdin)
-		select {
-		case right := <-c:
-			if right == word {
-				fmt.Println("正解です！")
-				score++
-			} else {
-				fmt.Println("残念、不正解です。")
-			}
-		case <-timeout:
-			fmt.Println("時間です！")
-			sign = false
+	var a oriPath
+	a.inputPA = "./img"
+	a.outputPA = "./img"
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Input the image format you want(like png or gif):")
+	if !scanner.Scan() {
+		fmt.Println("Please input the format.")
+		return
+	}
+	srcPath := scanner.Text()
+
+	var s []string
+	s, _ = convert.GetAllFile(a.inputPA, s)
+	for _, i := range s {
+		j := strings.Replace(i, "jpg", srcPath, -1) //jpgから任意の形式へ変換する
+		err := convert.Conv(i, j)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		}
 	}
-	fmt.Println("ゲーム終了！ やった単語数", num, " 時間内に正確単語数：", score)
-}
-
-//英単語をランダムに取り出す
-func RandomWord() (word string) {
-	words := []string{"banana", "apple", "milk", "fruits", "cat", "car", "elephant", "unbralla", "interface", "tissues", "format"}
-	rand.Seed(time.Now().Unix())
-	num := rand.Intn(len(words))
-	return words[num]
-}
-
-//入力単語を取得する
-func imp(r io.Reader) <-chan string {
-	wordCh := make(chan string, 1)
-	scanner := bufio.NewScanner(r)
-	scanner.Scan()
-	wordCh <- scanner.Text()
-	//close(wordCh)
-	return wordCh
 }

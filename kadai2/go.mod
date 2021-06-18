@@ -1,3 +1,3 @@
-module main.go
+module image.go
 
 go 1.16
