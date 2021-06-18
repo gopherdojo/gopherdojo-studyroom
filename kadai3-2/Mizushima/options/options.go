@@ -1,4 +1,4 @@
-package main
+package options
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 type Options struct {
 	Help bool `short:"h" long:"help" description:"print usage and exit"`
 	Procs int `short:"p" long:"procs" description:"the number of split to download"`
-	Output string `short:"o" long:"output" description:"path and file name of the file downloaded"`
+	Output string `short:"o" long:"output" description:"directory name of the file downloaded" required:"./"`
 }
 
 func (opts *Options) parse(argv []string) ([]string, error) {
@@ -31,33 +31,34 @@ func (opts Options) usage() []byte {
 	buf := bytes.Buffer{}
 
 	fmt.Fprintln(&buf, 
-					`Usage: pd [options] URL
-				Options:
-				-h,   --help               print usage and exit
-				-p,   --procs <num>        the number of split to download
-				-o,   --output <filename>  path and file name of the file downloaded
-				`,
+	`Usage: pd [options] URL
+
+	Options:
+	-h,   --help               print usage and exit
+	-p,   --procs <num>        the number of split to download
+	-o,   --output <filename>  path and file name of the file downloaded
+	`,
 	)
 
 	return buf.Bytes()
 }
 
-func ParseOptions(argv []string) (*Options, error) {
+func ParseOptions(argv []string) (*Options, []string, error) {
 	var opts Options
 	if len(argv) == 0 {
 		os.Stdout.Write(opts.usage())
-		return nil, errors.New("no options")
+		return nil, nil, errors.New("no options")
 	}
 
 	o, err := opts.parse(argv)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if opts.Help {
 		os.Stdout.Write(opts.usage())
-		return nil, errors.New("print usage")
+		return nil, nil, errors.New("print usage")
 	}
 
-	return &opts, nil
+	return &opts, o, nil
 }
