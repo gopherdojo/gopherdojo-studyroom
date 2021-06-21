@@ -15,7 +15,7 @@ type ConvertImage struct {
 	FromPath, ToPath string
 }
 
-// Convert is converts an image to a specified format
+// Convert converts an image to a specified format
 func (i ConvertImage) Convert(deleteOption bool) error {
 	sf, err := os.Open(i.FromPath)
 	if err != nil {
