@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http/httputil"
 	"os"
+	"runtime"
 
 	download "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/download"
 	getheader "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/getheader"
@@ -20,6 +21,10 @@ func main() {
 	opts, url, err := options.ParseOptions(os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if opts.Procs == 0 {
+		opts.Procs = runtime.NumCPU()
 	}
 
 	fmt.Printf("opts:%#v\n", opts)
