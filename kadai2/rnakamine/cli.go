@@ -63,8 +63,6 @@ func (c *CLI) Run(args []string) int {
 			fmt.Fprintln(c.errStream, "It suspends processing.")
 			return ExitCodeError
 		}
-	} else {
-		deleteOption = false
 	}
 
 	images, err := imgconv.GetConvertImages(dir, from, to)
