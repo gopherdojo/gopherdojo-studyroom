@@ -10,13 +10,18 @@ import (
 	imgconv "github.com/rnakamine/gopherdojo-studyroom/kadai2/rnakamine/lib"
 )
 
+// Represents the exit code of the command
 const (
-	ExitCodeOK    = 0
+	// Successful completion
+	ExitCodeOK = 0
+
+	// Error
 	ExitCodeError = 1
 )
 
 var supportFormat = [...]string{"jpg", "jpeg", "png", "gif"}
 
+// CLI is the main command line object
 type CLI struct {
 	inStream             io.Reader
 	outStream, errStream io.Writer
