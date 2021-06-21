@@ -57,7 +57,7 @@ func (c *CLI) Run(args []string) int {
 		in := bufio.NewScanner(c.inStream)
 		in.Scan()
 		answer := in.Text()
-		if answer == "y" || answer == "Y" {
+		if strings.ToLower(answer) == "y" {
 			deleteOption = true
 		} else {
 			fmt.Fprintln(c.errStream, "It suspends processing.")
