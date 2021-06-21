@@ -6,14 +6,17 @@ import (
 	"net/http/httputil"
 )
 
+// Request returns a response from url and a error.
 func Request(method string, url string, setH string, setV string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set(setH, setV)
-
+	if len(setH) == 0 {
+		req.Header.Set(setH, setV)
+	}
+	
 	dump, _ := httputil.DumpRequestOut(req, false)
 	fmt.Printf("request:\n%s\n", dump)
 

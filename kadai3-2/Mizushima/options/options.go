@@ -6,13 +6,14 @@ import (
 	"os"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/pkg/errors"
+	errors "github.com/pkg/errors"
 )
 
 type Options struct {
-	Help bool `short:"h" long:"help" description:"print usage and exit"`
-	Procs int `short:"p" long:"procs" description:"the number of split to download"`
-	Output string `short:"o" long:"output" description:"directory name of the file downloaded" required:"./"`
+	Help   bool   `short:"h" long:"help"`
+	Procs  int    `short:"p" long:"procs"`
+	Output string `short:"o" long:"output" default:"./"`
+	Tm     int    `short:"t" long:"time" default:"3"`
 }
 
 func (opts *Options) parse(argv []string) ([]string, error) {
@@ -30,13 +31,14 @@ func (opts *Options) parse(argv []string) ([]string, error) {
 func (opts Options) usage() []byte {
 	buf := bytes.Buffer{}
 
-	fmt.Fprintln(&buf, 
-	`Usage: pd [options] URL
+	fmt.Fprintln(&buf,
+		`Usage: pd [options] URL
 
 	Options:
-	-h,   --help               print usage and exit
-	-p,   --procs <num>        the number of split to download
-	-o,   --output <filename>  path and file name of the file downloaded
+	-h,   -help               print usage and exit
+	-p,   -procs <num>        the number of split to download
+	-o,   -output <filename>  path and file name of the file downloaded
+	-t,   -time <num>         Time limit minuts until the download is completed
 	`,
 	)
 
