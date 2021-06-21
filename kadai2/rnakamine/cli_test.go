@@ -23,7 +23,7 @@ func TestRun_parseError(t *testing.T) {
 	}
 }
 
-func TestCheckFormat(t *testing.T) {
+func TestIsValidFormat(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -38,7 +38,7 @@ func TestCheckFormat(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		truth := checkFormat(tt.ext)
+		truth := isValidFormat(tt.ext)
 		if truth != tt.expect {
 			t.Errorf(`checkFormat("%s") = %t, want %t`, tt.ext, truth, tt.expect)
 		}

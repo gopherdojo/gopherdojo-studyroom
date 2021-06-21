@@ -46,7 +46,7 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	if !checkFormat(from) || !checkFormat(to) {
+	if !isValidFormat(from) || !isValidFormat(to) {
 		fmt.Fprintln(c.errStream, "Unsupported format. Supported formats are jpg, jpeg, png and gif.")
 		return ExitCodeError
 	}
@@ -82,8 +82,8 @@ func (c *CLI) Run(args []string) int {
 	return ExitCodeOK
 }
 
-// CheckFormat is determine if the correct image is in the correct format.
-func checkFormat(ext string) bool {
+// isValidFormat determine if the correct image is in the correct format.
+func isValidFormat(ext string) bool {
 	for _, f := range supportFormat {
 		if strings.ToLower(ext) == f {
 			return true
