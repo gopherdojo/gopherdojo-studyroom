@@ -6,14 +6,14 @@ import (
 	"net/http/httputil"
 )
 
-// Request returns a response from url and a error.
+// Request throws a request and returns a response from url and a error.
 func Request(method string, url string, setH string, setV string) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(setH) == 0 {
+	if len(setH) != 0 {
 		req.Header.Set(setH, setV)
 	}
 	

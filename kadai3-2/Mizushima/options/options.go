@@ -1,3 +1,4 @@
+// This package implements command-line options for this application
 package options
 
 import (
@@ -9,13 +10,15 @@ import (
 	errors "github.com/pkg/errors"
 )
 
+// struct for options
 type Options struct {
 	Help   bool   `short:"h" long:"help"`
-	Procs  int    `short:"p" long:"procs"`
+	Procs  uint    `short:"p" long:"procs"`
 	Output string `short:"o" long:"output" default:"./"`
-	Tm     int    `short:"t" long:"time" default:"3"`
+	Tm     int    `short:"t" long:"time" default:"1"`
 }
 
+// parse options
 func (opts *Options) parse(argv []string) ([]string, error) {
 	p := flags.NewParser(opts, flags.PrintErrors)
 	args, err := p.ParseArgs(argv)
@@ -28,6 +31,7 @@ func (opts *Options) parse(argv []string) ([]string, error) {
 	return args, nil
 }
 
+// usage prints a description of avilable options
 func (opts Options) usage() []byte {
 	buf := bytes.Buffer{}
 
@@ -37,8 +41,8 @@ func (opts Options) usage() []byte {
 	Options:
 	-h,   -help               print usage and exit
 	-p,   -procs <num>        the number of split to download
-	-o,   -output <filename>  path and file name of the file downloaded
-	-t,   -time <num>         Time limit minuts until the download is completed
+	-o,   -output <filename>  path of the file downloaded
+	-t,   -time <num>         Time limit minuts until the each download is completed
 	`,
 	)
 

@@ -36,11 +36,15 @@ func ResHeaderComma(w io.Writer, r *http.Response, header string) (string, error
 }
 
 
-func GetSize(resp *http.Response) (int, error) {
+func GetSize(resp *http.Response) (uint, error) {
 	contLen, err := ResHeader(os.Stdout, resp, "Content-Length")
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
-	return strconv.Atoi(contLen[0])
+	ret, err := strconv.ParseUint(contLen[0], 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(ret), nil
 }
 
