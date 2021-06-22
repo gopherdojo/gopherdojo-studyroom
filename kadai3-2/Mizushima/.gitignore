@@ -1,3 +1,4 @@
 http.request*
 *.jpg
 documents
+bin/*
