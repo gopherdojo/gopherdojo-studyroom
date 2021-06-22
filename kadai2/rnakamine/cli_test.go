@@ -17,9 +17,9 @@ func TestRun_parseError(t *testing.T) {
 		t.Errorf("ExitStatus=%d, want %d", status, ExitCodeError)
 	}
 
-	expect := "flag provided but not defined: -foo"
-	if !strings.Contains(errStream.String(), expect) {
-		t.Errorf("Output=%s, want %s", errStream.String(), expect)
+	expected := "flag provided but not defined: -foo"
+	if !strings.Contains(errStream.String(), expected) {
+		t.Errorf("Output=%s, want %s", errStream.String(), expected)
 	}
 }
 
@@ -27,20 +27,20 @@ func TestIsValidFormat(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		ext    string
-		expect bool
+		ext      string
+		expected bool
 	}{
-		{ext: "jpg", expect: true},
-		{ext: "jpeg", expect: true},
-		{ext: "png", expect: true},
-		{ext: "gif", expect: true},
-		{ext: "txt", expect: false},
+		{ext: "jpg", expected: true},
+		{ext: "jpeg", expected: true},
+		{ext: "png", expected: true},
+		{ext: "gif", expected: true},
+		{ext: "txt", expected: false},
 	}
 
 	for _, tt := range tests {
 		truth := isValidFormat(tt.ext)
-		if truth != tt.expect {
-			t.Errorf(`checkFormat("%s") = %t, want %t`, tt.ext, truth, tt.expect)
+		if truth != tt.expected {
+			t.Errorf(`checkFormat("%s") = %t, want %t`, tt.ext, truth, tt.expected)
 		}
 	}
 }

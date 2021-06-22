@@ -31,12 +31,12 @@ func TestGetConvertImages(t *testing.T) {
 
 	tests := []struct {
 		from, to string
-		expect   []ConvertImage
+		expected []ConvertImage
 	}{
 		{
 			from: "jpg",
 			to:   "png",
-			expect: []ConvertImage{
+			expected: []ConvertImage{
 				{FromPath: tmpTestDirectory + "A.jpg", ToPath: tmpTestDirectory + "A.png"},
 				{FromPath: tmpTestDirectory + "B.jpg", ToPath: tmpTestDirectory + "B.png"},
 			},
@@ -44,7 +44,7 @@ func TestGetConvertImages(t *testing.T) {
 		{
 			from: "png",
 			to:   "jpg",
-			expect: []ConvertImage{
+			expected: []ConvertImage{
 				{FromPath: tmpTestDirectory + "C.png", ToPath: tmpTestDirectory + "C.jpg"},
 				{FromPath: tmpTestDirectory + "D.png", ToPath: tmpTestDirectory + "D.jpg"},
 			},
@@ -52,7 +52,7 @@ func TestGetConvertImages(t *testing.T) {
 		{
 			from: "gif",
 			to:   "png",
-			expect: []ConvertImage{
+			expected: []ConvertImage{
 				{FromPath: tmpTestDirectory + "sub/E.gif", ToPath: tmpTestDirectory + "sub/E.png"},
 				{FromPath: tmpTestDirectory + "sub/F.gif", ToPath: tmpTestDirectory + "sub/F.png"},
 			},
@@ -66,12 +66,12 @@ func TestGetConvertImages(t *testing.T) {
 		}
 
 		for index, image := range images {
-			if image.FromPath != tt.expect[index].FromPath {
-				t.Errorf("FromPath=%s, want %s", image.FromPath, tt.expect[index].FromPath)
+			if image.FromPath != tt.expected[index].FromPath {
+				t.Errorf("FromPath=%s, want %s", image.FromPath, tt.expected[index].FromPath)
 			}
 
-			if image.ToPath != tt.expect[index].ToPath {
-				t.Errorf("ToPath=%s, want %s", image.ToPath, tt.expect[index].ToPath)
+			if image.ToPath != tt.expected[index].ToPath {
+				t.Errorf("ToPath=%s, want %s", image.ToPath, tt.expected[index].ToPath)
 			}
 		}
 	}
@@ -81,26 +81,26 @@ func TestConvert(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		convertImage                     ConvertImage
-		deleteOption, fromExist, toExist bool
+		convertImage                                     ConvertImage
+		deleteOption, expectedFromExist, expectedToExist bool
 	}{
 		{
-			convertImage: ConvertImage{FromPath: tmpTestDirectory + "A.jpg", ToPath: tmpTestDirectory + "A.png"},
-			deleteOption: true,
-			fromExist:    false,
-			toExist:      true,
+			convertImage:      ConvertImage{FromPath: tmpTestDirectory + "A.jpg", ToPath: tmpTestDirectory + "A.png"},
+			deleteOption:      true,
+			expectedFromExist: false,
+			expectedToExist:   true,
 		},
 		{
-			convertImage: ConvertImage{FromPath: tmpTestDirectory + "C.png", ToPath: tmpTestDirectory + "C.jpg"},
-			deleteOption: false,
-			fromExist:    true,
-			toExist:      true,
+			convertImage:      ConvertImage{FromPath: tmpTestDirectory + "C.png", ToPath: tmpTestDirectory + "C.jpg"},
+			deleteOption:      false,
+			expectedFromExist: true,
+			expectedToExist:   true,
 		},
 		{
-			convertImage: ConvertImage{FromPath: tmpTestDirectory + "sub/E.gif", ToPath: tmpTestDirectory + "sub/E.png"},
-			deleteOption: true,
-			fromExist:    false,
-			toExist:      true,
+			convertImage:      ConvertImage{FromPath: tmpTestDirectory + "sub/E.gif", ToPath: tmpTestDirectory + "sub/E.png"},
+			deleteOption:      true,
+			expectedFromExist: false,
+			expectedToExist:   true,
 		},
 	}
 
@@ -110,14 +110,14 @@ func TestConvert(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		fromExist := testFileExist(t, tt.convertImage.FromPath)
-		if fromExist != tt.fromExist {
-			t.Errorf("fromExist=%t, want %t", fromExist, tt.fromExist)
+		expectedFromExist := testFileExist(t, tt.convertImage.FromPath)
+		if expectedFromExist != tt.expectedFromExist {
+			t.Errorf("expectedFromExist=%t, want %t", expectedFromExist, tt.expectedFromExist)
 		}
 
-		toExist := testFileExist(t, tt.convertImage.ToPath)
-		if toExist != tt.toExist {
-			t.Errorf("toExist=%t, want %t", toExist, tt.toExist)
+		expectedToExist := testFileExist(t, tt.convertImage.ToPath)
+		if expectedToExist != tt.expectedToExist {
+			t.Errorf("expectedToExist=%t, want %t", expectedToExist, tt.expectedToExist)
 		}
 	}
 }
