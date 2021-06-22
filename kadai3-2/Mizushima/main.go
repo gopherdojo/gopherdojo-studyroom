@@ -80,8 +80,14 @@ func main() {
 		// ctx, cancel := context.WithTimeout(context.Background(),time.Duration(opts.Tm)*time.Minute)
 		ctx := context.Background()
 		clean := func() { 
-			os.RemoveAll(tmpDirName)
-			os.Remove(opts.Output + filepath.Base(url))
+			out.Close()
+			// delete the tmporary directory
+			if err := os.RemoveAll(tmpDirName); err != nil {
+				log.Fatalf("err: RemoveAll: %s\n", err)
+			}
+			if err := os.Remove(opts.Output + filepath.Base(url)); err != nil {
+				log.Fatalf("err: os.Remove: %s\n", err)
+			}
 		}
 		ctx, cancel := listen.Listen(ctx, os.Stdout, clean)
 

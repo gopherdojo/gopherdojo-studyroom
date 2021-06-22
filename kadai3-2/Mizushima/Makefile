@@ -12,6 +12,7 @@ build:
 
 test: clean all
 	$(BINARY_NAME) http://i.imgur.com/z4d4kWk.jpg -o ./test_download
+	$(BINARY_NAME) http://socia-enterprise.co.jp -o ./test_download
 
 clean:
 	$(GOCLEAN)
