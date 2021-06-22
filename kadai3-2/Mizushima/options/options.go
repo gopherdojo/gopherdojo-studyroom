@@ -15,7 +15,6 @@ type Options struct {
 	Help   bool   `short:"h" long:"help"`
 	Procs  uint    `short:"p" long:"procs"`
 	Output string `short:"o" long:"output" default:"./"`
-	Tm     int    `short:"t" long:"time" default:"1"`
 }
 
 // parse options
@@ -42,7 +41,6 @@ func (opts Options) usage() []byte {
 	-h,   -help               print usage and exit
 	-p,   -procs <num>        the number of split to download
 	-o,   -output <filename>  path of the file downloaded
-	-t,   -time <num>         Time limit minuts until the each download is completed
 	`,
 	)
 

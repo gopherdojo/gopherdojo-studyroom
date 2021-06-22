@@ -70,12 +70,19 @@ func main() {
 		tmpDirName := opts.Output + strconv.Itoa(i)
 		err = os.Mkdir(tmpDirName, 0777)
 		if err != nil {
+			out.Close()
+			if err2 := os.Remove(opts.Output + filepath.Base(url)); err2 != nil {
+				log.Fatalf("err: os.Mkdir: %s\nerr: os.Remove: %s\n", err, err2)
+			}
 			log.Fatalf("err: os.Mkdir: %s\n", err)
 		}
 
 		// ctx, cancel := context.WithTimeout(context.Background(),time.Duration(opts.Tm)*time.Minute)
 		ctx := context.Background()
-		clean := func() { os.RemoveAll(tmpDirName)}
+		clean := func() { 
+			os.RemoveAll(tmpDirName)
+			os.Remove(opts.Output + filepath.Base(url))
+		}
 		ctx, cancel := listen.Listen(ctx, os.Stdout, clean)
 
 		var isPara bool = true
@@ -83,6 +90,7 @@ func main() {
 		if err != nil && err.Error() == "cannot find Accept-Ranges header" {
 			isPara = false  
 		} else if err != nil {
+			clean()
 			log.Fatalf("err: getheader.ResHeader: %s\n", err)
 		} else if accept[0] != "bytes" {
 			isPara = false
@@ -90,7 +98,6 @@ func main() {
 		}
 		
 		err = download.Downloader(url, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
-		// err = pararel(url, out, fileSize, partial, opts.Procs, tmpDirName, ctx)
 		if err != nil {
 			log.Fatalf("err: %s\n", err)
 		}

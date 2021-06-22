@@ -9,6 +9,7 @@ import (
 	"syscall"
 )
 
+// Listen returns a context for keyboad(ctrl + c) interrupt.
 func Listen(ctx context.Context, w io.Writer, f func()) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 

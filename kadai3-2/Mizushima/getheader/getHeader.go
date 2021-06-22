@@ -1,3 +1,4 @@
+// getheader package implements to read a response header of http
 package getheader
 
 import (
@@ -8,13 +9,13 @@ import (
 	"strconv"
 )
 
-// get all headers
+// Headers returns all headers
 func Headers(w io.Writer, r *http.Response) {
 	h := r.Header
 	fmt.Fprintln(w, h)
 }
 
-// get the specified header
+// ResHeader returns the value of the specified header
 func ResHeader(w io.Writer, r *http.Response, header string) ([]string, error) {
 	h, is := r.Header[header]
 	fmt.Println(h)
@@ -25,7 +26,7 @@ func ResHeader(w io.Writer, r *http.Response, header string) ([]string, error) {
 	return h, nil
 }
 
-// get the specified header by commas
+// ResHeaderComma returns the value of the specified response header by commas.
 func ResHeaderComma(w io.Writer, r *http.Response, header string) (string, error) {
 	h := r.Header.Get(header)
 	// if !is {
@@ -35,7 +36,7 @@ func ResHeaderComma(w io.Writer, r *http.Response, header string) (string, error
 	return h, nil
 }
 
-
+// GetSize returns size from response header.
 func GetSize(resp *http.Response) (uint, error) {
 	contLen, err := ResHeader(os.Stdout, resp, "Content-Length")
 	if err != nil {

@@ -1,3 +1,5 @@
+// download package implements parallel download and non-parallel
+// download.
 package download
 
 import (
@@ -12,14 +14,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+//PDownloader is user-defined struct
 type PDownloader struct {
-	url    string
-	output *os.File
-	fileSize uint
-	part   uint
-	procs  uint
+	url    string // URL for the download
+	output *os.File // Where to save the downloaded file
+	fileSize uint  // size of the downloaded file
+	part   uint  // Number of divided bytes
+	procs  uint  // Number of parallel download process
 }
 
+// newPDownloader is constructor for PDownloader.
 func newPDownloader(url string, output *os.File, fileSize uint, part uint, procs uint) *PDownloader {
 	return &PDownloader{
 			url: url,
@@ -30,6 +34,9 @@ func newPDownloader(url string, output *os.File, fileSize uint, part uint, procs
 		}
 }
 
+// Downloader gets elements of PDownloader, the download is parallel or not, temprary 
+// directory name and context.Context, and drives DownloadFile method if isPara is false
+// or PDownload if isPrara is true.
 // 
 func Downloader(url string, 
 	output *os.File, fileSize uint, part uint, procs uint, isPara bool, 
@@ -52,7 +59,7 @@ func Downloader(url string,
 	return nil
 }
 
-// non-pararel download
+// DownloadFile drives a non-parallel download
 func (pd *PDownloader)DownloadFile() error {
 		
 	resp, err := request.Request("GET", pd.url, "Range", "bytes=281-294")
@@ -69,6 +76,7 @@ func (pd *PDownloader)DownloadFile() error {
 	return nil
 }
 
+// PDownload drives parallel download.
 func (pd *PDownloader)PDownload(grp *errgroup.Group, 
 	tmpDirName string, procs uint, ctx context.Context) error {
 	// fmt.Printf("%d/%d downloading...\n", idx, pd.procs)
@@ -81,7 +89,7 @@ func (pd *PDownloader)PDownload(grp *errgroup.Group,
 			start = idx*pd.part + 1
 		}
 	
-		// 最後だったら
+		// if idx is the end
 		if idx == pd.procs-1 {
 			end = pd.fileSize
 		} else {
@@ -102,6 +110,9 @@ func (pd *PDownloader)PDownload(grp *errgroup.Group,
 	return nil
 }
 
+// ReqToMakeCopy sends a get request with "Range" field with "bytes" range.
+// And gets response and make a copy to a temprary file in temprary directory from response body.
+//
 func (pd *PDownloader)ReqToMakeCopy(tmpDirName, bytes string, idx uint) error {
 	fmt.Printf("ReqToMakeCopy: tmpDirName: %s, bytes %s, idx: %d\n", tmpDirName, bytes, idx)
 	resp, err := request.Request("GET", pd.url, "Range", bytes)
