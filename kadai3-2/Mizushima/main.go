@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -9,11 +10,14 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"time"
 
-	download "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/download"
-	getheader "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/getheader"
-	listen "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/listen"
-	options "github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/options"
+	flags "github.com/jessevdk/go-flags"
+	errors "github.com/pkg/errors"
+
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/download"
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/getheader"
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/listen"
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/request"
 )
 
@@ -22,46 +26,97 @@ import (
 // go run main.go http://i.imgur.com/z4d4kWk.jpg -o .
 // go run main.go https://misc.laboradian.com/test/003/ -o .
 
-func main() {
-	opts, urls, err := options.ParseOptions(os.Args[1:])
+// struct for options
+type Options struct {
+	Help   bool   `short:"h" long:"help"`
+	Procs  uint   `short:"p" long:"procs"`
+	Output string `short:"o" long:"output" default:"./"`
+}
+
+// parse options
+func (opts *Options) parse(argv []string) ([]string, error) {
+	p := flags.NewParser(opts, flags.PrintErrors)
+	args, err := p.ParseArgs(argv)
+
 	if err != nil {
-		log.Fatal(err)
+		os.Stderr.Write(opts.usage())
+		return nil, errors.Wrap(err, "invalid command line options")
 	}
 
+	return args, nil
+}
+
+// usage prints a description of avilable options
+func (opts Options) usage() []byte {
+	buf := bytes.Buffer{}
+
+	fmt.Fprintln(&buf,
+		`Usage: pd [options] URL
+
+	Options:
+	-h,   --help               print usage and exit
+	-p,   --procs <num>        the number of split to download (default: the number of CPU cores)
+	-o,   --output <filename>  path of the file downloaded (default: current directory)
+	`,
+	)
+
+	return buf.Bytes()
+}
+
+func main() {
+
+	// parse options
+	var opts Options
+	argv := os.Args[1:]
+	if len(argv) == 0 {
+		os.Stdout.Write(opts.usage())
+		log.Fatalf("err: %s\n", errors.New("no options"))
+	}
+
+	urls, err := opts.parse(argv)
+	if err != nil {
+		log.Fatalf("err: %s\n", err)
+	}
+
+	if opts.Help {
+		os.Stdout.Write(opts.usage())
+		log.Fatalf("err: %s\n", errors.New("print usage"))
+	}
+
+	//
 	if opts.Procs == 0 {
 		opts.Procs = uint(runtime.NumCPU())
 	}
 
-	fmt.Printf("opts:%#v\n", opts)
-	fmt.Println(urls)
-	
 	if len(opts.Output) > 0 && opts.Output[len(opts.Output)-1] != '/' {
 		opts.Output += "/"
 	}
 
+	// download from each url in urls
 	for i, url := range urls {
 
-		resp, err := request.Request("HEAD", url, "", "")
+		// make a empty context
+		ctx := context.Background()
+		ctxTimeout, cancelTimeout := context.WithTimeout(ctx, 10*time.Second)
+		defer cancelTimeout()
+
+		resp, err := request.Request(ctxTimeout, "HEAD", url, "", "")
 		if err != nil {
 			log.Fatalf("err: %s\n", err)
 		}
-		
-		fmt.Println("response:")
-		bytes, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			log.Fatalf("err: httputil.DumpResponse: %s\n", err)
-		}
-		fmt.Println(string(bytes))
+
+		h, _ := httputil.DumpResponse(resp, false)
+		fmt.Printf("response:\n%s", h)
 
 		fileSize, err := getheader.GetSize(resp)
 		if err != nil {
-			log.Fatalf("err: %s\n", err)
+			log.Fatalf("err: getheader.GetSize: %s\n", err)
 		}
 		resp.Body.Close()
 
 		partial := fileSize / opts.Procs
 
-		out, err := os.OpenFile(opts.Output + filepath.Base(url), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+		out, err := os.OpenFile(opts.Output+filepath.Base(url), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 		if err != nil {
 			log.Fatalf("err: os.Create: %s\n", err)
 		}
@@ -78,8 +133,7 @@ func main() {
 		}
 
 		// ctx, cancel := context.WithTimeout(context.Background(),time.Duration(opts.Tm)*time.Minute)
-		ctx := context.Background()
-		clean := func() { 
+		clean := func() {
 			out.Close()
 			// delete the tmporary directory
 			if err := os.RemoveAll(tmpDirName); err != nil {
@@ -89,33 +143,33 @@ func main() {
 				log.Fatalf("err: os.Remove: %s\n", err)
 			}
 		}
-		ctx, cancel := listen.Listen(ctx, os.Stdout, clean)
+		ctx, cancel := listen.Listen(ctxTimeout, os.Stdout, clean)
 
 		var isPara bool = true
 		accept, err := getheader.ResHeader(os.Stdout, resp, "Accept-Ranges")
 		if err != nil && err.Error() == "cannot find Accept-Ranges header" {
-			isPara = false  
+			isPara = false
 		} else if err != nil {
 			clean()
 			log.Fatalf("err: getheader.ResHeader: %s\n", err)
 		} else if accept[0] != "bytes" {
 			isPara = false
-			continue;
+			continue
 		}
-		
+
 		err = download.Downloader(url, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
 		if err != nil {
 			log.Fatalf("err: %s\n", err)
 		}
 
-		fmt.Println("download complete")
+		fmt.Printf("download complete: %s\n", url)
 
 		err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
 		if err != nil {
 			log.Fatalf("err: MergeFiles: %s\n", err)
 		}
 
-		// delete the tmporary directory
+		// delete the tmporary directory only
 		if err := os.RemoveAll(tmpDirName); err != nil {
 			log.Fatalf("err: RemoveAll: %s\n", err)
 		}
@@ -128,7 +182,7 @@ func main() {
 func MergeFiles(tmpDirName string, procs, fileSize uint, output *os.File) error {
 	for i := uint(0); i < procs; i++ {
 
-		body, err := os.ReadFile(tmpDirName+"/"+strconv.Itoa(int(i)))
+		body, err := os.ReadFile(tmpDirName + "/" + strconv.Itoa(int(i)))
 		if err != nil {
 			return err
 		}

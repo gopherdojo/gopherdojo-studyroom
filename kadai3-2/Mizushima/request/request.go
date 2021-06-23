@@ -1,14 +1,14 @@
 package request
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 )
 
 // Request throws a request and returns a response from url and a error.
-func Request(method string, url string, setH string, setV string) (*http.Response, error) {
-	req, err := http.NewRequest(method, url, nil)
+func Request(ctx context.Context, method string, url string, setH string, setV string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -16,16 +16,11 @@ func Request(method string, url string, setH string, setV string) (*http.Respons
 	if len(setH) != 0 {
 		req.Header.Set(setH, setV)
 	}
-	
-	dump, _ := httputil.DumpRequestOut(req, false)
-	fmt.Printf("request:\n%s\n", dump)
 
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("request.Request err: %s", err)
 	}
 	return resp, nil
 }
-
-

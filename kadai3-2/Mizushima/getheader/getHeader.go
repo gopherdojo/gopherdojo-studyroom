@@ -48,4 +48,3 @@ func GetSize(resp *http.Response) (uint, error) {
 	}
 	return uint(ret), nil
 }
-

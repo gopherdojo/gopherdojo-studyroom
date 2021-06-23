@@ -17,7 +17,7 @@ func Listen(ctx context.Context, w io.Writer, f func()) (context.Context, func()
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-ch
-		fmt.Fprintln(w, "\n^Csignal pressed. interrupt.")
+		fmt.Fprintln(w, "\n^Csignal : interrupt.")
 		cancel()
 		f()
 		os.Exit(0)

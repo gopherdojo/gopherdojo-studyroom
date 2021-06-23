@@ -5,14 +5,15 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 
-all: build
+all: build test
 
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-test: clean all
+test:
 	$(BINARY_NAME) http://i.imgur.com/z4d4kWk.jpg -o ./test_download
 	$(BINARY_NAME) http://socia-enterprise.co.jp -o ./test_download
+	$(BINARY_NAME) http://i.imgur.com/z4d4kWk.jpg http://socia-enterprise.co.jp -o ./test_download
 
 clean:
 	$(GOCLEAN)
