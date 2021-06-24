@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"strconv"
 
@@ -16,7 +17,7 @@ import (
 
 //PDownloader is user-defined struct
 type PDownloader struct {
-	url      string   // URL for the download
+	url      *url.URL   // URL for the download
 	output   *os.File // Where to save the downloaded file
 	fileSize uint     // size of the downloaded file
 	part     uint     // Number of divided bytes
@@ -24,7 +25,7 @@ type PDownloader struct {
 }
 
 // newPDownloader is constructor for PDownloader.
-func newPDownloader(url string, output *os.File, fileSize uint, part uint, procs uint) *PDownloader {
+func newPDownloader(url *url.URL, output *os.File, fileSize uint, part uint, procs uint) *PDownloader {
 	return &PDownloader{
 		url:      url,
 		output:   output,
@@ -38,7 +39,7 @@ func newPDownloader(url string, output *os.File, fileSize uint, part uint, procs
 // directory name and context.Context, and drives DownloadFile method if isPara is false
 // or PDownload if isPrara is true.
 //
-func Downloader(url string,
+func Downloader(url *url.URL,
 	output *os.File, fileSize uint, part uint, procs uint, isPara bool,
 	tmpDirName string, ctx context.Context) error {
 	pd := newPDownloader(url, output, fileSize, part, procs)
@@ -49,8 +50,10 @@ func Downloader(url string,
 			return err
 		}
 	} else {
-		grp, ctx := errgroup.WithContext(context.Background())
-		pd.PDownload(grp, tmpDirName, procs, ctx)
+		grp, ctx := errgroup.WithContext(ctx)
+		if err := pd.PDownload(grp, tmpDirName, procs, ctx); err != nil {
+			return err
+		}
 
 		if err := grp.Wait(); err != nil {
 			return err
@@ -60,13 +63,15 @@ func Downloader(url string,
 }
 
 // DownloadFile drives a non-parallel download
-func (pd *PDownloader) DownloadFile(ctx context.Context) error {
+func (pd *PDownloader) DownloadFile(ctx context.Context) (err error) {
 
-	resp, err := request.Request(ctx, "GET", pd.url, "Range", "bytes=281-294")
+	resp, err := request.Request(ctx, "GET", pd.url.String(), "", "")
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err = resp.Body.Close()
+	}()
 
 	_, err = io.Copy(pd.output, resp.Body)
 	if err != nil {
@@ -113,8 +118,8 @@ func (pd *PDownloader) PDownload(grp *errgroup.Group,
 // And gets response and make a copy to a temprary file in temprary directory from response body.
 //
 func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx context.Context) error {
-	fmt.Printf("ReqToMakeCopy: tmpDirName: %s, bytes %s, idx: %d\n", tmpDirName, bytes, idx)
-	resp, err := request.Request(ctx, "GET", pd.url, "Range", bytes)
+	// fmt.Printf("ReqToMakeCopy: tmpDirName: %s, bytes %s, idx: %d\n", tmpDirName, bytes, idx)
+	resp, err := request.Request(ctx, "GET", pd.url.String(), "Range", bytes)
 	if err != nil {
 		return err
 	}
@@ -125,9 +130,8 @@ func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx con
 	}
 	// fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
 	defer func() {
-		err = tmpOut.Close()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "err: tmpOut.Close(): %s", err.Error())
+		if err = tmpOut.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "err: tmpOut.Close(): %w", err.Error())
 		}
 	}()
 

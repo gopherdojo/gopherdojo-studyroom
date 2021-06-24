@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http/httputil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -13,7 +15,6 @@ import (
 	"time"
 
 	flags "github.com/jessevdk/go-flags"
-	errors "github.com/pkg/errors"
 
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/download"
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/getheader"
@@ -31,16 +32,19 @@ type Options struct {
 	Help   bool   `short:"h" long:"help"`
 	Procs  uint   `short:"p" long:"procs"`
 	Output string `short:"o" long:"output" default:"./"`
+	Tm     int    `short:"t" long:"timeout" default:"120"`
 }
 
 // parse options
 func (opts *Options) parse(argv []string) ([]string, error) {
 	p := flags.NewParser(opts, flags.PrintErrors)
 	args, err := p.ParseArgs(argv)
-
 	if err != nil {
-		os.Stderr.Write(opts.usage())
-		return nil, errors.Wrap(err, "invalid command line options")
+		_, err2 := os.Stderr.Write(opts.usage())
+		if err2 != nil {
+			return nil, fmt.Errorf("%w: invalid command line options: cannot print usage: %w", err, err2)
+		}
+		return nil, fmt.Errorf("%w: invalid command line options", err)
 	}
 
 	return args, nil
@@ -51,12 +55,13 @@ func (opts Options) usage() []byte {
 	buf := bytes.Buffer{}
 
 	fmt.Fprintln(&buf,
-		`Usage: pd [options] URL
+		`Usage: paraDW [options] URL (URL2, URL3, ...)
 
 	Options:
 	-h,   --help               print usage and exit
 	-p,   --procs <num>        the number of split to download (default: the number of CPU cores)
 	-o,   --output <filename>  path of the file downloaded (default: current directory)
+	-t,   --timeout <num>      Time limit of return of http response in seconds (default: 120)
 	`,
 	)
 
@@ -69,78 +74,115 @@ func main() {
 	var opts Options
 	argv := os.Args[1:]
 	if len(argv) == 0 {
-		os.Stdout.Write(opts.usage())
-		log.Fatalf("err: %s\n", errors.New("no options"))
+		if _, err := os.Stdout.Write(opts.usage()); err != nil {
+			log.Fatalf("err: %w: %w\n", errors.New("no options"), err)
+		}
+		log.Fatalf("err: %w\n", errors.New("no options"))
 	}
 
-	urls, err := opts.parse(argv)
+	urlsStr, err := opts.parse(argv)
 	if err != nil {
-		log.Fatalf("err: %s\n", err)
+		log.Fatalf("err: %w\n", err)
 	}
+
+	var urls []*url.URL
+	for _, u := range urlsStr {
+		url, err := url.ParseRequestURI(u)
+		if err != nil {
+			log.Fatalf("err: url.ParseRequestURI: %w\n", err)
+		}
+		urls = append(urls, url)
+	}
+
+	fmt.Printf("timeout: %d\n", opts.Tm)
 
 	if opts.Help {
-		os.Stdout.Write(opts.usage())
-		log.Fatalf("err: %s\n", errors.New("print usage"))
+		if _, err := os.Stdout.Write(opts.usage()); err != nil {
+			log.Fatalf("err: cannot print usage: %w", err)
+		}
+		log.Fatal(errors.New("print usage"))
 	}
 
-	//
+	// if procs was inputted, set the number of runtime.NumCPU() to opts.Procs.
 	if opts.Procs == 0 {
 		opts.Procs = uint(runtime.NumCPU())
 	}
 
+	// if opts.Output inputted and the end of opts.Output is not '/',
+	// add '/'.
 	if len(opts.Output) > 0 && opts.Output[len(opts.Output)-1] != '/' {
 		opts.Output += "/"
 	}
 
 	// download from each url in urls
-	for i, url := range urls {
+	for i, urlObj := range urls {
 
 		// make a empty context
 		ctx := context.Background()
-		ctxTimeout, cancelTimeout := context.WithTimeout(ctx, 10*time.Second)
+		ctxTimeout, cancelTimeout := context.WithTimeout(ctx, time.Duration(opts.Tm)*time.Second)
 		defer cancelTimeout()
 
-		resp, err := request.Request(ctxTimeout, "HEAD", url, "", "")
+		// send "HEAD" request, and gets response.
+		resp, err := request.Request(ctxTimeout, "HEAD", urlObj.String(), "", "")
 		if err != nil {
-			log.Fatalf("err: %s\n", err)
+			log.Fatalf("err: %w\n", err)
 		}
 
+		// show response header
 		h, _ := httputil.DumpResponse(resp, false)
 		fmt.Printf("response:\n%s", h)
 
+		// get the size from the response header.
 		fileSize, err := getheader.GetSize(resp)
 		if err != nil {
-			log.Fatalf("err: getheader.GetSize: %s\n", err)
+			log.Fatalf("err: getheader.GetSize: %w\n", err)
 		}
-		resp.Body.Close()
+		if err = resp.Body.Close(); err != nil {
+			log.Fatalf("err: %w", err)
+		}
 
+		// How many bytes to download at a time
 		partial := fileSize / opts.Procs
 
-		out, err := os.OpenFile(opts.Output+filepath.Base(url), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
-		if err != nil {
-			log.Fatalf("err: os.Create: %s\n", err)
+		outputPath := opts.Output + filepath.Base(urlObj.String())
+		// if there is the same file in opts.Output, delete that file in advance.
+		if isExists(outputPath) {
+			err := os.Remove(outputPath)
+			if err != nil {
+				log.Fatalf("err: isExists: os.Remove: %w\n", err)
+			}
 		}
 
-		// make a temporary directory
+		// make a file for download
+		out, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+		if err != nil {
+			log.Fatalf("err: os.Create: %w\n", err)
+		}
+
+		// make a temporary directory for parallel download
 		tmpDirName := opts.Output + strconv.Itoa(i)
 		err = os.Mkdir(tmpDirName, 0777)
 		if err != nil {
-			out.Close()
-			if err2 := os.Remove(opts.Output + filepath.Base(url)); err2 != nil {
-				log.Fatalf("err: os.Mkdir: %s\nerr: os.Remove: %s\n", err, err2)
+			if err3 := out.Close(); err3 != nil {
+				log.Fatalf("err: %w", err3)
 			}
-			log.Fatalf("err: os.Mkdir: %s\n", err)
+			if err2 := os.Remove(opts.Output + filepath.Base(urlObj.String())); err2 != nil {
+				log.Fatalf("err: os.Mkdir: %w\nerr: os.Remove: %w\n", err, err2)
+			}
+			log.Fatalf("err: os.Mkdir: %w\n", err)
 		}
 
 		// ctx, cancel := context.WithTimeout(context.Background(),time.Duration(opts.Tm)*time.Minute)
 		clean := func() {
-			out.Close()
+			if err := out.Close(); err != nil {
+				log.Fatalf("err: out.Close: %w\n", err)
+			}
 			// delete the tmporary directory
 			if err := os.RemoveAll(tmpDirName); err != nil {
-				log.Fatalf("err: RemoveAll: %s\n", err)
+				log.Fatalf("err: RemoveAll: %w\n", err)
 			}
-			if err := os.Remove(opts.Output + filepath.Base(url)); err != nil {
-				log.Fatalf("err: os.Remove: %s\n", err)
+			if err := os.Remove(opts.Output + filepath.Base(urlObj.String())); err != nil {
+				log.Fatalf("err: os.Remove: %w\n", err)
 			}
 		}
 		ctx, cancel := listen.Listen(ctxTimeout, os.Stdout, clean)
@@ -151,34 +193,41 @@ func main() {
 			isPara = false
 		} else if err != nil {
 			clean()
-			log.Fatalf("err: getheader.ResHeader: %s\n", err)
-		} else if accept[0] != "bytes" {
+			log.Fatalf("err: getheader.ResHeader: %w\n", err)
+		} else if accept[0] != "bytes" || opts.Procs == 1 {
 			isPara = false
 			continue
 		}
 
-		err = download.Downloader(url, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
+		// drive a download process
+		err = download.Downloader(urlObj, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
 		if err != nil {
-			log.Fatalf("err: %s\n", err)
+			log.Fatalf("err: %w\n", err)
 		}
 
-		fmt.Printf("download complete: %s\n", url)
+		fmt.Printf("download complete: %s\n", urlObj.String())
 
-		err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
-		if err != nil {
-			log.Fatalf("err: MergeFiles: %s\n", err)
+		// Merge the temporary files into "out", when parallel download executed.
+		if isPara {
+			err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
+			if err != nil {
+				log.Fatalf("err: MergeFiles: %w\n", err)
+			}
 		}
 
 		// delete the tmporary directory only
 		if err := os.RemoveAll(tmpDirName); err != nil {
-			log.Fatalf("err: RemoveAll: %s\n", err)
+			log.Fatalf("err: RemoveAll: %w\n", err)
 		}
 
 		cancel()
-		out.Close()
+		if err = out.Close(); err != nil {
+			log.Fatalf("err: %w", err)
+		}
 	}
 }
 
+// MergeFiles merges temporary files made for parallel download into "output".
 func MergeFiles(tmpDirName string, procs, fileSize uint, output *os.File) error {
 	for i := uint(0); i < procs; i++ {
 
@@ -187,8 +236,16 @@ func MergeFiles(tmpDirName string, procs, fileSize uint, output *os.File) error 
 			return err
 		}
 
-		fmt.Fprint(output, string(body))
+		if _, err = fmt.Fprint(output, string(body)); err != nil {
+			return err
+		}
 		fmt.Printf("target file: %s, len=%d written\n", output.Name(), len(string(body)))
 	}
 	return nil
+}
+
+//
+func isExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }

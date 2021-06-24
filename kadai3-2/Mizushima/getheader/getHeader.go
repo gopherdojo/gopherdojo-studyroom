@@ -10,19 +10,24 @@ import (
 )
 
 // Headers returns all headers
-func Headers(w io.Writer, r *http.Response) {
+func Headers(w io.Writer, r *http.Response) error {
 	h := r.Header
-	fmt.Fprintln(w, h)
+	if _, err := fmt.Fprintln(w, h); err != nil {
+		return err
+	}
+	return nil
 }
 
-// ResHeader returns the value of the specified header
+// ResHeader returns the value of the specified header, and writes http response header on io.Writer.
 func ResHeader(w io.Writer, r *http.Response, header string) ([]string, error) {
 	h, is := r.Header[header]
-	fmt.Println(h)
+	// fmt.Println(h)
 	if !is {
 		return nil, fmt.Errorf("cannot find %s header", header)
 	}
-	fmt.Fprintf(w, "Header[%s] = %s\n", header, h)
+	if _, err := fmt.Fprintf(w, "Header[%s] = %s\n", header, h); err != nil {
+		return nil, err
+	}
 	return h, nil
 }
 
@@ -32,7 +37,9 @@ func ResHeaderComma(w io.Writer, r *http.Response, header string) (string, error
 	// if !is {
 	// 	return "error", fmt.Errorf("cannot find %s header", header)
 	// }
-	fmt.Fprintf(w, "Header[%s] = %s\n", header, h)
+	if _, err := fmt.Fprintf(w, "Header[%s] = %s\n", header, h); err != nil {
+		return "", err
+	}
 	return h, nil
 }
 

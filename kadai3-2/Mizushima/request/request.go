@@ -7,8 +7,8 @@ import (
 )
 
 // Request throws a request and returns a response from url and a error.
-func Request(ctx context.Context, method string, url string, setH string, setV string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, nil)
+func Request(ctx context.Context, method string, urlStr string, setH string, setV string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, method, urlStr, nil)
 	if err != nil {
 		return nil, err
 	}

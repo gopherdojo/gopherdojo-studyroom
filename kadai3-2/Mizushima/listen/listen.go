@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +18,11 @@ func Listen(ctx context.Context, w io.Writer, f func()) (context.Context, func()
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-ch
-		fmt.Fprintln(w, "\n^Csignal : interrupt.")
+		_, err := fmt.Fprintln(w, "\n^Csignal : interrupt.")
+		if err != nil {
+			cancel()
+			log.Fatalf("err: listen.Listen: %s\n", err)
+		}
 		cancel()
 		f()
 		os.Exit(0)
