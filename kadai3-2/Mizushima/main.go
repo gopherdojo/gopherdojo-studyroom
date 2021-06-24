@@ -129,8 +129,12 @@ func main() {
 		}
 
 		// show response header
-		h, _ := httputil.DumpResponse(resp, false)
-		fmt.Printf("response:\n%s", h)
+		fmt.Printf("response:\n")
+		if b, err := httputil.DumpResponse(resp, false); err != nil {
+			log. Fatalf("err: %w", err)
+		} else {
+			fmt.Printf("%s\n", b)
+		}
 
 		// get the size from the response header.
 		fileSize, err := getheader.GetSize(resp)
@@ -172,7 +176,6 @@ func main() {
 			log.Fatalf("err: os.Mkdir: %w\n", err)
 		}
 
-		// ctx, cancel := context.WithTimeout(context.Background(),time.Duration(opts.Tm)*time.Minute)
 		clean := func() {
 			if err := out.Close(); err != nil {
 				log.Fatalf("err: out.Close: %w\n", err)

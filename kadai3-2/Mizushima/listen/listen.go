@@ -10,6 +10,8 @@ import (
 	"syscall"
 )
 
+var osExit = os.Exit
+
 // Listen returns a context for keyboad(ctrl + c) interrupt.
 func Listen(ctx context.Context, w io.Writer, f func()) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
@@ -25,7 +27,7 @@ func Listen(ctx context.Context, w io.Writer, f func()) (context.Context, func()
 		}
 		cancel()
 		f()
-		os.Exit(0)
+		osExit(0)
 	}()
 
 	return ctx, cancel

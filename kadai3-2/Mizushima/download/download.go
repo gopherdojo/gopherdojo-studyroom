@@ -67,7 +67,7 @@ func (pd *PDownloader) DownloadFile(ctx context.Context) (err error) {
 
 	resp, err := request.Request(ctx, "GET", pd.url.String(), "", "")
 	if err != nil {
-		return err
+		return
 	}
 	defer func() {
 		err = resp.Body.Close()
@@ -75,7 +75,7 @@ func (pd *PDownloader) DownloadFile(ctx context.Context) (err error) {
 
 	_, err = io.Copy(pd.output, resp.Body)
 	if err != nil {
-		return err
+		return
 	}
 
 	return nil
@@ -117,7 +117,7 @@ func (pd *PDownloader) PDownload(grp *errgroup.Group,
 // ReqToMakeCopy sends a "GET" request with "Range" field with "bytes" range.
 // And gets response and make a copy to a temprary file in temprary directory from response body.
 //
-func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx context.Context) error {
+func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx context.Context) (err error) {
 	// fmt.Printf("ReqToMakeCopy: tmpDirName: %s, bytes %s, idx: %d\n", tmpDirName, bytes, idx)
 	resp, err := request.Request(ctx, "GET", pd.url.String(), "Range", bytes)
 	if err != nil {
@@ -130,9 +130,7 @@ func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx con
 	}
 	// fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
 	defer func() {
-		if err = tmpOut.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "err: tmpOut.Close(): %w", err.Error())
-		}
+		err = tmpOut.Close();
 	}()
 
 	body, err := ioutil.ReadAll(resp.Body)
