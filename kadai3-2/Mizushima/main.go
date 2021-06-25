@@ -126,7 +126,7 @@ func main() {
 		// show response header
 		fmt.Printf("response:\n")
 		if b, err := httputil.DumpResponse(resp, false); err != nil {
-			log. Fatalf("err: %s", err)
+			log.Fatalf("err: %s", err)
 		} else {
 			fmt.Printf("%s\n", b)
 		}
