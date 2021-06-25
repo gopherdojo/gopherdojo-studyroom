@@ -29,7 +29,8 @@ var vals1 = [][]string{{"146515"}, {"bytes"}, {"image/jpeg"}, {"GET", "OPTIONS"}
 var vals2 = [][]string{{"bytes"}, {"image/jpeg"}, {"GET", "OPTIONS"}}
 
 func Test_ResHeader(t *testing.T) {
-
+	t.Helper()
+	
 	cases := []struct {
 		name string
 		input string

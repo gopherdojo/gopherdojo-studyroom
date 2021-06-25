@@ -81,7 +81,7 @@ func (pd *PDownloader) DownloadFile(ctx context.Context) (err error) {
 	return nil
 }
 
-// PDownload drives parallel download.
+// PDownload drives parallel download. downloaded file is in temporary directory named tmpDirName.
 func (pd *PDownloader) PDownload(grp *errgroup.Group,
 	tmpDirName string, procs uint, ctx context.Context) error {
 	var start, end, idx uint
@@ -128,15 +128,25 @@ func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx con
 	if err != nil {
 		return err
 	}
-	// fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
+	fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
 	defer func() {
 		err = tmpOut.Close();
 	}()
 
+	// b := make([]byte, 1000)
+	// resp.Body.Read(b)
+	// fmt.Printf("resp.body: %s\n", string(b))
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		// fmt.Printf("err: %s\n", err)
+		if err != io.EOF && err != io.ErrUnexpectedEOF {
+			return err
+		}
 	}
+
+	// fmt.Printf("response body: length: %d\n", len(body))
+
 	length, err := tmpOut.Write(body)
 	if err != nil {
 		return err

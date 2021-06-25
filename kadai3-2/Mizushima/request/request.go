@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Request throws a request and returns a response from url and a error.
+// Request throws a request and returns a response object from url and a error.
 func Request(ctx context.Context, method string, urlStr string, setH string, setV string) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, method, urlStr, nil)
 	if err != nil {

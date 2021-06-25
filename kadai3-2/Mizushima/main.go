@@ -22,11 +22,6 @@ import (
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/request"
 )
 
-// for test
-// go run main.go https://4.bp.blogspot.com/-2-Ny23XgrF0/Ws69gszw2jI/AAAAAAABLdU/unbzWD_U8foWBwPKWQdGP1vEDoQoYjgZwCLcBGAs/s1600/top_banner.jpg -o kadai3-2
-// go run main.go http://i.imgur.com/z4d4kWk.jpg -o .
-// go run main.go https://misc.laboradian.com/test/003/ -o .
-
 // struct for options
 type Options struct {
 	Help   bool   `short:"h" long:"help"`
@@ -42,7 +37,7 @@ func (opts *Options) parse(argv []string) ([]string, error) {
 	if err != nil {
 		_, err2 := os.Stderr.Write(opts.usage())
 		if err2 != nil {
-			return nil, fmt.Errorf("%w: invalid command line options: cannot print usage: %w", err, err2)
+			return nil, fmt.Errorf("%s: invalid command line options: cannot print usage: %s", err, err2)
 		}
 		return nil, fmt.Errorf("%w: invalid command line options", err)
 	}
@@ -75,21 +70,21 @@ func main() {
 	argv := os.Args[1:]
 	if len(argv) == 0 {
 		if _, err := os.Stdout.Write(opts.usage()); err != nil {
-			log.Fatalf("err: %w: %w\n", errors.New("no options"), err)
+			log.Fatalf("err: %s: %s\n", errors.New("no options"), err)
 		}
-		log.Fatalf("err: %w\n", errors.New("no options"))
+		log.Fatalf("err: %s\n", errors.New("no options"))
 	}
 
 	urlsStr, err := opts.parse(argv)
 	if err != nil {
-		log.Fatalf("err: %w\n", err)
+		log.Fatalf("err: %s\n", err)
 	}
 
 	var urls []*url.URL
 	for _, u := range urlsStr {
 		url, err := url.ParseRequestURI(u)
 		if err != nil {
-			log.Fatalf("err: url.ParseRequestURI: %w\n", err)
+			log.Fatalf("err: url.ParseRequestURI: %s\n", err)
 		}
 		urls = append(urls, url)
 	}
@@ -98,7 +93,7 @@ func main() {
 
 	if opts.Help {
 		if _, err := os.Stdout.Write(opts.usage()); err != nil {
-			log.Fatalf("err: cannot print usage: %w", err)
+			log.Fatalf("err: cannot print usage: %s", err)
 		}
 		log.Fatal(errors.New("print usage"))
 	}
@@ -125,13 +120,13 @@ func main() {
 		// send "HEAD" request, and gets response.
 		resp, err := request.Request(ctxTimeout, "HEAD", urlObj.String(), "", "")
 		if err != nil {
-			log.Fatalf("err: %w\n", err)
+			log.Fatalf("err: %s\n", err)
 		}
 
 		// show response header
 		fmt.Printf("response:\n")
 		if b, err := httputil.DumpResponse(resp, false); err != nil {
-			log. Fatalf("err: %w", err)
+			log. Fatalf("err: %s", err)
 		} else {
 			fmt.Printf("%s\n", b)
 		}
@@ -139,10 +134,10 @@ func main() {
 		// get the size from the response header.
 		fileSize, err := getheader.GetSize(resp)
 		if err != nil {
-			log.Fatalf("err: getheader.GetSize: %w\n", err)
+			log.Fatalf("err: getheader.GetSize: %s\n", err)
 		}
 		if err = resp.Body.Close(); err != nil {
-			log.Fatalf("err: %w", err)
+			log.Fatalf("err: %s", err)
 		}
 
 		// How many bytes to download at a time
@@ -153,14 +148,14 @@ func main() {
 		if isExists(outputPath) {
 			err := os.Remove(outputPath)
 			if err != nil {
-				log.Fatalf("err: isExists: os.Remove: %w\n", err)
+				log.Fatalf("err: isExists: os.Remove: %s\n", err)
 			}
 		}
 
 		// make a file for download
 		out, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 		if err != nil {
-			log.Fatalf("err: os.Create: %w\n", err)
+			log.Fatalf("err: os.Create: %s\n", err)
 		}
 
 		// make a temporary directory for parallel download
@@ -168,24 +163,24 @@ func main() {
 		err = os.Mkdir(tmpDirName, 0777)
 		if err != nil {
 			if err3 := out.Close(); err3 != nil {
-				log.Fatalf("err: %w", err3)
+				log.Fatalf("err: %s", err3)
 			}
 			if err2 := os.Remove(opts.Output + filepath.Base(urlObj.String())); err2 != nil {
-				log.Fatalf("err: os.Mkdir: %w\nerr: os.Remove: %w\n", err, err2)
+				log.Fatalf("err: os.Mkdir: %s\nerr: os.Remove: %s\n", err, err2)
 			}
-			log.Fatalf("err: os.Mkdir: %w\n", err)
+			log.Fatalf("err: os.Mkdir: %s\n", err)
 		}
 
 		clean := func() {
 			if err := out.Close(); err != nil {
-				log.Fatalf("err: out.Close: %w\n", err)
+				log.Fatalf("err: out.Close: %s\n", err)
 			}
 			// delete the tmporary directory
 			if err := os.RemoveAll(tmpDirName); err != nil {
-				log.Fatalf("err: RemoveAll: %w\n", err)
+				log.Fatalf("err: RemoveAll: %s\n", err)
 			}
 			if err := os.Remove(opts.Output + filepath.Base(urlObj.String())); err != nil {
-				log.Fatalf("err: os.Remove: %w\n", err)
+				log.Fatalf("err: os.Remove: %s\n", err)
 			}
 		}
 		ctx, cancel := listen.Listen(ctxTimeout, os.Stdout, clean)
@@ -196,7 +191,7 @@ func main() {
 			isPara = false
 		} else if err != nil {
 			clean()
-			log.Fatalf("err: getheader.ResHeader: %w\n", err)
+			log.Fatalf("err: getheader.ResHeader: %s\n", err)
 		} else if accept[0] != "bytes" || opts.Procs == 1 {
 			isPara = false
 			continue
@@ -205,7 +200,7 @@ func main() {
 		// drive a download process
 		err = download.Downloader(urlObj, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
 		if err != nil {
-			log.Fatalf("err: %w\n", err)
+			log.Fatalf("err: %s\n", err)
 		}
 
 		fmt.Printf("download complete: %s\n", urlObj.String())
@@ -214,18 +209,18 @@ func main() {
 		if isPara {
 			err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
 			if err != nil {
-				log.Fatalf("err: MergeFiles: %w\n", err)
+				log.Fatalf("err: MergeFiles: %s\n", err)
 			}
 		}
 
 		// delete the tmporary directory only
 		if err := os.RemoveAll(tmpDirName); err != nil {
-			log.Fatalf("err: RemoveAll: %w\n", err)
+			log.Fatalf("err: RemoveAll: %s\n", err)
 		}
 
 		cancel()
 		if err = out.Close(); err != nil {
-			log.Fatalf("err: %w", err)
+			log.Fatalf("err: %s", err)
 		}
 	}
 }
