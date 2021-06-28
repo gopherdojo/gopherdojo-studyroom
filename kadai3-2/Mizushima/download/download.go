@@ -17,7 +17,7 @@ import (
 
 //PDownloader is user-defined struct
 type PDownloader struct {
-	url      *url.URL   // URL for the download
+	url      *url.URL // URL for the download
 	output   *os.File // Where to save the downloaded file
 	fileSize uint     // size of the downloaded file
 	part     uint     // Number of divided bytes
@@ -81,7 +81,8 @@ func (pd *PDownloader) DownloadFile(ctx context.Context) (err error) {
 	return nil
 }
 
-// PDownload drives parallel download. downloaded file is in temporary directory named tmpDirName.
+// PDownload drives parallel download. downloaded file is in temporary
+// directory named tmpDirName.
 func (pd *PDownloader) PDownload(grp *errgroup.Group,
 	tmpDirName string, procs uint, ctx context.Context) error {
 	var start, end, idx uint
@@ -128,9 +129,9 @@ func (pd *PDownloader) ReqToMakeCopy(tmpDirName, bytes string, idx uint, ctx con
 	if err != nil {
 		return err
 	}
-	fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
+	// fmt.Printf("tmpOut.Name(): %s\n", tmpOut.Name())
 	defer func() {
-		err = tmpOut.Close();
+		err = tmpOut.Close()
 	}()
 
 	// b := make([]byte, 1000)

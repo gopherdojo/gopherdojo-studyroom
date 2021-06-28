@@ -1,8 +1,6 @@
-package download_test
+package request_test
 
 import (
-	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,13 +9,12 @@ import (
 	"net/url"
 	"os"
 	"reflect"
-	"runtime"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/download"
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/request"
 )
 
 var testdataPathMap = map[int][]string{
@@ -26,147 +23,41 @@ var testdataPathMap = map[int][]string{
 	// 2 : "../documents/http.request.txt",
 }
 
-func TestDownloader_SingleProcess(t *testing.T) {
+func Test_Request(t *testing.T) {
 	t.Helper()
 
-	ts, clean := newTestServer(t, nonRangeAccessHandler, 0)
-	defer clean()
-
-	// get a url.URL object
-	urlObj := getURLObject(t, ts.URL)
-
-	// get a file for output
-	output, clean := makeTempFile(t)
-	defer clean()
-
-	resp, err := http.Get(ts.URL)
-	if err != nil {
-		t.Error(err)
+	cases := []struct {
+		name string
+		key int // key for testdataPathMap
+		handler http.HandlerFunc
+		expected *http.Response
+	}{
+		{
+			name: "case 1",
+			key: 0,
+			handler: nonRangeAccessHandler,
+			expected: &http.Response{},
+		},
+		{
+			name: "case 2",
+			key: 1,
+			handler: rangeAccessHandler,
+			expected: &http.Response{},
+		},
 	}
-	defer resp.Body.Close()
 
-	// get the file size to be downloaded.
-	size := getSizeForTest(t, resp)
-
-	// this test is non-parallel download.
-	part := size
-	procs := uint(1)
-	isPara := false
-	tmpDirName := ""
-	ctx := context.Background()
-
-	t.Run("case 1", func(t *testing.T) {
-		err := download.Downloader(urlObj, output, size, part, procs, isPara, tmpDirName, ctx)
-		if err != nil {
-			t.Error(err)
-		}
-
-		actual := new(bytes.Buffer).Bytes()
-		_, err = output.Read(actual)
-		if err != nil {
-			t.Error(err)
-		}
-
-		expected, err := os.ReadFile(testdataPathMap[0][0])
-		if err != nil {
-			t.Error(err)
-		}
-
-		if reflect.DeepEqual(actual, expected) {
-			t.Errorf("expected %s, but got %s", expected, actual)
-		}
-	})
-}
-
-func TestDownloader_SingleProcessTimeout(t *testing.T) {
-	t.Helper()
-
-	ts, clean := newTestServer(t, nonRangeAccessTooLateHandler, 0)
-	defer clean()
-
-	// get a url.URL object
-	urlObj := getURLObject(t, ts.URL)
-
-	// get a file for output
-	output, clean := makeTempFile(t)
-	defer clean()
-
-	resp, err := http.Get(ts.URL)
-	if err != nil {
-		t.Error(err)
-	}
-	defer resp.Body.Close()
-
-	// get the file size to be downloaded.
-	size := getSizeForTest(t, resp)
-
-	// this test is non-parallel download.
-	part := size
-	procs := uint(1)
-	isPara := false
-	tmpDirName := ""
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	t.Run("case 1", func(t *testing.T) {
-		actual := download.Downloader(urlObj, output, size, part, procs, isPara, tmpDirName, ctx)
-		if err != nil {
-			t.Error(err)
-		}
-		expected := fmt.Errorf("request.Request err: Get \"%s\": %w", urlObj, context.DeadlineExceeded)
-		if actual.Error() != expected.Error() {
-			t.Errorf("expected %s, \nbut got %s", expected, actual)
-		}
-	})
-}
-
-func TestDownloader_ParallelProcess(t *testing.T) {
-	t.Helper()
-
-	// make a server for test.
-	ts, clean := newTestServer(t, rangeAccessHandler, 1)
-	defer clean()
-
-	// get a url.URL object
-	urlObj := getURLObject(t, ts.URL)
-
-	// get a file for output
-	output, clean := makeTempFile(t)
-	defer clean()
-
-	// get a response from test server.
-	resp, err := http.Get(ts.URL)
-	if err != nil {
-		t.Error(err)
-	}
-	defer resp.Body.Close()
-
-	// get the file size to be downloaded.
-	size := getSizeForTest(t, resp)
-
-	// this test is parallel download.
-	procs := uint(runtime.NumCPU())
-	part := size / procs
-	isPara := true
-	tmpDirName := "test"
-	ctx := context.Background()
-
-	t.Run("case 1", func(t *testing.T) {
-		if err := os.Mkdir(tmpDirName, 0775); err != nil {
-			t.Error(err)
-		}
-		err := download.Downloader(urlObj, output, size, part, procs, isPara, tmpDirName, ctx)
-		if err != nil {
-			t.Errorf("err: %w", err)
-		}
-		defer func() {
-			err := os.RemoveAll(tmpDirName)
-			if err != nil {
-				t.Error(err)
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			ts, clean := newTestServer(t, c.handler, c.key)
+			actual, err := request.Request(context.BackGround(), "GET", ts.URL, "", "")
+			if reflect.DeepEqual(actual, c.expected) {
+				t.Errorf("expected %v, but got %v", c.expected, actual)
 			}
-		}()
-	})
+		})
+	}
 }
+
 
 func newTestServer(t *testing.T,
 	handler func(t *testing.T, w http.ResponseWriter, r *http.Request, testDataKey int),
