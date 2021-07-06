@@ -46,7 +46,7 @@ func TestGame(t *testing.T) {
 			ans: []string{
 				"America",
 				"American",
-				"😊",
+				"😊",  // typo
 				"April",
 				"August",
 				"Bacon",

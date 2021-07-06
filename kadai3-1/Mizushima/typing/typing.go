@@ -55,8 +55,6 @@ func Game(r io.Reader, w io.Writer, words []string, t time.Duration, isTest bool
 			}
 			return score, nil
 		case ans := <-ch:
-			// fmt.Printf("ans: %s\n", ans)
-			// fmt.Printf("word: %s\n", word)
 			if ans == word {
 				if !isTest {
 					_, err = fmt.Fprintln(w, "> しぇえか～い")
@@ -77,6 +75,7 @@ func Game(r io.Reader, w io.Writer, words []string, t time.Duration, isTest bool
 	}
 }
 
+// input returns a channel receives string.
 func input(r io.Reader) <-chan string {
 	ch := make(chan string)
 	go func() {
@@ -89,6 +88,7 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
+// incSlice returns the integer slice starts with 0 and ends with n-1.
 func incSlice(n int) []int {
 	var res []int
 	for i := 0; i < n; i++ {
