@@ -2,34 +2,25 @@ package typing
 
 import (
 	"bufio"
-	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
-	"os"
 	"time"
 )
 
-func Game(r io.Reader, w io.Writer, wordsPath string, t time.Duration, isTest bool) (int, error) {
-
-	words, err := readCSV(wordsPath)
-	if err != nil {
-		return -1, err
-	}
+func Game(r io.Reader, w io.Writer, words []string, t time.Duration, isTest bool) (int, error) {
 
 	limit := time.After(t)
 
 	rand.Seed(time.Now().UnixNano())
 	var indices []int
-	if !isTest {
-		indices = rand.Perm(len(words))
-	} else {
+	indices = rand.Perm(len(words))
+	if isTest {
 		indices = incSlice(len(words))
 	}
 
 	if !isTest {
-		_, err = fmt.Fprintln(w, "> Typing game start\nPlease type the displayed word")
+		_, err := fmt.Fprintln(w, "> Typing game start\nPlease type the displayed word")
 		if err != nil {
 			return -1, err
 		}
@@ -49,7 +40,7 @@ func Game(r io.Reader, w io.Writer, wordsPath string, t time.Duration, isTest bo
 
 		word = words[indices[idx]]
 
-		_, err = fmt.Fprintf(w, "> %s\n", word)
+		_, err := fmt.Fprintf(w, "> %s\n", word)
 		if err != nil {
 			return -1, err
 		}
@@ -96,36 +87,6 @@ func input(r io.Reader) <-chan string {
 		// close(ch)
 	}()
 	return ch
-}
-
-func readCSV(path string) ([]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		if err = file.Close(); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	csvFile := csv.NewReader(file)
-	csvFile.TrimLeadingSpace = true
-
-	var ret []string
-	var row []string
-
-	for {
-		row, err = csvFile.Read()
-		if err != nil {
-			break
-		}
-
-		ret = append(ret, row...)
-	}
-
-	return ret, nil
 }
 
 func incSlice(n int) []int {
