@@ -11,9 +11,7 @@ build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test:
-	$(BINARY_NAME) http://i.imgur.com/z4d4kWk.jpg -o ./test_download
-	$(BINARY_NAME) http://socia-enterprise.co.jp -o ./test_download
-	$(BINARY_NAME) http://i.imgur.com/z4d4kWk.jpg http://socia-enterprise.co.jp -o ./test_download
+	$(BINARY_NAME) https://golang.org/dl/go1.16.5.linux-amd64.tar.gz -o ./test_download
 
 clean:
 	$(GOCLEAN)
