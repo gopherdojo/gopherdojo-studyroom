@@ -6,13 +6,17 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 
 	iconv "github.com/tetuyosi/gopherdojo-studyroom/kadai1/tetuyosi/iconv"
 )
 
+// 変換対象ディレクトリ名
 var dir string
+
+// 変換対象拡張子(jpg,jpeg,png,gif)
 var srcExt string
+
+// 変換後拡張子(jpg,jpeg,png,gif)
 var destExt string
 
 func init() {
@@ -26,13 +30,13 @@ func main() {
 	dir = flag.Arg(0)
 	// 引数のチェック
 	if dir == "" {
-		fmt.Fprintf(os.Stderr, "%s", "変換対象ディレクトリ名を入れてください。")
+		fmt.Printf("変換対象ディレクトリ名を入れてください。")
 		os.Exit(1)
 	}
 	_, err := os.Stat(dir)
 	// フォルダチェック
 	if os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "%s%s", "指定ディレクトリは存在しません。", dir)
+		fmt.Printf("指定ディレクトリは存在しません。%s", dir)
 		os.Exit(1)
 	}
 
@@ -44,10 +48,10 @@ func main() {
 		if info.IsDir() {
 			return nil
 		}
-		if !strings.HasSuffix(info.Name(), srcExt) {
+		c, err := iconv.New(path, srcExt, destExt)
+		if err != nil {
 			return nil
 		}
-		c := iconv.New(path, srcExt, destExt)
 		err = c.Imaging()
 		if err != nil {
 			return err

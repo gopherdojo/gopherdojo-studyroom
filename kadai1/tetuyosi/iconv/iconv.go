@@ -1,3 +1,4 @@
+// package iconv implements functions to convert images to a desired format.
 package iconv
 
 import (
@@ -11,6 +12,7 @@ import (
 	"strings"
 )
 
+// A Convert image interface
 type Conv struct {
 	FilePath string
 	SrcExt   string
@@ -18,6 +20,7 @@ type Conv struct {
 	image    image.Image
 }
 
+// jpeg or jpg return same extension
 var extMap = map[string]string{
 	"jpg":  "jpg",
 	"jpeg": "jpg",
@@ -25,13 +28,31 @@ var extMap = map[string]string{
 	"gif":  "gif",
 }
 
-func New(path string, srcExt string, destExt string) *Conv {
+// Return Conv object
+func New(path string, srcExt string, destExt string) (*Conv, error) {
+	fileExt := strings.ToLower(strings.TrimLeft(filepath.Ext(path), "."))
 	srcExt = strings.ToLower(srcExt)
 	destExt = strings.ToLower(destExt)
-	return &Conv{FilePath: path, SrcExt: srcExt, DestExt: destExt}
+	if !isConvertible(fileExt) {
+		return nil, fmt.Errorf("変換ファイル拡張子が不正です。")
+	}
+	if !isConvertible(srcExt) {
+		return nil, fmt.Errorf("変換元フォーマット指定の誤りです。")
+	}
+	if !isConvertible(destExt) {
+		return nil, fmt.Errorf("変換先フォーマット指定の誤りです。")
+	}
+	return &Conv{FilePath: path, SrcExt: srcExt, DestExt: destExt}, nil
 }
 
-func (c *Conv) Imaging() (err error) {
+// Check convertible extension
+func isConvertible(ext string) bool {
+	_, isExist := extMap[ext]
+	return isExist
+}
+
+// Read file and convert internal image
+func (c *Conv) Imaging() error {
 	f, err := os.Open(c.FilePath)
 	if err != nil {
 		return fmt.Errorf("指定ファイルが開けません")
@@ -54,7 +75,8 @@ func (c *Conv) Imaging() (err error) {
 	return nil
 }
 
-func (c *Conv) Convert() (err error) {
+// internal image convert to desired format
+func (c *Conv) Convert() error {
 	name := strings.TrimSuffix(filepath.Base(c.FilePath), c.SrcExt) + c.DestExt
 
 	f, err := os.Create(filepath.Dir(c.FilePath) + "/" + name)
