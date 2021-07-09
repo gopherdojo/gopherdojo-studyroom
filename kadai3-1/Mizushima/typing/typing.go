@@ -55,20 +55,16 @@ func Game(r io.Reader, w io.Writer, words []string, t time.Duration, isTest bool
 			}
 			return score, nil
 		case ans := <-ch:
-			if ans == word {
-				if !isTest {
-					_, err = fmt.Fprintln(w, "> しぇえか～い")
-					if err != nil {
-						return -1, err
-					}
-				}
-				score++
-			} else {
-				if !isTest {
-					_, err = fmt.Fprintln(w, "> ぶっぶー")
-					if err != nil {
-						return -1, err
-					}
+			message := "> しぇえか～い"
+			score++
+			if ans != word {
+				message = "> ぶっぶー"
+				score--
+			}
+
+			if !isTest {
+				if _, err := fmt.Fprintln(w, message); err != nil {
+					return -1, err
 				}
 			}
 		}

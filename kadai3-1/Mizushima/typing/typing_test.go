@@ -122,7 +122,7 @@ func Test_input(t *testing.T) {
 
 	cases := map[string]string {
 		"case 1" : "foo\nbar\nfoobar",
-		"case 2" : "foobarfoobar\nbar\nbar",
+		"case 2" : "foobarfoobar\nfoo\nbar",
 	}
 
 	for name, val := range cases {
@@ -133,7 +133,6 @@ func Test_input(t *testing.T) {
 
 			for _, e := range expects {
 				ans := <-ch
-				fmt.Println(ans)
 				if e != ans {
 					t.Fatalf("expected %s, but got %s", e, ans)
 				}
