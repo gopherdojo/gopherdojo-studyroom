@@ -53,6 +53,19 @@ func Test_Request(t *testing.T) {
 		},
 	}
 
+	/* Responseの内容
+	actual: map[Access-Range:[bytes] Content-Length:[2066] Date:[Mon, 12 Jul 2021 09:22:22 GMT]]
+    request_test.go:74: expected,
+        HTTP/0.0 206 Partial Content
+        Content-Length: 0
+        
+        but got,
+        HTTP/1.1 206 Partial Content
+        Content-Length: 2066
+        Access-Range: bytes
+        Date: Mon, 12 Jul 2021 09:22:22 GMT
+	*/
+
 	for _, c := range cases {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
