@@ -1,11 +1,14 @@
 package request_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"reflect"
@@ -18,31 +21,35 @@ import (
 )
 
 var testdataPathMap = map[int][]string{
-	0: {"../documents/003", "311"},
-	1: {"../documents/z4d4kWk.jpg", "146515"},
-	// 2 : "../documents/http.request.txt",
+	0: {"../documents/003", mustGetSize("../documents/003")},
+	1: {"../documents/z4d4kWk.jpg", mustGetSize("../documents/z4d4kWk.jpg")},
 }
 
 func Test_Request(t *testing.T) {
 	t.Helper()
 
 	cases := []struct {
-		name string
-		key int // key for testdataPathMap
-		handler http.HandlerFunc
+		name     string
+		key      int // key for testdataPathMap
+		handler  func(t *testing.T, w http.ResponseWriter, r *http.Request, testDataKey int)
 		expected *http.Response
 	}{
 		{
-			name: "case 1",
-			key: 0,
-			handler: nonRangeAccessHandler,
+			name:     "case 1",
+			key:      0,
+			handler:  nonRangeAccessHandler,
 			expected: &http.Response{},
 		},
 		{
-			name: "case 2",
-			key: 1,
-			handler: rangeAccessHandler,
-			expected: &http.Response{},
+			name:     "case 2",
+			key:      1,
+			handler:  rangeAccessHandler,
+			// http.Responseを作る方法を調べる
+			expected: &http.Response{
+				Status: "206 Partial Content",
+				StatusCode: 206,
+				Proto: "HTTP/1.1",
+			},
 		},
 	}
 
@@ -50,14 +57,26 @@ func Test_Request(t *testing.T) {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
 			ts, clean := newTestServer(t, c.handler, c.key)
-			actual, err := request.Request(context.BackGround(), "GET", ts.URL, "", "")
-			if reflect.DeepEqual(actual, c.expected) {
-				t.Errorf("expected %v, but got %v", c.expected, actual)
+			defer clean()
+			actual, err := request.Request(context.Background(), "GET", ts.URL, "", "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			fmt.Println("actual:", actual.Header)
+			if !reflect.DeepEqual(actual.Header, c.expected.Header) {
+				dumped_expected, err := httputil.DumpResponse(c.expected, false)
+				if err != nil {
+					t.Fatal(err)
+				}
+				dumped_actual, err := httputil.DumpResponse(actual, false)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Errorf("expected,\n%vbut got,\n%v", string(dumped_expected), string(dumped_actual))
 			}
 		})
 	}
 }
-
 
 func newTestServer(t *testing.T,
 	handler func(t *testing.T, w http.ResponseWriter, r *http.Request, testDataKey int),
@@ -181,6 +200,16 @@ func makeTempFile(t *testing.T) (*os.File, func()) {
 				t.Fatal(err)
 			}
 		}
+}
+
+func mustGetSize(path string) string {
+	
+	fileinfo, err := os.Stat(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return strconv.Itoa(int(fileinfo.Size()))
 }
 
 // GetSize returns size from response header.

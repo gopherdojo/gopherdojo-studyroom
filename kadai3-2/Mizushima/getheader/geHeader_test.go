@@ -120,6 +120,8 @@ func Test_GetSize(t *testing.T) {
 }
 
 func makeResponse(t *testing.T, heads []string, vals [][]string) (*http.Response, error) {
+	t.Helper()
+	
 	var resp = make(map[string][]string)
 
 	if len(heads) != len(vals) {
