@@ -4,17 +4,23 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
+GOFMT=$(GOCMD) fmt
 
 all: build test
 
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-test:
-	$(BINARY_NAME) https://golang.org/dl/go1.16.5.linux-amd64.tar.gz -o ./test_download
+test: build
+	cd download; $(GOTEST) -v -cover
+	cd getheader; $(GOTEST) -v -cover
+	cd listen; $(GOTEST) -v -cover
+	cd request; $(GOTEST) -v -cover
 
 clean:
 	$(GOCLEAN)
-	rm -rf $(BINARY_NAME) test_download/*
 
-.PHONY: test clean
+format:
+	$(GOFMT) ./...
+
+.PHONY: test clean format

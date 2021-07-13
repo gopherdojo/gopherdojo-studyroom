@@ -113,8 +113,7 @@ func main() {
 	for i, urlObj := range urls {
 
 		// make a empty context
-		ctx := context.Background()
-		ctxTimeout, cancelTimeout := context.WithTimeout(ctx, time.Duration(opts.Tm)*time.Second)
+		ctxTimeout, cancelTimeout := context.WithTimeout(context.Background(), time.Duration(opts.Tm)*time.Second)
 		defer cancelTimeout()
 
 		// send "HEAD" request, and gets response.
@@ -218,6 +217,7 @@ func main() {
 			log.Fatalf("err: RemoveAll: %s\n", err)
 		}
 
+		// Clean up
 		cancel()
 		if err = out.Close(); err != nil {
 			log.Fatalf("err: %s", err)

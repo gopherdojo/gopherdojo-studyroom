@@ -10,19 +10,18 @@ import (
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima/getheader"
 )
 
-
-var heads1 = []string {
-	"Content-Length", 
-	"Accept-Ranges", 
-	"Content-Type", 
+var heads1 = []string{
+	"Content-Length",
+	"Accept-Ranges",
+	"Content-Type",
 	"Access-Control-Allow-Methods",
-	}
+}
 
-var heads2 = []string {
-	"Accept-Ranges", 
-	"Content-Type", 
+var heads2 = []string{
+	"Accept-Ranges",
+	"Content-Type",
 	"Access-Control-Allow-Methods",
-	}
+}
 
 var vals1 = [][]string{{"146515"}, {"bytes"}, {"image/jpeg"}, {"GET", "OPTIONS"}}
 
@@ -30,26 +29,26 @@ var vals2 = [][]string{{"bytes"}, {"image/jpeg"}, {"GET", "OPTIONS"}}
 
 func Test_ResHeader(t *testing.T) {
 	t.Helper()
-	
+
 	cases := []struct {
-		name string
-		input string
-		heads []string
-		vals [][]string
+		name     string
+		input    string
+		heads    []string
+		vals     [][]string
 		expected []string
 	}{
 		{
-			name: "case 1",
-			input: "Content-Length",
-			heads: heads1,
-			vals: vals1,
+			name:     "case 1",
+			input:    "Content-Length",
+			heads:    heads1,
+			vals:     vals1,
 			expected: []string{"146515"},
 		},
 		{
-			name: "case 2",
-			input: "Accept-Ranges",
-			heads: heads2,
-			vals: vals2,
+			name:     "case 2",
+			input:    "Accept-Ranges",
+			heads:    heads2,
+			vals:     vals2,
 			expected: []string{"bytes"},
 		},
 	}
@@ -75,21 +74,21 @@ func Test_ResHeader(t *testing.T) {
 func Test_GetSize(t *testing.T) {
 
 	cases := []struct {
-		name string
-		heads []string
-		vals [][]string
+		name     string
+		heads    []string
+		vals     [][]string
 		expected uint
 	}{
 		{
-			name: "case 1",
-			heads: heads1,
-			vals: vals1,
+			name:     "case 1",
+			heads:    heads1,
+			vals:     vals1,
 			expected: uint(146515),
 		},
 		{
-			name: "case 2",
-			heads: heads2,
-			vals: vals2,
+			name:     "case 2",
+			heads:    heads2,
+			vals:     vals2,
 			expected: 0,
 		},
 	}
@@ -98,7 +97,7 @@ func Test_GetSize(t *testing.T) {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
 			resp, err := makeResponse(t, c.heads, c.vals)
-			
+
 			if err != nil {
 				t.Error(err)
 			}
@@ -121,7 +120,7 @@ func Test_GetSize(t *testing.T) {
 
 func makeResponse(t *testing.T, heads []string, vals [][]string) (*http.Response, error) {
 	t.Helper()
-	
+
 	var resp = make(map[string][]string)
 
 	if len(heads) != len(vals) {
@@ -132,7 +131,7 @@ func makeResponse(t *testing.T, heads []string, vals [][]string) (*http.Response
 		if _, ok := resp[heads[i]]; ok {
 			return nil, errors.New("Duplicate elements in heads")
 		}
-		
+
 		resp[heads[i]] = vals[i]
 	}
 

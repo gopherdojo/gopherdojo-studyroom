@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -21,8 +22,8 @@ import (
 )
 
 var testdataPathMap = map[int][]string{
-	0: {"../documents/003", "311"},
-	1: {"../documents/z4d4kWk.jpg", "146515"},
+	0: {"../testdata/003", mustGetSize("../testdata/003")},
+	1: {"../testdata/z4d4kWk.jpg", mustGetSize("../testdata/z4d4kWk.jpg")},
 	// 2 : "../documents/http.request.txt",
 }
 
@@ -307,4 +308,14 @@ func getSizeForTest(t *testing.T, r *http.Response) uint {
 		t.Error(err)
 	}
 	return uint(ret)
+}
+
+func mustGetSize(path string) string {
+
+	fileinfo, err := os.Stat(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return strconv.Itoa(int(fileinfo.Size()))
 }

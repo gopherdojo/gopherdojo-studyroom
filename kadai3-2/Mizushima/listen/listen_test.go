@@ -8,11 +8,10 @@ import (
 	"time"
 )
 
-
 func Test_Listen(t *testing.T) {
 	t.Helper()
-	
-	cleanFn := func(){}
+
+	cleanFn := func() {}
 
 	doneCh := make(chan struct{})
 	osExit = func(code int) { doneCh <- struct{}{} }
