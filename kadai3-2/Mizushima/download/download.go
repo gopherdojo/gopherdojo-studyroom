@@ -37,7 +37,7 @@ func newPDownloader(url *url.URL, output *os.File, fileSize uint, part uint, pro
 
 // Downloader gets elements of PDownloader, the download is parallel or not, temprary
 // directory name and context.Context, and drives DownloadFile method if isPara is false
-// or PDownload if isPrara is true.
+// or PDownload if isPara is true.
 //
 func Downloader(url *url.URL,
 	output *os.File, fileSize uint, part uint, procs uint, isPara bool,

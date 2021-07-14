@@ -28,9 +28,9 @@ go get github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai3-2/Mizushima
 ```bash
 $ make build
 ```
-2. ディレクトリを指定して実行
+2. URLを指定してダウンロード実行
 ```bash
-$ ./bin/paraDW [option] URL(, URL, URL, ...)
+$ ./bin/paraDW [option] URL( URL URL ...)
 ```
 
 ※ URLは複数指定できます  
