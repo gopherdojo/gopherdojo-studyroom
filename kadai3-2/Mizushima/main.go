@@ -111,117 +111,119 @@ func main() {
 
 	// download from each url in urls
 	for i, urlObj := range urls {
+		downloadFromUrl(i, opts, urlObj)
+	}
+}
 
-		// make a empty context
-		ctxTimeout, cancelTimeout := context.WithTimeout(context.Background(), time.Duration(opts.Tm)*time.Second)
-		defer cancelTimeout()
+//
+func downloadFromUrl(i int, opts Options, urlObj *url.URL) {
 
-		// send "HEAD" request, and gets response.
-		resp, err := request.Request(ctxTimeout, "HEAD", urlObj.String(), "", "")
+	// make a timeout context from a empty context
+	ctxTimeout, cancelTimeout := context.WithTimeout(context.Background(), time.Duration(opts.Tm)*time.Second)
+	defer cancelTimeout()
+
+	// send "HEAD" request, and gets response.
+	resp, err := request.Request(ctxTimeout, "HEAD", urlObj.String(), "", "")
+	if err != nil {
+		log.Fatalf("err: %s\n", err)
+	}
+
+	// show response header
+	fmt.Printf("response:\n")
+	if b, err := httputil.DumpResponse(resp, false); err != nil {
+		log.Fatalf("err: %s", err)
+	} else {
+		fmt.Printf("%s\n", b)
+	}
+
+	// get the size from the response header.
+	fileSize, err := getheader.GetSize(resp)
+	if err != nil {
+		log.Fatalf("err: getheader.GetSize: %s\n", err)
+	}
+	if err = resp.Body.Close(); err != nil {
+		log.Fatalf("err: %s", err)
+	}
+
+	// How many bytes to download at a time
+	partial := fileSize / opts.Procs
+
+	outputPath := opts.Output + filepath.Base(urlObj.String())
+	// if there is the same file in opts.Output, delete that file in advance.
+	if isExists(outputPath) {
+		err := os.Remove(outputPath)
 		if err != nil {
-			log.Fatalf("err: %s\n", err)
+			log.Fatalf("err: isExists: os.Remove: %s\n", err)
 		}
+	}
 
-		// show response header
-		fmt.Printf("response:\n")
-		if b, err := httputil.DumpResponse(resp, false); err != nil {
+	// make a file for download
+	out, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+	if err != nil {
+		log.Fatalf("err: os.Create: %s\n", err)
+	}
+	defer func() {
+		if err := out.Close(); err != nil {
 			log.Fatalf("err: %s", err)
-		} else {
-			fmt.Printf("%s\n", b)
 		}
+	}()
 
-		// get the size from the response header.
-		fileSize, err := getheader.GetSize(resp)
-		if err != nil {
-			log.Fatalf("err: getheader.GetSize: %s\n", err)
+	// make a temporary directory for parallel download
+	tmpDirName := opts.Output + strconv.Itoa(i)
+	err = os.Mkdir(tmpDirName, 0777)
+	if err != nil {
+		if err3 := out.Close(); err3 != nil {
+			log.Fatalf("err: %s", err3)
 		}
-		if err = resp.Body.Close(); err != nil {
-			log.Fatalf("err: %s", err)
+		if err2 := os.Remove(opts.Output + filepath.Base(urlObj.String())); err2 != nil {
+			log.Fatalf("err: os.Mkdir: %s\nerr: os.Remove: %s\n", err, err2)
 		}
+		log.Fatalf("err: os.Mkdir: %s\n", err)
+	}
 
-		// How many bytes to download at a time
-		partial := fileSize / opts.Procs
-
-		outputPath := opts.Output + filepath.Base(urlObj.String())
-		// if there is the same file in opts.Output, delete that file in advance.
-		if isExists(outputPath) {
-			err := os.Remove(outputPath)
-			if err != nil {
-				log.Fatalf("err: isExists: os.Remove: %s\n", err)
-			}
+	clean := func() {
+		if err := out.Close(); err != nil {
+			log.Fatalf("err: out.Close: %s\n", err)
 		}
-
-		// make a file for download
-		out, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
-		if err != nil {
-			log.Fatalf("err: os.Create: %s\n", err)
-		}
-
-		// make a temporary directory for parallel download
-		tmpDirName := opts.Output + strconv.Itoa(i)
-		err = os.Mkdir(tmpDirName, 0777)
-		if err != nil {
-			if err3 := out.Close(); err3 != nil {
-				log.Fatalf("err: %s", err3)
-			}
-			if err2 := os.Remove(opts.Output + filepath.Base(urlObj.String())); err2 != nil {
-				log.Fatalf("err: os.Mkdir: %s\nerr: os.Remove: %s\n", err, err2)
-			}
-			log.Fatalf("err: os.Mkdir: %s\n", err)
-		}
-
-		clean := func() {
-			if err := out.Close(); err != nil {
-				log.Fatalf("err: out.Close: %s\n", err)
-			}
-			// delete the tmporary directory
-			if err := os.RemoveAll(tmpDirName); err != nil {
-				log.Fatalf("err: RemoveAll: %s\n", err)
-			}
-			if err := os.Remove(opts.Output + filepath.Base(urlObj.String())); err != nil {
-				log.Fatalf("err: os.Remove: %s\n", err)
-			}
-		}
-		ctx, cancel := listen.Listen(ctxTimeout, os.Stdout, clean)
-
-		var isPara bool = true
-		accept, err := getheader.ResHeader(os.Stdout, resp, "Accept-Ranges")
-		if err != nil && err.Error() == "cannot find Accept-Ranges header" {
-			isPara = false
-		} else if err != nil {
-			clean()
-			log.Fatalf("err: getheader.ResHeader: %s\n", err)
-		} else if accept[0] != "bytes" || opts.Procs == 1 {
-			isPara = false
-			continue
-		}
-
-		// drive a download process
-		err = download.Downloader(urlObj, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
-		if err != nil {
-			log.Fatalf("err: %s\n", err)
-		}
-
-		fmt.Printf("download complete: %s\n", urlObj.String())
-
-		// Merge the temporary files into "out", when parallel download executed.
-		if isPara {
-			err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
-			if err != nil {
-				log.Fatalf("err: MergeFiles: %s\n", err)
-			}
-		}
-
-		// delete the tmporary directory only
+		// delete the tmporary directory
 		if err := os.RemoveAll(tmpDirName); err != nil {
 			log.Fatalf("err: RemoveAll: %s\n", err)
 		}
-
-		// Clean up
-		cancel()
-		if err = out.Close(); err != nil {
-			log.Fatalf("err: %s", err)
+		if err := os.Remove(opts.Output + filepath.Base(urlObj.String())); err != nil {
+			log.Fatalf("err: os.Remove: %s\n", err)
 		}
+	}
+	ctx, cancel := listen.Listen(ctxTimeout, os.Stdout, clean)
+	defer cancel()
+
+	var isPara bool = true
+	_, err = getheader.ResHeader(os.Stdout, resp, "Accept-Ranges")
+	if err != nil && err.Error() == "cannot find Accept-Ranges header" {
+		isPara = false
+	} else if err != nil {
+		clean()
+		log.Fatalf("err: getheader.ResHeader: %s\n", err)
+	}
+
+	// drive a download process
+	err = download.Downloader(urlObj, out, fileSize, partial, opts.Procs, isPara, tmpDirName, ctx)
+	if err != nil {
+		log.Fatalf("err: %s\n", err)
+	}
+
+	fmt.Printf("download complete: %s\n", urlObj.String())
+
+	// Merge the temporary files into "out", when parallel download executed.
+	if isPara {
+		err = MergeFiles(tmpDirName, opts.Procs, fileSize, out)
+		if err != nil {
+			log.Fatalf("err: MergeFiles: %s\n", err)
+		}
+	}
+
+	// delete the tmporary directory only
+	if err := os.RemoveAll(tmpDirName); err != nil {
+		log.Fatalf("err: RemoveAll: %s\n", err)
 	}
 }
 
