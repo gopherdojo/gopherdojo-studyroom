@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -115,7 +114,7 @@ func main() {
 	}
 }
 
-//
+// downloadFromUrl does the download processing from url object.
 func downloadFromUrl(i int, opts Options, urlObj *url.URL) {
 
 	// make a timeout context from a empty context
@@ -128,14 +127,6 @@ func downloadFromUrl(i int, opts Options, urlObj *url.URL) {
 		log.Fatalf("err: %s\n", err)
 	}
 
-	// show response header
-	fmt.Printf("response:\n")
-	if b, err := httputil.DumpResponse(resp, false); err != nil {
-		log.Fatalf("err: %s", err)
-	} else {
-		fmt.Printf("%s\n", b)
-	}
-
 	// get the size from the response header.
 	fileSize, err := getheader.GetSize(resp)
 	if err != nil {
@@ -145,7 +136,7 @@ func downloadFromUrl(i int, opts Options, urlObj *url.URL) {
 		log.Fatalf("err: %s", err)
 	}
 
-	// How many bytes to download at a time
+	// get how many bytes to download at a time
 	partial := fileSize / opts.Procs
 
 	outputPath := opts.Output + filepath.Base(urlObj.String())
