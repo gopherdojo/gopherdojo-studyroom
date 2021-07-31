@@ -15,7 +15,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//PDownloader is user-defined struct
+// PDownloader is user-defined struct for the download process.
+// It's not limited to parallel downloads.
 type PDownloader struct {
 	url      *url.URL // URL for the download
 	output   *os.File // Where to save the downloaded file

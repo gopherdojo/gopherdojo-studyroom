@@ -235,7 +235,7 @@ func MergeFiles(tmpDirName string, procs, fileSize uint, output *os.File) error 
 	return nil
 }
 
-//
+// isExists returns the file exists or not, in 'path'.
 func isExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
