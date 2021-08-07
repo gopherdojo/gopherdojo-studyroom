@@ -1,8 +1,7 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
@@ -12,8 +11,10 @@ import (
 var res = map[int]string{
 	0: "大吉",
 	1: "中吉",
-	2: "小吉",
-	3: "凶",
+	2: "中吉",
+	3: "小吉",
+	4: "小吉",
+	5: "凶",
 }
 
 type Person struct {
@@ -21,21 +22,19 @@ type Person struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json; charset=utf-8")
+	w.Header().Set("Content-type", "text/html; charset=utf-8")
 
-	person := r.FormValue("p")
+	t := template.Must(template.New("msg").
+		Parse("<!DOCTYPE html><html><body>{{.Person}}さんの運勢は「<b>{{.Response}}</b>」です</body></html>"))
 
-	idx := rand.Intn(len(res))
-
-	v := struct {
-		Msg string `json:"msg"`
+	if err := t.Execute(w, struct {
+		Person   string
+		Response string
 	}{
-		Msg: fmt.Sprintf("%sさんの運勢は%sです", person, res[idx]),
-	}
-
-	// JSONを返す（レスポンスに書き込む）
-	if err := json.NewEncoder(w).Encode(v); err != nil {
-		log.Println("Err:", err)
+		Person:   r.FormValue("p"),
+		Response: res[rand.Intn(len(res))],
+	}); err != nil {
+		log.Fatalf("failed to execute template: %v", err)
 	}
 
 }
