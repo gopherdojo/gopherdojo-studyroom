@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 )
 
@@ -13,10 +14,9 @@ func returnFilePath() ([]string,error) {
 	var stringPath  []string
 
 	err := filepath.Walk(selectedDirecotry,
-		func(path string, info fs.FileInfo, err error) error {
-			if filepath.Ext(path) == ".jpg" {
-				fmt.Println(path)
-				stringPath = append(stringPath,path)
+		func(paths string, info fs.FileInfo, err error) error {
+			if filepath.Ext(paths) == ".jpg" {
+				stringPath = append(stringPath,paths)
 			}
 			return nil
 		})
@@ -29,8 +29,11 @@ func init()  {
 
 func main() {
 	flag.Parse()
-	var path,err = returnFilePath()
+	paths,err := returnFilePath()
+	fmt.Println(paths)
+
 	if err != nil {
-		fmt.Println(path)
+		fmt.Fprintf(os.Stderr,"ディレクトリ選択をしてください。")
+		os.Exit(-1)
 	}
 }
