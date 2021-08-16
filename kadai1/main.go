@@ -8,38 +8,41 @@ import (
 	"path/filepath"
 )
 
-var  selectedDirecotry string
-var  selectedFileType string
-var  convertedFileType string
+type flagStruct struct {
+	selectedDirecotry string
+	selectedFileType  string
+	convertedFileType string
+}
 
-func returnFilePath(selectedFileType *string) ([]string,error) {
-	var stringPath  []string
-	err := filepath.Walk(selectedDirecotry,
+var flg flagStruct
+
+func returnFilePath(selectedFileType *string) ([]string, error) {
+	var stringPath []string
+	err := filepath.Walk(flg.selectedDirecotry,
 		func(paths string, info fs.FileInfo, err error) error {
 			if filepath.Ext(paths) == *selectedFileType {
-				stringPath = append(stringPath,paths)
+				stringPath = append(stringPath, paths)
 			}
 			return nil
 		})
-	return  stringPath,err
+	return stringPath, err
 }
 
-func init()  {
+func init() {
 
-	flag.StringVar(&selectedDirecotry, "s", "", "ディレクトリを指定")
-	flag.StringVar(&selectedFileType, "f",".jpg", "変換前のファイルタイプを指定")
-	flag.StringVar(&convertedFileType, "cf",".jpg", "変換後のファイルタイプを指定")
+	flag.StringVar(&flg.selectedDirecotry, "s", "", "ディレクトリを指定")
+	flag.StringVar(&flg.selectedFileType, "f", ".jpg", "変換前のファイルタイプを指定")
+	flag.StringVar(&flg.convertedFileType, "cf", ".jpg", "変換後のファイルタイプを指定")
 
 }
 
 func main() {
 	flag.Parse()
-
-	paths,err := returnFilePath(&selectedFileType)
+	paths, err := returnFilePath(&flg.selectedFileType)
 	fmt.Println(paths)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr,"ディレクトリ選択をしてください。")
+		fmt.Fprintf(os.Stderr, "ディレクトリ選択をしてください。")
 		os.Exit(-1)
 	}
 }
