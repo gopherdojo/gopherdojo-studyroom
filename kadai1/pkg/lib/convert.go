@@ -9,9 +9,9 @@ import (
 
 type flagStruct struct {
 	selectedDirectory string
-	selectedFileType   string
-	convertedFileType  string
-	stringPath         []string
+	selectedFileType  string
+	convertedFileType string
+	stringPath        []string
 }
 
 var flg flagStruct
@@ -34,11 +34,10 @@ func init() {
 
 }
 
-func Convert()  {
+func Convert() {
 	flag.Parse()
 	err := ReturnFilePath(&flg.selectedFileType)
-	fmt.Println(&flg.stringPath)
-	fmt.Println(err)
-	fmt.Println("Convert")
+	if err == nil {
+		fmt.Println(flg.stringPath)
+	}
 }
-
