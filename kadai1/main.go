@@ -1,7 +1,6 @@
 package main
 
-import "comu2e"
-
+import "kadai1/lib"
 func main() {
- comu2e.conb
+	lib.Return()
 }
