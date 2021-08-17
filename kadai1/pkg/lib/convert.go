@@ -3,15 +3,12 @@ package lib
 import (
 	"flag"
 	"fmt"
-	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"io/fs"
-	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 type flagStruct struct {
@@ -23,6 +20,13 @@ type flagStruct struct {
 
 var flg flagStruct
 
+func assert(err error) error {
+	if err != nil {
+		fmt.Println("error")
+		return err
+	}
+	return err
+}
 func init() {
 	flag.StringVar(&flg.selectedDirectory, "s", "", "ディレクトリを指定")
 	flag.StringVar(&flg.selectedFileType, "f", ".jpg", "変換前のファイルタイプを指定")
@@ -43,34 +47,19 @@ func returnFilePath(selectedFileType *string) error {
 
 func readImage(fn string) error {
 	f, err := os.Open(fn)
-	if err != nil {
-		return err
-	}
+	assert(err)
 	defer f.Close()
-	//設定をデコード
-	config, format, err := image.DecodeConfig(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//フォーマット名表示
-	fmt.Println("画像フォーマット：" + format)
-	//サイズ表示
-	fmt.Println("横幅=" + strconv.Itoa(config.Width) + ", 縦幅=" + strconv.Itoa(config.Height))
 	return err
 }
 func Convert() {
 	flag.Parse()
 	err := returnFilePath(&flg.selectedFileType)
-	if err != nil {
-		fmt.Println("Error")
-	}
+	assert(err)
 
 	for _, v := range flg.stringPath {
 		err := readImage(v)
-		if err != nil {
-			fmt.Println("error")
-		}
+		assert(err)
 		fmt.Println(v)
 	}
+
 }
