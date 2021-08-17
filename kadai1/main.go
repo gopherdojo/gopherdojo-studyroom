@@ -1,6 +1,10 @@
 package main
 
-import "kadai1/lib"
+import (
+	"fmt"
+	"gopherdojo-studyroom/kadai1/pkg/lib"
+)
 func main() {
-	lib.Return()
+	lib.Convert()
+	fmt.Println("Hello")
 }
