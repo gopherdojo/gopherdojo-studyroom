@@ -16,7 +16,7 @@ type flagStruct struct {
 
 var flg flagStruct
 
-func ReturnFilePath(selectedFileType *string) error {
+func returnFilePath(selectedFileType *string) error {
 	err := filepath.Walk(flg.selectedDirectory,
 		func(paths string, info fs.FileInfo, err error) error {
 			if filepath.Ext(paths) == *selectedFileType {
@@ -27,7 +27,6 @@ func ReturnFilePath(selectedFileType *string) error {
 	return err
 }
 func init() {
-
 	flag.StringVar(&flg.selectedDirectory, "s", "", "ディレクトリを指定")
 	flag.StringVar(&flg.selectedFileType, "f", ".jpg", "変換前のファイルタイプを指定")
 	flag.StringVar(&flg.convertedFileType, "cf", ".png", "変換後のファイルタイプを指定")
@@ -36,7 +35,7 @@ func init() {
 
 func Convert() {
 	flag.Parse()
-	err := ReturnFilePath(&flg.selectedFileType)
+	err := returnFilePath(&flg.selectedFileType)
 	if err == nil {
 		fmt.Println(flg.stringPath)
 	}
