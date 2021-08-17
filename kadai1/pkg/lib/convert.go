@@ -47,18 +47,18 @@ func returnFilePath(selectedFileType *string) error {
 
 func readImage(fn string) error {
 	f, err := os.Open(fn)
-	assert(err)
+	err = assert(err)
 	defer f.Close()
 	return err
 }
 func Convert() {
 	flag.Parse()
 	err := returnFilePath(&flg.selectedFileType)
-	assert(err)
+	err = assert(err)
 
 	for _, v := range flg.stringPath {
 		err := readImage(v)
-		assert(err)
+		err = assert(err)
 		fmt.Println(v)
 	}
 
