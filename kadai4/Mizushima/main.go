@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"math/rand"
@@ -42,6 +43,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	BootServer(handler)
+
+}
+
+func BootServer(handler func(http.ResponseWriter, *http.Request)) {
+
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		fmt.Printf("BootServer: err: %s\n", err)
+	}
+
 }
