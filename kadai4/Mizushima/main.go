@@ -1,13 +1,10 @@
 package main
 
 import (
-<<<<<<< HEAD
 	"database/sql"
 	"fmt"
-=======
 	"fmt"
 	"html/template"
->>>>>>> 0145fb960386b50c66f7445037b89689ce65a2e6
 	"log"
 	"os"
 
