@@ -1,8 +1,13 @@
 package main
 
 import (
+<<<<<<< HEAD
 	"database/sql"
 	"fmt"
+=======
+	"fmt"
+	"html/template"
+>>>>>>> 0145fb960386b50c66f7445037b89689ce65a2e6
 	"log"
 	"os"
 
@@ -60,6 +65,7 @@ func main() {
 // 		log.Fatalf("failed to execute template: %v", err)
 // 	}
 
+<<<<<<< HEAD
 // }
 
 // func main() {
@@ -77,3 +83,17 @@ func main() {
 // 	}
 
 // }
+=======
+	BootServer(handler)
+
+}
+
+func BootServer(handler func(http.ResponseWriter, *http.Request)) {
+
+	http.HandleFunc("/", handler)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		fmt.Printf("BootServer: err: %s\n", err)
+	}
+
+}
+>>>>>>> 0145fb960386b50c66f7445037b89689ce65a2e6
