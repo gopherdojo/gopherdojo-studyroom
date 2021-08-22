@@ -1,4 +1,4 @@
-package lib
+package main
 
 import (
 	"bytes"
@@ -13,13 +13,22 @@ import (
 	"path/filepath"
 )
 
-type Flag struct {
+type Convert struct {
 	selectedDirectory string
 	selectedFileType  string
 	convertedFileType string
 	stringPath        []string
 	stringPathBuff    bytes.Buffer
+	args []string
+
 }
+
+func NewConvert(args []string) *Convert {
+	return &Convert{
+		args: args,
+	}
+}
+
 
 func assert(msg string, err error) error {
 	if err != nil {
@@ -28,27 +37,29 @@ func assert(msg string, err error) error {
 	}
 	return err
 }
-func (flg *Flag) init() {
-	flag.StringVar(&flg.selectedDirectory, "s", "", "ディレクトリを指定")
-	flag.StringVar(&flg.selectedFileType, "f", ".jpg", "変換前のファイルタイプを指定")
-	flag.StringVar(&flg.convertedFileType, "cf", ".png", "変換後のファイルタイプを指定")
+
+var fInit = NewFlg()
+func init() {
+	flag.StringVar(&fInit.selectedDirectory, "s", "", "ディレクトリを指定")
+	flag.StringVar(&fInit.selectedFileType, "f", ".jpg", "変換前のファイルタイプを指定")
+	flag.StringVar(&fInit.convertedFileType, "cf", ".png", "変換後のファイルタイプを指定")
 
 }
 
-func (flg *Flag) returnFilePath() error {
-	err := filepath.Walk(flg.selectedDirectory,
+func (c *Convert) returnFilePath() error {
+	err := filepath.Walk(c.selectedDirectory,
 		func(paths string, info fs.FileInfo, err error) error {
-			if filepath.Ext(paths) == flg.selectedFileType {
-				flg.stringPath = append(flg.stringPath, paths)
-				flg.stringPathBuff.WriteString(paths)
-				flg.stringPathBuff.WriteString(",")
+			if filepath.Ext(paths) == c.selectedFileType {
+				c.stringPath = append(c.stringPath, paths)
+				c.stringPathBuff.WriteString(paths)
+				c.stringPathBuff.WriteString(",")
 			}
 			return nil
 		})
 	return err
 }
 
-func (flg *Flag) replaceExt(filePath, from, to string) string {
+func (c *Convert) replaceExt(filePath, from, to string) string {
 	ext := filepath.Ext(filePath)
 	if len(from) > 0 && ext != from {
 		return filePath
@@ -65,7 +76,7 @@ func makeDir(dirName string) {
 		fmt.Println("すでに保存先は存在するのでディレクトリを作成できません")
 	}
 }
-func (flg *Flag) convertImage(fn string) error {
+func (c *Convert) convertImage(fn string) error {
 	f, err := os.Open(fn)
 	err = assert("OS.Open", err)
 	defer f.Close()
@@ -79,7 +90,7 @@ func (flg *Flag) convertImage(fn string) error {
 	makeDir("convert")
 	makeDir("convert/jpeg")
 
-	fno := flg.replaceExt(fn, ".jpg", ".png")
+	fno := c.replaceExt(fn, ".jpg", ".png")
 
 	fo, err := os.Create(filepath.Base(fno))
 	err = assert("OS.Create", err)
@@ -91,7 +102,7 @@ func (flg *Flag) convertImage(fn string) error {
 	os.Chdir("jpeg")
 	switch imageType {
 	case ".jpeg", ".jpg":
-		switch flg.convertedFileType {
+		switch c.convertedFileType {
 		case "gif":
 			return gif.Encode(fo, img, nil)
 		default:
@@ -101,7 +112,7 @@ func (flg *Flag) convertImage(fn string) error {
 		}
 
 	case "png":
-		switch flg.convertedFileType {
+		switch c.convertedFileType {
 		case "jpeg", "jpg":
 			return jpeg.Encode(fo, img, nil)
 		case "gif":
@@ -117,8 +128,8 @@ func (flg *Flag) convertImage(fn string) error {
 	return err
 }
 
-func NewFlg() *Flag{
-	return &Flag{
+func NewFlg() *Convert{
+	return &Convert{
 		selectedDirectory: "",
 		selectedFileType:  "",
 		convertedFileType: "",
@@ -127,15 +138,18 @@ func NewFlg() *Flag{
 	}
 }
 
-func (flg *Flag) Exec() {
+func (c *Convert) Run() error{
 	flag.Parse()
-	err := flg.returnFilePath()
+	err := c.returnFilePath()
 	err = assert("returnFilePath", err)
+	var cmd []string
 
-	for _, v := range flg.stringPath {
-		err := flg.convertImage(v)
+	cmd = append(cmd, c.args...)
+
+	for _, v := range c.stringPath {
+		err := c.convertImage(v)
 		err = assert("convertImage", err)
 
 	}
-
+	return nil
 }

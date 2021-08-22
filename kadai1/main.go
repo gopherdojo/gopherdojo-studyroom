@@ -1,10 +1,28 @@
 package main
 
 import (
-	"gopherdojo-studyroom/kadai1/pkg/lib"
-	_ "gopherdojo-studyroom/kadai1/pkg/lib"
+	"fmt"
 )
 func main() {
-	f := lib.NewFlg()
-	f.Exec()
+
+	arguments, err := ParseArguments()
+	if err != nil {
+		fmt.Println(arguments)
+	}
+	//
+	//if arguments.isHelp {
+	//	help()
+	//	os.Exit(0)
+	//}
+	//if err != nil {
+	//	fmt.Fprintln(os.Stderr, err)
+	//	os.Exit(1)
+	//}
+	//
+	//c := NewConvert(arguments.args )
+	//
+	//if err := c.Run(); err != nil {
+	//	fmt.Fprintln(os.Stderr, err)
+	//	os.Exit(1)
+	//})
 }
