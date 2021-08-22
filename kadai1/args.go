@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 )
@@ -15,12 +14,8 @@ type Arguments struct {
 
 	args              []string
 
-	stringPathBuff bytes.Buffer
 }
 
-func Hello()  {
-	fmt.Println("Hello")
-}
 func ParseArguments() (*Arguments, error) {
 	var argument Arguments
 
@@ -30,7 +25,7 @@ func ParseArguments() (*Arguments, error) {
 	flag.BoolVar(&argument.isHelp, "help", false, "display this help and exit")
 
 	flag.Parse()
-	fmt.Println("Argument")
+
 	return &argument, nil
 
 }
