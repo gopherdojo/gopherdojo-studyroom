@@ -1,8 +1,5 @@
-/**
-Package pkg is convert
-*/
-
-package pkg
+// Package cmd will command and control you.
+package mypkg
 
 import (
 	"fmt"
