@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gopherdojo-studyroom/kadai1/mypkg"
+	"gopherdojo-studyroom/kadai1/takahashi-e/mypkg"
 	"os"
 )
 // main use
