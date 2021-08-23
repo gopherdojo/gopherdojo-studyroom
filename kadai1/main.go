@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"gopherdojo-studyroom/kadai1/pkg"
 	"os"
 )
 func main() {
-	arguments, err := ParseArguments()
+	arguments, err := pkg.ParseArguments()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	if arguments.isHelp {
-		Help()
+	if arguments.IsHelp {
+		pkg.Help()
 		os.Exit(0)
 	}
 
