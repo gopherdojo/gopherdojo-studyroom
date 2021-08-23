@@ -11,13 +11,6 @@ import (
 	"path/filepath"
 )
 
-
-func newConvert(args []string) *Arguments {
-	return &Arguments{
-		args: args,
-	}
-}
-
 func assert(msg string, err error) error {
 	if err != nil {
 		fmt.Println(msg, "error")
@@ -30,7 +23,6 @@ func (c *Arguments) returnFilePath() error {
 	err := filepath.Walk(c.selectedDirectory,
 		func(paths string, info fs.FileInfo, err error) error {
 			if filepath.Ext(paths) == c.selectedFileType {
-				fmt.Println(paths)
 				c.stringPath = append(c.stringPath, paths)
 			}
 			return nil
@@ -46,6 +38,25 @@ func (c *Arguments) replaceExt(filePath, from, to string) string {
 	return filePath[:len(filePath)-len(ext)] + to
 }
 
+func (c *Arguments) caseConvert(from string, to string, fn string, img image.Image) error {
+	fno := c.replaceExt(fn, from, "-out"+to)
+	fo, err := os.Create(fno)
+	defer fo.Close()
+	err = assert("OS.Create", err)
+
+	switch to {
+	case ".gif":
+		return gif.Encode(fo, img, nil)
+
+	case ".png":
+
+		return png.Encode(fo, img)
+	case ".jpg":
+		return jpeg.Encode(fo, img, nil)
+	}
+
+	return err
+}
 
 func (c *Arguments) convertImage(fn string) error {
 	f, err := os.Open(fn)
@@ -55,38 +66,38 @@ func (c *Arguments) convertImage(fn string) error {
 	img, _, err := image.Decode(f)
 	err = assert("Decode", err)
 
-	fno := c.replaceExt(fn, ".jpg", ".png")
-
-	fo, err := os.Create(fno)
-	err = assert("OS.Create", err)
-	defer fo.Close()
-
 	imageType := filepath.Ext(fn)
 
 	switch imageType {
-	case ".jpeg", ".jpg":
-		switch c.convertedFileType {
-		case "gif":
-			return gif.Encode(fo, img, nil)
-		default:
-			fmt.Println(imageType)
 
-			return png.Encode(fo, img)
+	case ".jpg":
+		switch c.convertedFileType {
+		case ".gif":
+			err = c.caseConvert(".jpg",".gif",fn,img)
+		default:
+			err = c.caseConvert(".jpg",".png",fn,img)
 		}
 
-	case "png":
+	case ".jpeg":
 		switch c.convertedFileType {
-		case "jpeg", "jpg":
-			return jpeg.Encode(fo, img, nil)
-		case "gif":
-			return gif.Encode(fo, img, nil)
+		case ".gif":
+			err = c.caseConvert(".jpg",".gif",fn,img)
 		default:
-			fmt.Println("default")
+			err = c.caseConvert(".jpg",".png",fn,img)
+		}
+
+	case ".png":
+		switch c.convertedFileType {
+		case ".jpeg":
+			err = c.caseConvert(".png",".jpeg",fn,img)
+		case ".jpg":
+			err = c.caseConvert(".png",".jpg",fn,img)
+		case ".gif":
+			err = c.caseConvert(".png",".gif",fn,img)
 		}
 	}
 	return err
 }
-
 
 func (c *Arguments) Run() error {
 	err := c.returnFilePath()

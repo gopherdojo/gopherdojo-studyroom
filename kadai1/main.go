@@ -11,17 +11,12 @@ func main() {
 		os.Exit(1)
 	}
 	if arguments.isHelp {
-		help()
+		Help()
 		os.Exit(0)
 	}
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	c := newConvert(arguments.args)
-	fmt.Println(c.args)
 
-	if err := c.Run(); err != nil {
+
+	if err := arguments.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
