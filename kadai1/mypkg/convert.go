@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-//Assert error
+//Assert error Utility
 func Assert(msg string, err error) error {
 	if err != nil {
 		fmt.Println(msg, "error")
@@ -21,6 +21,7 @@ func Assert(msg string, err error) error {
 	return err
 }
 
+// Return filepath which is selected extension below selected directory.\
 func (c *Arguments) ReturnFilePath() error {
 
 	err := os.Chdir(c.SelectedDirectory)
@@ -36,6 +37,7 @@ func (c *Arguments) ReturnFilePath() error {
 	return err
 }
 
+// Replace from selected file extension to othe file extension.
 func (c *Arguments) ReplaceExt(filePath, from, to string) string {
 	ext := filepath.Ext(filePath)
 	if len(from) > 0 && ext != from {
@@ -44,6 +46,7 @@ func (c *Arguments) ReplaceExt(filePath, from, to string) string {
 	return filePath[:len(filePath)-len(ext)] + to
 }
 
+// Arrange case for conversion.
 func (c *Arguments) CaseConvert(from string, to string, fn string, img image.Image) error {
 	fno := c.ReplaceExt(fn, from, "-out"+to)
 	fo, err := os.Create(fno)
@@ -65,6 +68,7 @@ func (c *Arguments) CaseConvert(from string, to string, fn string, img image.Ima
 	return err
 }
 
+// Convert image in  each case
 func (c *Arguments) ConvertImage(fn string) error {
 	f, err := os.Open(fn)
 	err = Assert("OS.Open", err)
@@ -102,12 +106,13 @@ func (c *Arguments) ConvertImage(fn string) error {
 		case ".gif":
 			err = c.CaseConvert(".png", ".gif", fn, img)
 		default:
-			err = c.CaseConvert(".png",".jpg",fn,img)
+			err = c.CaseConvert(".png", ".jpg", fn, img)
 		}
 	}
 	return err
 }
 
+// Run in main.go
 func (c *Arguments) Run() error {
 	err := c.ReturnFilePath()
 	err = Assert("ReturnFilePath", err)

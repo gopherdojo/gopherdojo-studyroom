@@ -5,6 +5,7 @@ import (
 	"gopherdojo-studyroom/kadai1/mypkg"
 	"os"
 )
+// main use
 func main() {
 	arguments, err := mypkg.ParseArguments()
 	if err != nil {
@@ -12,7 +13,7 @@ func main() {
 		os.Exit(1)
 	}
 	if arguments.IsHelp {
-		mypkg.Help()
+		fmt.Println(mypkg.Help())
 		os.Exit(0)
 	}
 

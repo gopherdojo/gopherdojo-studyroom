@@ -2,9 +2,9 @@ package mypkg
 
 import (
 	"flag"
-	"fmt"
 )
 
+//Argument Struct which use for command line flag.
 type Arguments struct {
 	SelectedDirectory string
 	SelectedFileType  string
@@ -14,6 +14,7 @@ type Arguments struct {
 	Args              []string
 }
 
+//parse argument which provided by cli.
 func ParseArguments() (*Arguments, error) {
 	var argument Arguments
 
@@ -26,13 +27,13 @@ func ParseArguments() (*Arguments, error) {
 
 }
 
-func Help() {
-	fmt.Println(`
+//display options.
+func Help() string {
+	return `
 Usage:
  convert [options] command
 	Options:
   	-s,  変換したいファイルがあるディレクトリを指定
   	-f,  変換前のファイルタイプを.jpeg , .png , .gifを指定 デフォルトは .jpg 
-  	-cf, 変換後のファイルタイプを .png , .gif 指定 デフォルトは.png`,
-	)
+  	-cf, 変換後のファイルタイプを .png , .gif 指定 デフォルトは.png`
 }

@@ -62,12 +62,12 @@ go run main.go -help
 ├── assets
 │   ├── download-out.gif (変換後)
 │   ├── download-out.jpg (変換後)
-│   ├── download.jpg
-│   ├── download.png
+│   ├── download.jpg (変換前）
+│   ├── download.png (変換前）
 │   ├── neko\ test-out.gif (変換後)
 │   ├── neko\ test-out.jpg (変換後)
-│   ├── neko\ test.jpg
-│   └── neko\ test.png
+│   ├── neko\ test.jpg (変換前）
+│   └── neko\ test.png (変換前）
 ├── gopherdojo-studyroom
 ├── kadai1
 ├── main
