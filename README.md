@@ -58,7 +58,7 @@ go run main.go -help
 * 自作パッケージ
 * Go Modulesの使用　go mod init しています。
 ```aidl
-.
+. 
 ├── assets
 │   ├── download-out.gif (変換後)
 │   ├── download-out.jpg (変換後)
@@ -93,3 +93,21 @@ type Arguments struct {
 	Args              []string
 }
 ```
+
+* GoDocの使用
+
+Godocのインストール
+````
+go get golang.org/x/tools/cmd/godoc    
+````
+
+GoDocの起動
+``
+godoc -http=:6060 
+``
+
+``` http://localhost:6060 ```にアクセス
+
+```mypkg```に記載されている。
+
+以上
