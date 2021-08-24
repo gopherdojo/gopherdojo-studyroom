@@ -12,7 +12,7 @@ import (
 type Record struct {
 	ID int64
 	Name string
-	Phone string
+	Amount string
 }
 
 func main() {
@@ -22,11 +22,10 @@ func main() {
 }
 
 func run() error {
-	db, err := sql.Open("sqlite", "addressbook.db")
+	db, err := sql.Open("sqlite", "amountbook.db")
 	if err != nil {
 		return err
 	}
-
 
 	if err = db.Ping(); err != nil {
 		return err
@@ -43,7 +42,7 @@ func run() error {
 			return err
 		}
 
-		if err := inputRecord(db); err != nil {
+		if err := remittanceProcess(db); err != nil {
 			return err
 		}
 	}
@@ -53,10 +52,10 @@ func run() error {
 
 func createTable(db *sql.DB) error {
 	const sql = `
-	CREATE TABLE IF NOT EXISTS addressbook (
+	CREATE TABLE IF NOT EXISTS amountbook (
 		id   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
-		phone  INTEGER NOT NULL
+		amount INTEGER NOT NULL
 	);`
 
 	if _, err := db.Exec(sql); err != nil {
@@ -68,14 +67,14 @@ func createTable(db *sql.DB) error {
 
 func showRecords(db *sql.DB) error {
 	fmt.Println("All records.")
-	rows, err := db.Query("SELECT * FROM addressbook")
+	rows, err := db.Query("SELECT * FROM amountbook")
 	if err != nil {
 		return err
 	}
 
 	for rows.Next() {
 		var r Record
-		if err := rows.Scan(&r.ID, &r.Name, &r.Phone); err != nil {
+		if err := rows.Scan(&r.ID, &r.Name, &r.Amount); err != nil {
 			return err
 		}
 		fmt.Println(r)
@@ -88,22 +87,64 @@ func showRecords(db *sql.DB) error {
 	return nil
 }
 
-func inputRecord(db *sql.DB) error {
-	var r Record
+// input returns names of sender and reciever, and amount sender wants to send.
+func input() (string, string, int64) {
+	var user1 string
+	fmt.Print("From who? Please enter name. > ")
+	fmt.Scan(&user1)
 
-	fmt.Print("Name? > ")
-	fmt.Scan(&r.Name)
+	var user2 string
+	fmt.Print("To who? Please enter name. > ")
+	fmt.Scan(&user2)
 
-	fmt.Print("Phone number? > ")
-	fmt.Scan(&r.Phone)
+	var amount int64
+	fmt.Print("How much Amount you want to send? > ")
+	fmt.Scan(&amount)
 
-	const sql = "INSERT INTO addressbook(name, phone) values (?,?)"
-	_, err := db.Exec(sql, r.Name, r.Phone)
+	return user1, user2, amount
+}
+
+func remittanceProcess(db *sql.DB) error {
+
+	sender, reciever, amount := input()
+	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	return err
+	rowSender := tx.QueryRow("SELECT * FROM USER = ?", sender)
+	var recSender Record
+	if err := rowSender.Scan(&recSender.ID, &recSender.Name, &recSender.Amount); err != nil {
+		if errRoll := tx.Rollback(); errRoll != nil {
+			return fmt.Errorf("%s: %s", err, errRoll)
+		}
+		return err
+	}
+	const updateSQLSend = "UPDATE amountbook SET amount = amount - ? WHERE ID = ?"
+	if _, err = tx.Exec(updateSQLSend, amount, recSender.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	rowReciever := tx.QueryRow("SELECT * FROM USER = ?", reciever)
+	var recReciever Record
+	if err := rowReciever.Scan(&recReciever.Name, &recReciever.Amount); err != nil {
+		if errRoll := tx.Rollback(); errRoll != nil {
+			return fmt.Errorf("%s: %s", err, errRoll)
+		}
+		return err
+	}
+	const updateSQLRecieve = "UPDATE amountbook SET amount = amount + ? WHERE ID = ?"
+	if _, err = tx.Exec(updateSQLRecieve, amount, recReciever.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // import (
