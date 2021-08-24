@@ -9,17 +9,101 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+type Record struct {
+	ID int64
+	Name string
+	Phone string
+}
+
 func main() {
-	db, err := sql.Open("sqlite", "database.db")
-	if err != nil {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func run() error {
+	db, err := sql.Open("sqlite", "addressbook.db")
+	if err != nil {
+		return err
+	}
+
+
 	if err = db.Ping(); err != nil {
-		log.Fatal(err)
+		return err
 	} else {
 		fmt.Fprintln(os.Stderr, "connected to dakabase.db")
 	}
-	
+
+	if err := createTable(db); err != nil {
+		return err
+	}
+
+	for {
+		if err := showRecords(db); err != nil {
+			return err
+		}
+
+		if err := inputRecord(db); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func createTable(db *sql.DB) error {
+	const sql = `
+	CREATE TABLE IF NOT EXISTS addressbook (
+		id   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		phone  INTEGER NOT NULL
+	);`
+
+	if _, err := db.Exec(sql); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func showRecords(db *sql.DB) error {
+	fmt.Println("All records.")
+	rows, err := db.Query("SELECT * FROM addressbook")
+	if err != nil {
+		return err
+	}
+
+	for rows.Next() {
+		var r Record
+		if err := rows.Scan(&r.ID, &r.Name, &r.Phone); err != nil {
+			return err
+		}
+		fmt.Println(r)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func inputRecord(db *sql.DB) error {
+	var r Record
+
+	fmt.Print("Name? > ")
+	fmt.Scan(&r.Name)
+
+	fmt.Print("Phone number? > ")
+	fmt.Scan(&r.Phone)
+
+	const sql = "INSERT INTO addressbook(name, phone) values (?,?)"
+	_, err := db.Exec(sql, r.Name, r.Phone)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 // import (
