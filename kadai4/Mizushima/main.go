@@ -21,4 +21,3 @@ func BootServer(handler func(http.ResponseWriter, *http.Request)) {
 	}
 
 }
-

@@ -15,7 +15,7 @@ type Res struct {
 func omikujiHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json; charset=utf-8")
 
-	v := Res {
+	v := Res{
 		Result: result(rand.Intn(5), time.Now()),
 	}
 
