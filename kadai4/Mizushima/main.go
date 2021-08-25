@@ -10,8 +10,8 @@ import (
 )
 
 type Record struct {
-	ID int64
-	Name string
+	ID     int64
+	Name   string
 	Amount string
 }
 
@@ -39,7 +39,7 @@ func run() error {
 
 	var abort bool
 	for !abort {
-		
+
 		if err := showRecords(db); err != nil {
 			return err
 		}
@@ -57,12 +57,12 @@ func run() error {
 		default:
 			fmt.Println("Please input y or n")
 		}
-		
+
 	}
 
 	abort = false
 	for !abort {
-		
+
 		if err := showRecords(db); err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func run() error {
 		default:
 			fmt.Println("Please input y or n")
 		}
-	}	
+	}
 
 	return nil
 }
@@ -173,7 +173,7 @@ func remittanceProcess(db *sql.DB) error {
 		}
 		return fmt.Errorf("func remittanceProccess: rowSender.Scan: %s", err)
 	}
-	const updateSQLSend = "UPDATE amountbook SET amount=amount-? WHERE ID=?"
+	const updateSQLSend = "UPDATE amountbook SET amount = amount - ? WHERE ID = ?"
 	if _, err = tx.Exec(updateSQLSend, amount, recSender.ID); err != nil {
 		tx.Rollback()
 		return err
