@@ -37,15 +37,50 @@ func run() error {
 		return err
 	}
 
-	for {
+	var abort bool
+	for !abort {
+		
 		if err := showRecords(db); err != nil {
 			return err
 		}
 
-		if err := remittanceProcess(db); err != nil {
+		var resp string
+		fmt.Print("Do you want to register? y/n > ")
+		fmt.Scan(&resp)
+		switch resp {
+		case "y", "Y":
+			if err := inputRecord(db); err != nil {
+				return err
+			}
+		case "n", "N":
+			abort = true
+		default:
+			fmt.Println("Please input y or n")
+		}
+		
+	}
+
+	abort = false
+	for !abort {
+		
+		if err := showRecords(db); err != nil {
 			return err
 		}
-	}
+
+		var resp string
+		fmt.Print("Do you want to deal remittance? y/n > ")
+		fmt.Scan(&resp)
+		switch resp {
+		case "y", "Y":
+			if err := remittanceProcess(db); err != nil {
+				return err
+			}
+		case "n", "N":
+			abort = true
+		default:
+			fmt.Println("Please input y or n")
+		}
+	}	
 
 	return nil
 }
@@ -87,8 +122,26 @@ func showRecords(db *sql.DB) error {
 	return nil
 }
 
-// input returns names of sender and reciever, and amount sender wants to send.
-func input() (string, string, int64) {
+func inputRecord(db *sql.DB) error {
+	var r Record
+
+	fmt.Print("Name? > ")
+	fmt.Scan(&r.Name)
+
+	fmt.Print("Amount? > ")
+	fmt.Scan(&r.Amount)
+
+	const sql = "INSERT INTO amountbook(name, amount) values (?,?)"
+	_, err := db.Exec(sql, r.Name, r.Amount)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// input returns names of the sender and the reciever, and the amount sender wants to send.
+func inputRemittance() (string, string, int64) {
 	var user1 string
 	fmt.Print("From who? Please enter name. > ")
 	fmt.Scan(&user1)
@@ -106,38 +159,38 @@ func input() (string, string, int64) {
 
 func remittanceProcess(db *sql.DB) error {
 
-	sender, reciever, amount := input()
+	sender, reciever, amount := inputRemittance()
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	rowSender := tx.QueryRow("SELECT * FROM USER = ?", sender)
+	rowSender := tx.QueryRow("SELECT * FROM amountbook WHERE name = ?", sender)
 	var recSender Record
 	if err := rowSender.Scan(&recSender.ID, &recSender.Name, &recSender.Amount); err != nil {
 		if errRoll := tx.Rollback(); errRoll != nil {
-			return fmt.Errorf("%s: %s", err, errRoll)
+			return fmt.Errorf("func remittanceProccess: rowSender.Scan: rollback failed: %s: %s", err, errRoll)
 		}
-		return err
+		return fmt.Errorf("func remittanceProccess: rowSender.Scan: %s", err)
 	}
-	const updateSQLSend = "UPDATE amountbook SET amount = amount - ? WHERE ID = ?"
+	const updateSQLSend = "UPDATE amountbook SET amount=amount-? WHERE ID=?"
 	if _, err = tx.Exec(updateSQLSend, amount, recSender.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	rowReciever := tx.QueryRow("SELECT * FROM USER = ?", reciever)
+	rowReciever := tx.QueryRow("SELECT * FROM amountbook WHERE name = ?", reciever)
 	var recReciever Record
-	if err := rowReciever.Scan(&recReciever.Name, &recReciever.Amount); err != nil {
+	if err := rowReciever.Scan(&recReciever.ID, &recReciever.Name, &recReciever.Amount); err != nil {
 		if errRoll := tx.Rollback(); errRoll != nil {
-			return fmt.Errorf("%s: %s", err, errRoll)
+			return fmt.Errorf("func remittanceProccess: rowReciever.Scan: rollback failed: %s: %s", err, errRoll)
 		}
-		return err
+		return fmt.Errorf("func remittanceProccess: rowReciever.Scan: %s", err)
 	}
 	const updateSQLRecieve = "UPDATE amountbook SET amount = amount + ? WHERE ID = ?"
 	if _, err = tx.Exec(updateSQLRecieve, amount, recReciever.ID); err != nil {
 		tx.Rollback()
-		return err
+		return fmt.Errorf("func remittanceProccess: %s", err)
 	}
 
 	if err := tx.Commit(); err != nil {
