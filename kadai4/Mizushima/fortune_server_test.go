@@ -23,7 +23,7 @@ func TestOmikujiHandler(t *testing.T) {
 	}()
 
 	if rw.StatusCode != http.StatusOK {
-		t.Fatal("unexpected status code")
+		t.Fatalf("unexpected status code: %d", rw.StatusCode)
 	}
 
 	var res Res

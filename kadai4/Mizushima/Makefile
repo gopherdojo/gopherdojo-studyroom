@@ -12,7 +12,7 @@ build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test: build
-	$(GOTEST) fortune_server_test.go fortune_server.go -v -cover
+	$(GOTEST) fortune_server_test.go fortune_server.go main_test.go main.go -v -cover
 
 clean:
 	$(GOCLEAN)
