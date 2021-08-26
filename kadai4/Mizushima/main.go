@@ -13,6 +13,7 @@ func main() {
 	BootServer(omikujiHandler)
 }
 
+// BootServer starts the 'Omikuji' server.
 func BootServer(handler func(http.ResponseWriter, *http.Request)) {
 
 	http.HandleFunc("/", handler)

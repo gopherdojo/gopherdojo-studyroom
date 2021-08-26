@@ -1,3 +1,4 @@
+// fortune_server.go implements the 'handler' and other functions to return a result of 'Omikuji'.
 package main
 
 import (
@@ -8,10 +9,12 @@ import (
 	"time"
 )
 
+// Res is a struct for json has one field 'result'.
 type Res struct {
 	Result string `json:"result"`
 }
 
+// omikujiHandler implements the 'handler' for the 'Omikuji' server.
 func omikujiHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json; charset=utf-8")
 
@@ -25,7 +28,8 @@ func omikujiHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// result returns the result of Omikuji if 'i' is bitween 0 and 5, or a empty string.
+// result function returns the result of Omikuji if 'i' is bitween 0 and 5, or a empty string.
+// If 't' is the first three days of the new year, result function returns always '大吉'
 func result(i int, t time.Time) string {
 
 	if t.Month() == 1 && (1 <= t.Day() && t.Day() <= 3) {
