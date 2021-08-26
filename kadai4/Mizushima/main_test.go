@@ -9,7 +9,7 @@ import (
 )
 
 func TestBootServer(t *testing.T) {
-	ts:= httptest.NewServer(router(omikujiHandler))
+	ts := httptest.NewServer(router(omikujiHandler))
 	defer ts.Close()
 
 	resp, err := http.Get(ts.URL)
@@ -17,7 +17,7 @@ func TestBootServer(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() {
-		if err := resp.Body.Close(); err!= nil {
+		if err := resp.Body.Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()

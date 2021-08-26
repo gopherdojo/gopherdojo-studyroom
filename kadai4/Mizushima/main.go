@@ -29,7 +29,7 @@ func main() {
 	log.Println(<-ch)
 }
 
-// 
+//
 func server(addr string, handler func(w http.ResponseWriter, r *http.Request)) (net.Listener, chan error) {
 	ch := make(chan error)
 
@@ -46,7 +46,7 @@ func server(addr string, handler func(w http.ResponseWriter, r *http.Request)) (
 	return listener, ch
 }
 
-// 
+//
 func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux {
 
 	mux := http.NewServeMux()
@@ -55,7 +55,7 @@ func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux
 	return mux
 }
 
-// 
+//
 func listen(ctx context.Context, listener net.Listener) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 
