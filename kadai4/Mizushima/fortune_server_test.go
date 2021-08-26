@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,19 +10,32 @@ import (
 )
 
 func TestOmikujiHandler(t *testing.T) {
+
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", nil)
+
 	omikujiHandler(w, r)
 	rw := w.Result()
-	defer rw.Body.Close()
+	defer func() {
+		if err := rw.Body.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
 	if rw.StatusCode != http.StatusOK {
 		t.Fatal("unexpected status code")
 	}
-	b, err := ioutil.ReadAll(rw.Body)
-	if err != nil {
-		t.Fatalf("unexpected error: %s", err)
+
+	var res Res
+	dec := json.NewDecoder(rw.Body)
+	if err := dec.Decode(&res); err != nil && err != io.EOF {
+		t.Fatal(err)
 	}
-	fmt.Println(string(b))
+
+	s := []string{"大吉", "中吉", "小吉", "凶"}
+	if res.Result == "" || !contains(s, res.Result) {
+		t.Fatal("Error: json returned is not valid")
+	}
 }
 
 func TestResult(t *testing.T) {
@@ -51,10 +64,35 @@ func TestResult(t *testing.T) {
 			index:    5,
 			expected: "凶",
 		},
+		"August 25 and the index is 0": {
+			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
+			index:    0,
+			expected: "大吉",
+		},
+		"August 25 and the index is 1": {
+			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
+			index:    1,
+			expected: "中吉",
+		},
+		"August 25 and the index is 2": {
+			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
+			index:    2,
+			expected: "中吉",
+		},
 		"August 25 and the index is 3": {
 			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
 			index:    3,
 			expected: "小吉",
+		},
+		"August 25 and the index is 4": {
+			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
+			index:    4,
+			expected: "小吉",
+		},
+		"August 25 and the index is 5": {
+			date:     time.Date(2021, 8, 25, 0, 0, 0, 0, time.Local),
+			index:    5,
+			expected: "凶",
 		},
 	}
 
@@ -66,4 +104,13 @@ func TestResult(t *testing.T) {
 			}
 		})
 	}
+}
+
+func contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
 }
