@@ -33,7 +33,7 @@ func main() {
 
 // server function creates a net.Listener that listens from 'addr', 
 // and invoke 'router' function by go routine,
-// and reteuns the net.Listener that server created and error channel from 'router' function.
+// and reteuns the net.Listener that server created, and error channel from the server handler.
 func server(addr string,
 	handler func(w http.ResponseWriter, r *http.Request)) (net.Listener, chan error) {
 	ch := make(chan error)
