@@ -2,30 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func TestBootServer(t *testing.T) {
-	ts := httptest.NewServer(router(omikujiHandler))
-	defer ts.Close()
+func TestServerOmikujiHandler(t *testing.T) {
+	resp, close := serverTestHelper(t, omikujiHandler, "TestServerOmikujiHandler")
+	defer close()
 
-	resp, err := http.Get(ts.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			t.Fatal(err)
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected status code: %d", resp.StatusCode)
-	}
-
+	// 独自テスト
 	var res Res
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&res); err != nil && err != io.EOF {
@@ -37,3 +26,49 @@ func TestBootServer(t *testing.T) {
 		t.Fatal("Error: json that the handler returned is invalid")
 	}
 }
+
+func TestServerHelloWorldHandler(t *testing.T) {
+	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request){
+		fmt.Fprintln(w, "Hello, World!")
+	}, "TestServerHelloWorldHandler")
+	defer close()
+	
+	// 独自テスト
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("TestServerHelloWorldHandler: error: %s", err)
+	}
+
+	const expected = "Hello, World!\n"
+	if string(b) != expected {
+		t.Fatalf("expected %s, but got %s", expected, string(b))
+	}
+}
+
+// serverTestHelper performs a connection test on a test server with 'handler'.
+func serverTestHelper(t *testing.T,
+	handler func(w http.ResponseWriter, r *http.Request),
+	funcName string) (*http.Response, func()) {
+
+	t.Helper()
+
+	ts := httptest.NewServer(router(handler))
+	
+	resp, err := http.Get(ts.URL)
+	if err != nil {
+		t.Fatalf("%s: error: %s", funcName, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("%s: error: unexpected status code: %d", funcName, resp.StatusCode)
+	}
+
+	return resp,
+	func() {
+		ts.Close()
+		if err := resp.Body.Close(); err != nil {
+			t.Fatalf("resp.Body.Close(): error: %s", err)
+		}
+	}
+}
+

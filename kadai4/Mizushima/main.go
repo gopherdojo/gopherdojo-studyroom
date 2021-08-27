@@ -60,7 +60,8 @@ func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux
 	return mux
 }
 
-// listen accepts 'ctrl+c' signal, and stop the 'Omikuji' server.
+// listen accepts 'ctrl+c' signal, and stop the 'Omikuji' server,
+// and returns context.Context and function for clean.
 func listen(ctx context.Context, listener net.Listener) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 
