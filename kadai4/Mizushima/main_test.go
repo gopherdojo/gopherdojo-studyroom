@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestServerOmikujiHandler(t *testing.T) {
+func TestConnectionOmikujiHandler(t *testing.T) {
 	resp, close := serverTestHelper(t, omikujiHandler, "TestServerOmikujiHandler")
 	defer close()
 
@@ -27,7 +27,7 @@ func TestServerOmikujiHandler(t *testing.T) {
 	}
 }
 
-func TestServerHelloWorldHandler(t *testing.T) {
+func TestConnectionHelloWorldHandler(t *testing.T) {
 	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request){
 		fmt.Fprintln(w, "Hello, World!")
 	}, "TestServerHelloWorldHandler")
@@ -52,13 +52,16 @@ func serverTestHelper(t *testing.T,
 
 	t.Helper()
 
+	// create the new test server 
 	ts := httptest.NewServer(router(handler))
 	
+	// get the response.
 	resp, err := http.Get(ts.URL)
 	if err != nil {
 		t.Fatalf("%s: error: %s", funcName, err)
 	}
 
+	// check the status code in the response.
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("%s: error: unexpected status code: %d", funcName, resp.StatusCode)
 	}
