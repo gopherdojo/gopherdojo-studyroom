@@ -18,19 +18,24 @@ import (
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	// Listen to port 8080, and set handler to 'OmikujiHandler'.
 	listener, ch := server(":8080", omikujiHandler)
 	fmt.Println("Omikuji Server started at", listener.Addr())
 
-	// ctrl+c signal interrupt
+	// 'ctrl+c' signal interrupt
 	ctx := context.Background()
 	_, cancel := listen(ctx, listener)
 	defer cancel()
 
+	// Accept and print the error from the handler.
 	log.Println(<-ch)
 }
 
-//
-func server(addr string, handler func(w http.ResponseWriter, r *http.Request)) (net.Listener, chan error) {
+// server function creates a net.Listener that listens from 'addr', 
+// and invoke 'router' function by go routine,
+// and reteuns the net.Listener that server created and error channel from 'router' function.
+func server(addr string,
+	handler func(w http.ResponseWriter, r *http.Request)) (net.Listener, chan error) {
 	ch := make(chan error)
 
 	listener, err := net.Listen("tcp", addr)
@@ -46,7 +51,7 @@ func server(addr string, handler func(w http.ResponseWriter, r *http.Request)) (
 	return listener, ch
 }
 
-//
+// router function returns the pointer of http.ServerMux that has 'handler'.
 func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux {
 
 	mux := http.NewServeMux()
@@ -55,7 +60,7 @@ func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux
 	return mux
 }
 
-//
+// listen accepts 'ctrl+c' signal, and stop the 'Omikuji' server.
 func listen(ctx context.Context, listener net.Listener) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 
