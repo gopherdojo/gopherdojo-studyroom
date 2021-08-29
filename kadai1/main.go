@@ -3,19 +3,17 @@ package main
 import (
 	"fmt"
 	"highpon/args"
-	"os"
-	"path/filepath"
+	"highpon/convert"
+	"strings"
 )
 
 func main() {
 	var a = args.ParseArgs()
 	fmt.Println(a.From)
-	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		fmt.Printf("path: %#v\n", path)
-		return nil
-	})
-	fmt.Println(err)
+	fmt.Println(convert.GetSelectedExtensionPath(a.From, a.Dir))
+	var b = convert.GetSelectedExtensionPath(a.From, a.Dir)
+	for _, v := range b {
+		fmt.Println(strings.Join(v[:len(v)-1], "."))
+	}
+
 }
