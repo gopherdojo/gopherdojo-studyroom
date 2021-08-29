@@ -1,19 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"highpon/args"
-	"highpon/convert"
+	"image-convert/args"
+	"image-convert/convert"
 	"strings"
 )
 
 func main() {
-	var a = args.ParseArgs()
-	fmt.Println(a.From)
-	fmt.Println(convert.GetSelectedExtensionPath(a.From, a.Dir))
-	var b = convert.GetSelectedExtensionPath(a.From, a.Dir)
-	for _, v := range b {
-		fmt.Println(strings.Join(v[:len(v)-1], "."))
+	var args = args.ParseArgs()
+	var convertList = convert.GetSelectedExtensionPath(args.From, args.Dir)
+	for _, v := range convertList {
+		convert.ConvertImage(strings.Join(v[:len(v)-1], "."), args.From, args.To)
 	}
-
 }

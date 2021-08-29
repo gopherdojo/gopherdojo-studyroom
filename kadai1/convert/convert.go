@@ -1,6 +1,10 @@
 package convert
 
 import (
+	"fmt"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"log"
 	"os"
 	"path/filepath"
@@ -24,4 +28,37 @@ func GetSelectedExtensionPath(fileType string, directory string) [][]string {
 		log.Fatal(err)
 	}
 	return retval
+}
+
+func ConvertImage(fileName string, from string, to string) {
+	f, err := os.Open(fileName + "." + from)
+	if err != nil {
+		fmt.Println("open:", err)
+		return
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		fmt.Println("decode:", err)
+		return
+	}
+
+	fso, err := os.Create(fileName + "." + to)
+	if err != nil {
+		fmt.Println("create:", err)
+		return
+	}
+	defer fso.Close()
+
+	switch {
+	case (from == "jpg" || from == "jpeg") || to == "png":
+		jpeg.Encode(fso, img, nil)
+	case from == "png" && (to == "jpg" || to == "jpeg"):
+		png.Encode(fso, img)
+	}
+
+	if err := os.Remove(fileName + "." + from); err != nil {
+		fmt.Println(err)
+	}
 }
