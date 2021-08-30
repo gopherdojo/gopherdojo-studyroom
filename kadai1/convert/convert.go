@@ -52,7 +52,7 @@ func ConvertImage(fileName string, from string, to string) {
 	defer fso.Close()
 
 	switch {
-	case (from == "jpg" || from == "jpeg") || to == "png":
+	case (from == "jpg" || from == "jpeg") && to == "png":
 		jpeg.Encode(fso, img, nil)
 	case from == "png" && (to == "jpg" || to == "jpeg"):
 		png.Encode(fso, img)
