@@ -12,12 +12,17 @@ build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test: build
-	$(GOTEST) fortune_server_test.go fortune_server.go main_test.go main.go -v -cover
+	cd fortune; $(GOTEST) -v -cover
+	$(GOTEST) -v -cover
 
 clean:
 	$(GOCLEAN)
 
 format:
 	$(GOFMT) ./...
+
+coverage:
+	$(GOTEST) -coverprofile=profile .
+	$(GOCMD) tool cover -html=profile
 
 .PHONY: test clean format

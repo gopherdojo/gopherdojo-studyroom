@@ -13,13 +13,17 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai4/Mizushima/fortune"
 )
 
+var timeNow = func() time.Time { return time.Now() }
+
 func main() {
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(timeNow().UnixNano())
 
 	// Listen to port 8080, and set handler to 'OmikujiHandler'.
-	listener, ch := server(":8080", omikujiHandler)
+	listener, ch := server(":8080", fortune.OmikujiHandler)
 	fmt.Println("Omikuji Server started at", listener.Addr())
 
 	// 'ctrl+c' signal interrupt
@@ -31,7 +35,7 @@ func main() {
 	log.Println(<-ch)
 }
 
-// server function creates a net.Listener that listens from 'addr', 
+// server function creates a net.Listener that listens from 'addr',
 // and invoke 'router' function by go routine,
 // and reteuns the net.Listener that server created, and error channel from the server handler.
 func server(addr string,

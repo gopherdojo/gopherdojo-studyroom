@@ -8,31 +8,33 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai4/Mizushima/fortune"
 )
 
 func TestConnectionOmikujiHandler(t *testing.T) {
-	resp, close := serverTestHelper(t, omikujiHandler, "TestServerOmikujiHandler")
+	resp, close := serverTestHelper(t, fortune.OmikujiHandler, "TestServerOmikujiHandler")
 	defer close()
 
 	// 独自テスト
-	var res Res
+	var res fortune.Res
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&res); err != nil && err != io.EOF {
 		t.Fatal(err)
 	}
 
 	s := []string{"大吉", "中吉", "小吉", "凶"}
-	if res.Result == "" || !contains(s, res.Result) {
+	if res.Result == "" || !fortune.Contains(s, res.Result) {
 		t.Fatal("Error: json that the handler returned is invalid")
 	}
 }
 
 func TestConnectionHelloWorldHandler(t *testing.T) {
-	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request){
+	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello, World!")
 	}, "TestServerHelloWorldHandler")
 	defer close()
-	
+
 	// 独自テスト
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -52,9 +54,9 @@ func serverTestHelper(t *testing.T,
 
 	t.Helper()
 
-	// create the new test server 
+	// create the new test server
 	ts := httptest.NewServer(router(handler))
-	
+
 	// get the response.
 	resp, err := http.Get(ts.URL)
 	if err != nil {
@@ -67,11 +69,10 @@ func serverTestHelper(t *testing.T,
 	}
 
 	return resp,
-	func() {
-		ts.Close()
-		if err := resp.Body.Close(); err != nil {
-			t.Fatalf("resp.Body.Close(): error: %s", err)
+		func() {
+			ts.Close()
+			if err := resp.Body.Close(); err != nil {
+				t.Fatalf("resp.Body.Close(): error: %s", err)
+			}
 		}
-	}
 }
-

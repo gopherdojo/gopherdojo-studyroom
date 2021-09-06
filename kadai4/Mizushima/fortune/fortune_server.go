@@ -1,5 +1,5 @@
 // fortune_server.go implements the 'handler' and other functions to return a result of 'Omikuji'.
-package main
+package fortune
 
 import (
 	"encoding/json"
@@ -9,17 +9,19 @@ import (
 	"time"
 )
 
+var timeNow = func() time.Time { return time.Now() }
+
 // Res is a struct for json has one field 'result'.
 type Res struct {
 	Result string `json:"result"`
 }
 
 // omikujiHandler implements the 'handler' for the 'Omikuji' server.
-func omikujiHandler(w http.ResponseWriter, r *http.Request) {
+func OmikujiHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json; charset=utf-8")
 
 	v := Res{
-		Result: result(rand.Intn(5), time.Now()),
+		Result: result(rand.Intn(5), timeNow()),
 	}
 
 	if err := json.NewEncoder(w).Encode(v); err != nil {
@@ -48,4 +50,13 @@ func result(i int, t time.Time) string {
 	default:
 		return ""
 	}
+}
+
+func Contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
 }
