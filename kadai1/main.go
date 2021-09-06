@@ -1,15 +1,36 @@
 package main
 
 import (
-	"image-convert/args"
+	"flag"
 	"image-convert/convert"
-	"strings"
+	"log"
 )
 
+type cmdArgs struct {
+	from string
+	to   string
+	dir  string
+}
+
+func parseArgs() *cmdArgs {
+	var cmd cmdArgs
+	flag.StringVar(&cmd.from, "from", "jpg", "from")
+	flag.StringVar(&cmd.to, "to", "png", "to")
+	flag.StringVar(&cmd.dir, "dir", "./", "directory")
+	flag.Parse()
+	return &cmd
+}
+
 func main() {
-	var args = args.ParseArgs()
-	var convertList = convert.GetSelectedExtensionPath(args.From, args.Dir)
+	var args = parseArgs()
+	var convertList, err = convert.GetSelectedExtensionPath(args.from, args.dir)
+	if err != nil {
+		log.Fatal(err)
+	}
 	for _, v := range convertList {
-		convert.ConvertImage(strings.Join(v[:len(v)-1], "."), args.From, args.To)
+		err := convert.ConvertImage(v, args.to)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

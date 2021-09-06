@@ -1,64 +1,67 @@
 package convert
 
 import (
-	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
-func GetSelectedExtensionPath(fileType string, directory string) [][]string {
-	var retval [][]string
+func GetSelectedExtensionPath(fileType string, directory string) ([]string, error) {
+	var retval []string
 	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		slice := strings.Split(path, ".")
-		if slice[len(slice)-1] == fileType {
-			retval = append(retval, slice)
+		if filepath.Ext(path) == "."+fileType {
+			if f, err := os.Stat(path); !(os.IsNotExist(err) || f.IsDir()) {
+				retval = append(retval, path)
+			}
 		}
 
 		return nil
 	})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return retval
+	return retval, nil
 }
 
-func ConvertImage(fileName string, from string, to string) {
-	f, err := os.Open(fileName + "." + from)
+func ConvertImage(fileName string, to string) error {
+	f, err := os.Open(fileName)
 	if err != nil {
-		fmt.Println("open:", err)
-		return
+		return err
 	}
 	defer f.Close()
 
 	img, _, err := image.Decode(f)
 	if err != nil {
-		fmt.Println("decode:", err)
-		return
+		return err
 	}
 
-	fso, err := os.Create(fileName + "." + to)
+	out, err := os.Create(fileName[:len(fileName)-len(filepath.Ext(fileName))+1] + to)
 	if err != nil {
-		fmt.Println("create:", err)
-		return
+		return err
 	}
-	defer fso.Close()
+	defer out.Close()
 
-	switch {
-	case (from == "jpg" || from == "jpeg") && to == "png":
-		jpeg.Encode(fso, img, nil)
-	case from == "png" && (to == "jpg" || to == "jpeg"):
-		png.Encode(fso, img)
+	switch to {
+	case "jpg", "jpeg":
+		if err := jpeg.Encode(out, img, nil); err != nil {
+			return err
+		}
+	case "png":
+		if err := png.Encode(out, img); err != nil {
+			return err
+		}
+	default:
+
 	}
 
-	if err := os.Remove(fileName + "." + from); err != nil {
-		fmt.Println(err)
+	if err := os.Remove(fileName); err != nil {
+		return err
 	}
+
+	return nil
 }
