@@ -17,13 +17,19 @@ import (
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai4/Mizushima/fortune"
 )
 
-var timeNow = func() time.Time { return time.Now() }
+var osExit = os.Exit
 
 func main() {
-	rand.Seed(timeNow().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 
+	ch := runServer(":8080", fortune.OmikujiHandler)
+	// Accept and print the error from the handler.
+	log.Println(<-ch)
+}
+
+func runServer(addr string, handler func(w http.ResponseWriter, r *http.Request)) chan error {
 	// Listen to port 8080, and set handler to 'OmikujiHandler'.
-	listener, ch := server(":8080", fortune.OmikujiHandler)
+	listener, ch := server(addr, handler)
 	fmt.Println("Omikuji Server started at", listener.Addr())
 
 	// 'ctrl+c' signal interrupt
@@ -31,8 +37,7 @@ func main() {
 	_, cancel := listen(ctx, listener)
 	defer cancel()
 
-	// Accept and print the error from the handler.
-	log.Println(<-ch)
+	return ch
 }
 
 // server function creates a net.Listener that listens from 'addr',
@@ -79,8 +84,10 @@ func listen(ctx context.Context, listener net.Listener) (context.Context, func()
 		}
 		if err := listener.Close(); err != nil {
 			cancel()
-			log.Fatalf("listen: listener.Close error: %s", err)
+			log.Fatalf("listen: listener.Close error: %s\n", err)
 		}
+		cancel()
+		osExit(0)
 	}()
 
 	return ctx, cancel

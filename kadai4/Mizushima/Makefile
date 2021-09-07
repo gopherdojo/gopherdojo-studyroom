@@ -22,7 +22,7 @@ format:
 	$(GOFMT) ./...
 
 coverage:
-	$(GOTEST) -coverprofile=profile .
+	$(GOTEST) -coverprofile=profile . ./fortune
 	$(GOCMD) tool cover -html=profile
 
 .PHONY: test clean format

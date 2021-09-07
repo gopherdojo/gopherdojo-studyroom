@@ -1,18 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/MizushimaToshihiko/gopherdojo-studyroom/kadai4/Mizushima/fortune"
+	"golang.org/x/net/nettest"
 )
 
-func TestConnectionOmikujiHandler(t *testing.T) {
+func TestRouternOmikujiHandler(t *testing.T) {
 	resp, close := serverTestHelper(t, fortune.OmikujiHandler, "TestServerOmikujiHandler")
 	defer close()
 
@@ -24,12 +27,12 @@ func TestConnectionOmikujiHandler(t *testing.T) {
 	}
 
 	s := []string{"大吉", "中吉", "小吉", "凶"}
-	if res.Result == "" || !fortune.Contains(s, res.Result) {
+	if res.Result == "" || !contains(s, res.Result) {
 		t.Fatal("Error: json that the handler returned is invalid")
 	}
 }
 
-func TestConnectionHelloWorldHandler(t *testing.T) {
+func TestRouterHelloWorldHandler(t *testing.T) {
 	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello, World!")
 	}, "TestServerHelloWorldHandler")
@@ -75,4 +78,37 @@ func serverTestHelper(t *testing.T,
 				t.Fatalf("resp.Body.Close(): error: %s", err)
 			}
 		}
+}
+
+func contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
+func TestListen(t *testing.T) {
+
+	doneCh := make(chan struct{})
+	osExit = func(code int) { doneCh <- struct{}{} }
+
+	testListener, err := nettest.NewLocalListener("tcp")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, cancel := listen(context.Background(), testListener)
+	defer cancel()
+
+	proc, err := os.FindProcess(os.Getpid())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := proc.Signal(os.Interrupt); err != nil {
+		t.Fatal(err)
+	}
+
+	<-doneCh
 }

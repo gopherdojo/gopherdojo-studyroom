@@ -10,6 +10,7 @@ import (
 )
 
 var timeNow = func() time.Time { return time.Now() }
+var resOmikuji = [4]string{"大吉", "中吉", "小吉", "凶"}
 
 // Res is a struct for json has one field 'result'.
 type Res struct {
@@ -35,28 +36,19 @@ func OmikujiHandler(w http.ResponseWriter, r *http.Request) {
 func result(i int, t time.Time) string {
 
 	if t.Month() == 1 && (1 <= t.Day() && t.Day() <= 3) {
-		return "大吉"
+		return resOmikuji[0]
 	}
 
 	switch i {
 	case 0:
-		return "大吉"
+		return resOmikuji[0]
 	case 1, 2:
-		return "中吉"
+		return resOmikuji[1]
 	case 3, 4:
-		return "小吉"
+		return resOmikuji[2]
 	case 5:
-		return "凶"
+		return resOmikuji[3]
 	default:
 		return ""
 	}
-}
-
-func Contains(s []string, e string) bool {
-	for _, v := range s {
-		if e == v {
-			return true
-		}
-	}
-	return false
 }
