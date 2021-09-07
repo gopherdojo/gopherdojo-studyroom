@@ -16,7 +16,7 @@ import (
 )
 
 func TestRouternOmikujiHandler(t *testing.T) {
-	resp, close := serverTestHelper(t, fortune.OmikujiHandler, "TestServerOmikujiHandler")
+	resp, close := routerTestHelper(t, fortune.OmikujiHandler, "TestServerOmikujiHandler")
 	defer close()
 
 	// 独自テスト
@@ -33,7 +33,7 @@ func TestRouternOmikujiHandler(t *testing.T) {
 }
 
 func TestRouterHelloWorldHandler(t *testing.T) {
-	resp, close := serverTestHelper(t, func(w http.ResponseWriter, r *http.Request) {
+	resp, close := routerTestHelper(t, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello, World!")
 	}, "TestServerHelloWorldHandler")
 	defer close()
@@ -51,7 +51,7 @@ func TestRouterHelloWorldHandler(t *testing.T) {
 }
 
 // serverTestHelper performs a connection test on a test server with 'handler'.
-func serverTestHelper(t *testing.T,
+func routerTestHelper(t *testing.T,
 	handler func(w http.ResponseWriter, r *http.Request),
 	funcName string) (*http.Response, func()) {
 
@@ -98,7 +98,7 @@ func TestListen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, cancel := listen(context.Background(), testListener)
+	_, cancel := interruptListen(context.Background(), testListener)
 	defer cancel()
 
 	proc, err := os.FindProcess(os.Getpid())

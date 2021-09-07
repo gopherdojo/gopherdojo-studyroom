@@ -34,7 +34,7 @@ func runServer(addr string, handler func(w http.ResponseWriter, r *http.Request)
 
 	// 'ctrl+c' signal interrupt
 	ctx := context.Background()
-	_, cancel := listen(ctx, listener)
+	_, cancel := interruptListen(ctx, listener)
 	defer cancel()
 
 	return ch
@@ -71,7 +71,7 @@ func router(handler func(w http.ResponseWriter, r *http.Request)) *http.ServeMux
 
 // listen accepts 'ctrl+c' signal, and stop the 'Omikuji' server,
 // and returns context.Context and function for clean.
-func listen(ctx context.Context, listener net.Listener) (context.Context, func()) {
+func interruptListen(ctx context.Context, listener net.Listener) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	sig := make(chan os.Signal)
