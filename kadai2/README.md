@@ -7,7 +7,11 @@
 * io.Readerは、入力処理の基本インターフェース
 * `Read(p []byte) (n int, err error)` をもつインターフェース
 * バイト列を読み出すインターフェース
+
+【io.Reader】
 * io.Writerは、出力処理の基本インターフェース
+* `Write(p []byte) (n int, err error)` をもつインターフェース
+* バイト列を書き出すインターフェース
 
 ### io.Readerとio.Writerがあることでどういう利点があるのか具体例を挙げて考えてみる
 * 様々な場面で出てくる入出力にio.Readerインターフェースに準拠しているため、汎用性に優れている。
@@ -26,9 +30,21 @@
 * テストヘルパーを作ってみる
 
 #### Usage
+モジュール配下に移動
 `cd convert`
-`go test`
+
+テスト実行
+`go test -run ''`
+
+カバー内容を吐き出す
+`go test -cover ./... -coverprofile=cover.out`
+
+go toolを用いてcover.htmlを作成する
+`go tool cover -html=cover.out -o cover.html`
+
+cover.htmlを開く
+`open cover.html`
 
 #### カバレッジ
-
+current : coverage: 75.0% of statements
 
