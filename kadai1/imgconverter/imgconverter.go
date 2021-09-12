@@ -12,6 +12,22 @@ import (
 	"path/filepath"
 )
 
+// ValidInputExtension is a list of image formats that can be specified for the -i option in the argument.
+var ValidInputExtension = []string{
+	".jpeg",
+	".jpg",
+	".png",
+	".gif",
+}
+
+// ValidOutputExtension is a list of image formats that can be specified for the -o option in the argument.
+// Please note that .gif is not selectable.
+var ValidOutputExtension = []string{
+	".jpeg",
+	".jpg",
+	".png",
+}
+
 // Option stores the values of the -i and -o options entered on the command line.
 type Option struct {
 	Input, Output *string

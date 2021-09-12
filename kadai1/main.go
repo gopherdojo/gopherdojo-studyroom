@@ -9,18 +9,6 @@ import (
 	"github.com/r-uehara0219/gopherdojo-studyroom/imgconverter"
 )
 
-var validInputExtension = []string{
-	".jpeg",
-	".jpg",
-	".png",
-	".gif",
-}
-var validOutputExtension = []string{
-	".jpeg",
-	".jpg",
-	".png",
-}
-
 func isValidExtension(s string, arr []string) bool {
 	for _, extension := range arr {
 		if s == extension {
@@ -37,9 +25,9 @@ var option = imgconverter.Option{
 
 func main() {
 	flag.Parse()
-	if !isValidExtension(*option.Input, validInputExtension) || !isValidExtension(*option.Output, validOutputExtension) {
+	if !isValidExtension(*option.Input, imgconverter.ValidInputExtension) || !isValidExtension(*option.Output, imgconverter.ValidOutputExtension) {
 		fmt.Fprintln(os.Stderr, "Invalid extension has been specified.")
-		fmt.Fprintln(os.Stderr, "Please check the document to see what extensions can be specified.")
+		fmt.Fprintln(os.Stderr, "Please check README.md to see what extensions can be specified.")
 		os.Exit(1)
 	}
 
