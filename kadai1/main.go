@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/r-uehara0219/gopherdojo-studyroom/imgconverter"
 	"os"
 	"path/filepath"
+
+	"github.com/r-uehara0219/gopherdojo-studyroom/imgconverter"
 )
 
 var validInputExtension = []string{
