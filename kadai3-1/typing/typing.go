@@ -7,6 +7,7 @@ import (
     "bufio"
 )
 
+// Randomly extract　word
 func RandomWord() string {
         words := []string {
             "reason",
@@ -25,6 +26,7 @@ func RandomWord() string {
         return words[rand.Intn(len(words))]
 }
 
+// Create Chan
 func CreateChan(word string) <-chan string {
         stdin := bufio.NewScanner(os.Stdin)
         stdin.Scan()

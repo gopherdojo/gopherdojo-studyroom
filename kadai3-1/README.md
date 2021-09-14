@@ -15,6 +15,6 @@
 ## Setup
 * init `$ go install`
 ## Usage
-* `go run main.go [-from from extension] [-to to extension] [-directory directory]`
+* `go run main.go [-time time limit ] `
 
 
