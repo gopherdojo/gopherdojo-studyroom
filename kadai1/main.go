@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -18,9 +18,10 @@ func main() {
 	flag.Parse()
 	if !imgconverter.IsValidExtension(*option.Input, "input") ||
 		!imgconverter.IsValidExtension(*option.Output, "output") {
-		fmt.Fprintln(os.Stderr, "Invalid extension has been specified.")
-		fmt.Fprintln(os.Stderr, "Please check README.md to see what extensions can be specified.")
-		os.Exit(1)
+		log.Fatalln(
+			"Invalid extension has been specified.\n",
+			"Please check README.md to see what extensions can be specified.",
+		)
 	}
 
 	args := flag.Args()
@@ -36,7 +37,6 @@ func main() {
 			return nil
 		})
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
