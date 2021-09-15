@@ -29,7 +29,7 @@ var validOutputExtension = []string{
 	".png",
 }
 
-// IsValidExtension is a function to determine if the extension is selectable.
+// IsValidExtension determine if the extension is selectable.
 func IsValidExtension(s string, optionType string) bool {
 	var arr []string
 	if optionType == "input" {
@@ -43,6 +43,11 @@ func IsValidExtension(s string, optionType string) bool {
 		}
 	}
 	return false
+}
+
+// getFileNameWithoutExtension returns the filename as a String without the file extension.
+func getFileNameWithoutExtension(path string) string {
+	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
 }
 
 // Option stores the values of the -i and -o options entered on the command line.
@@ -75,7 +80,7 @@ func Do(path string, option Option) (err error) {
 		return err
 	}
 
-	outputPath := "./icon" + *option.Output
+	outputPath := "./" + getFileNameWithoutExtension(path) + *option.Output
 	outputFile, err := os.Create(filepath.Join(filepath.Dir(path), outputPath))
 	if err != nil {
 		return err
