@@ -56,7 +56,7 @@ type Option struct {
 }
 
 // Do function transform the image
-func Do(path string, option Option) (err error) {
+func Do(path string, option *Option) (err error) {
 	inputFile, err := os.Open(path)
 	if err != nil {
 		return err

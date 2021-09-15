@@ -29,7 +29,7 @@ func main() {
 	err := filepath.Walk(filepath.Dir(args[0]),
 		func(path string, info os.FileInfo, err error) error {
 			if filepath.Ext(path) == *option.Input {
-				err = imgconverter.Do(path, option)
+				err = imgconverter.Do(path, &option)
 				if err != nil {
 					return err
 				}
