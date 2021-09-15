@@ -47,7 +47,7 @@ func IsValidExtension(s string, optionType string) bool {
 
 // getFileNameWithoutExtension returns the filename as a String without the file extension.
 func getFileNameWithoutExtension(path string) string {
-	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
+	return filepath.Base(path[:(len(path) - len(filepath.Ext(path)))])
 }
 
 // Option stores the values of the -i and -o options entered on the command line.
