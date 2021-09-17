@@ -57,4 +57,8 @@ func main() {
 	if err := validateArgs(); err != nil {
 		log.Fatalln(err)
 	}
+
+	if err := imgconv.Converter(directory, inputType, outputType); err != nil {
+		log.Fatalln(err)
+	}
 }
