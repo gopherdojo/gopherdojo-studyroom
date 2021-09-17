@@ -4,7 +4,7 @@ build:
 
 .PHONY: run
 run:
-	go run main.go
+	./bin/imgconf -input-type=png -output-type=jpg testdata
 
 .PHONY: clean
 clean:
