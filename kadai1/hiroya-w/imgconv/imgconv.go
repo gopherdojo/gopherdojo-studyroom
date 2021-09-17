@@ -18,3 +18,25 @@ func Converter(directory, inputType, outputType string) error {
 	return nil
 }
 
+func getFiles(directory, inputType string) ([]string, error) {
+	var fileNames []string
+	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if filepath.Ext(path) == "."+inputType {
+			fileNames = append(fileNames, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fileNames, nil
+}
+
