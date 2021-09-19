@@ -20,9 +20,7 @@ func init() {
 
 func validateType(t string) error {
 	switch t {
-	case "jpg":
-		fallthrough
-	case "png":
+	case "jpg", "jpeg", "png", "gif":
 		return nil
 	default:
 		return fmt.Errorf("invalid type: %s", t)
