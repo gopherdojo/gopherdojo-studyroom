@@ -16,8 +16,8 @@ type Options struct {
 var opt Options
 
 func init() {
-	flag.StringVar(&opt.inputType, "input-type", "jpg", "input type")
-	flag.StringVar(&opt.outputType, "output-type", "png", "output type")
+	flag.StringVar(&opt.inputType, "input-type", "jpg", "input type[jpg|jpeg|png|gif]")
+	flag.StringVar(&opt.outputType, "output-type", "png", "output type[jpg|jpeg|png|gif]")
 }
 
 // validateType validates the type of the image

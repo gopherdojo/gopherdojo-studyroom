@@ -7,7 +7,7 @@ bin/imgconv: $(SRC)
 	go build -o bin/imgconv .
 
 .PHONY: run
-run:
+run: build
 	./bin/imgconv -input-type=png -output-type=jpg testdata
 
 .PHONY: test
