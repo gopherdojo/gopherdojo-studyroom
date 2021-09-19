@@ -6,6 +6,10 @@ build:
 run:
 	./bin/imgconf -input-type=png -output-type=jpg testdata
 
+.PHONY: test
+test: build run
+
 .PHONY: clean
 clean:
-	rm -rf bin/main
+	-rm -rf bin/main
+	-rm testdata/*.jpg testdata/*jpeg testdata/*.png testdata/*.gif
