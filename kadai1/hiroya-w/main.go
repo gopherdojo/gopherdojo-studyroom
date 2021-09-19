@@ -7,15 +7,17 @@ import (
 	"log"
 )
 
-var (
+type Options struct {
 	inputType  string
 	outputType string
 	directory  string
-)
+}
+
+var opt Options
 
 func init() {
-	flag.StringVar(&inputType, "input-type", "jpg", "input type")
-	flag.StringVar(&outputType, "output-type", "png", "output type")
+	flag.StringVar(&opt.inputType, "input-type", "jpg", "input type")
+	flag.StringVar(&opt.outputType, "output-type", "png", "output type")
 }
 
 func validateType(t string) error {
@@ -30,22 +32,22 @@ func validateType(t string) error {
 func validateArgs() error {
 	flag.Parse()
 
-	if inputType == outputType {
+	if opt.inputType == opt.outputType {
 		return fmt.Errorf("input and output type can't be the same")
 	}
 
-	if err := validateType(inputType); err != nil {
+	if err := validateType(opt.inputType); err != nil {
 		return err
 	}
 
-	if err := validateType(outputType); err != nil {
+	if err := validateType(opt.outputType); err != nil {
 		return err
 	}
 
 	if flag.Arg(0) == "" {
 		return fmt.Errorf("directory is required")
 	} else {
-		directory = flag.Arg(0)
+		opt.directory = flag.Arg(0)
 	}
 
 	return nil
@@ -56,7 +58,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := imgconv.Converter(directory, inputType, outputType); err != nil {
+	if err := imgconv.Converter(opt.directory, opt.inputType, opt.outputType); err != nil {
 		log.Fatalln(err)
 	}
 }
