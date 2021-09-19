@@ -6,6 +6,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -58,7 +59,11 @@ func convert(filePath, outputType string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	img, _, err := image.Decode(f)
 	if err != nil {
@@ -70,7 +75,11 @@ func convert(filePath, outputType string) error {
 	if err != nil {
 		return err
 	}
-	defer output.Close()
+	defer func() {
+		if err := output.Close(); err != nil {
+			log.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	switch outputType {
 	case "jpg", "jpeg":
