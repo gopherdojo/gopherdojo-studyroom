@@ -7,19 +7,19 @@ import (
 )
 
 func Converter(directory, inputType, outputType string) error {
-	fileNames, err := getFiles(directory, inputType)
+	imgPaths, err := getFiles(directory, inputType)
 	if err != nil {
 		return err
 	}
 
-	for _, file := range fileNames {
-		fmt.Println(file)
+	for _, path := range imgPaths {
+		fmt.Println(path)
 	}
 	return nil
 }
 
 func getFiles(directory, inputType string) ([]string, error) {
-	var fileNames []string
+	var imgPaths []string
 
 	if f, err := os.Stat(directory); err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func getFiles(directory, inputType string) ([]string, error) {
 			return nil
 		}
 		if filepath.Ext(path) == "."+inputType {
-			fileNames = append(fileNames, path)
+			imgPaths = append(imgPaths, path)
 		}
 		return nil
 	})
@@ -44,6 +44,6 @@ func getFiles(directory, inputType string) ([]string, error) {
 		return nil, err
 	}
 
-	return fileNames, nil
+	return imgPaths, nil
 }
 
