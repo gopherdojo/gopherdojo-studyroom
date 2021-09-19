@@ -20,6 +20,7 @@ func init() {
 	flag.StringVar(&opt.outputType, "output-type", "png", "output type")
 }
 
+// validateType validates the type of the image
 func validateType(t string) error {
 	switch t {
 	case "jpg", "jpeg", "png", "gif":
@@ -29,6 +30,7 @@ func validateType(t string) error {
 	}
 }
 
+// validateArgs validates the arguments
 func validateArgs() error {
 	flag.Parse()
 

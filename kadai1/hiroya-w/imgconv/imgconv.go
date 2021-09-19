@@ -1,3 +1,7 @@
+/*
+	Package imgconv provides image converter functions.
+	JPG, PNG, and GIF are supported.
+*/
 package imgconv
 
 import (
@@ -11,6 +15,7 @@ import (
 	"path/filepath"
 )
 
+// Converter converts the inputType format images in the directory to outputType format.
 func Converter(directory, inputType, outputType string) error {
 	imgPaths, err := getFiles(directory, inputType)
 	if err != nil {
@@ -25,6 +30,7 @@ func Converter(directory, inputType, outputType string) error {
 	return nil
 }
 
+// getFiles returns a list of file paths in a directory with the file extension specified by inputType.
 func getFiles(directory, inputType string) ([]string, error) {
 	var imgPaths []string
 
@@ -54,6 +60,7 @@ func getFiles(directory, inputType string) ([]string, error) {
 	return imgPaths, nil
 }
 
+// convert converts the image at filePath to the outputType format.
 func convert(filePath, outputType string) error {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -93,10 +100,12 @@ func convert(filePath, outputType string) error {
 	}
 }
 
+// renameExt renames the file extension of the file at filePath to newExt.
 func renameExt(filePath, newExt string) string {
 	return filePath[:len(filePath)-len(filepath.Ext(filePath))] + "." + newExt
 }
 
+// convertJPG converts the image to the JPEG format.
 func convertJPG(img image.Image, output *os.File) error {
 	if err := jpeg.Encode(output, img, nil); err != nil {
 		return err
@@ -104,6 +113,7 @@ func convertJPG(img image.Image, output *os.File) error {
 	return nil
 }
 
+// convertJPG converts the image to the PNG format.
 func convertPNG(img image.Image, output *os.File) error {
 	if err := png.Encode(output, img); err != nil {
 		return err
@@ -111,6 +121,7 @@ func convertPNG(img image.Image, output *os.File) error {
 	return nil
 }
 
+// convertJPG converts the image to the GIF format.
 func convertGIF(img image.Image, output *os.File) error {
 	if err := gif.Encode(output, img, nil); err != nil {
 		return err

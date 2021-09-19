@@ -21,6 +21,10 @@ testdata-gen:
 check:
 	errcheck ./...
 
+.PHONY: doc
+doc:
+	godoc -http=:8080
+
 .PHONY: clean
 clean:
 	-rm bin/imgconv
