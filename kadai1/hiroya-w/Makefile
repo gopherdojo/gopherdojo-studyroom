@@ -1,15 +1,19 @@
+SRC := main.go imgconv/imgconv.go
+
 .PHONY: build
-build:
-	go build -o bin/imgconf main.go
+build: bin/imgconv
+
+bin/imgconv: $(SRC)
+	go build -o bin/imgconv .
 
 .PHONY: run
 run:
-	./bin/imgconf -input-type=png -output-type=jpg testdata
+	./bin/imgconv -input-type=png -output-type=jpg testdata
 
 .PHONY: test
 test: build run
 
 .PHONY: clean
 clean:
-	-rm -rf bin/main
+	-rm bin/imgconv
 	-rm testdata/*.jpg testdata/*jpeg testdata/*.png testdata/*.gif
