@@ -65,8 +65,8 @@ func convert(filePath, outputType string) error {
 		return err
 	}
 
-	fileName := filepath.Base(filePath)
-	output, err := os.Create(fileName + "." + outputType)
+	outputPath := renameExt(filePath, outputType)
+	output, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
@@ -82,6 +82,10 @@ func convert(filePath, outputType string) error {
 	default:
 		return fmt.Errorf("%s is not a supported output type", outputType)
 	}
+}
+
+func renameExt(filePath, newExt string) string {
+	return filePath[:len(filePath)-len(filepath.Ext(filePath))] + "." + newExt
 }
 
 func convertJPG(img image.Image, output *os.File) error {
