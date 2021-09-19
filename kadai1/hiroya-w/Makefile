@@ -11,7 +11,15 @@ run:
 	./bin/imgconv -input-type=png -output-type=jpg testdata
 
 .PHONY: test
-test: build run
+test: build testdata-gen run
+
+.PHONY: testdata-gen
+testdata-gen:
+	cd testdata && ./init.sh
+
+.PHONY: check
+check:
+	errcheck ./...
 
 .PHONY: clean
 clean:
