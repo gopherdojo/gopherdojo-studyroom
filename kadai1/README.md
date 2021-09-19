@@ -17,6 +17,28 @@
 
 ## 使い方
 
+###　ビルドして使う場合
+
+- ビルド
+
+```
+go build -o image-converter
+```
+
+- 例
+
+```
+image-converter -d sample -f .png -t .jpg
+```
+
+### ビルドしない場合
+
 ```
 go run main.go -d [ディレクトリ] -f [変換前の拡張子]　-t [変換後の拡張子]
+```
+
+- 例
+
+```
+go run main.go -d sample -f .png -t .jpg
 ```
