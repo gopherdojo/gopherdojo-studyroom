@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Ext codes represents convertible file ext.
+// Ext codes represents convertible file ext
 const (
 	ExtJPG  = ".jpg"
 	ExtJPEG = ".jpeg"
@@ -18,7 +18,7 @@ const (
 	ExtGIF  = ".gif"
 )
 
-// IsConvertible check ext is convertible.
+// IsConvertible check that specified ext is convertible
 func IsConvertible(ext string) bool {
 	switch ext {
 	case ExtJPG, ExtJPEG, ExtPNG, ExtGIF:
@@ -28,19 +28,20 @@ func IsConvertible(ext string) bool {
 	}
 }
 
-// Converter converts image ext.
+// Converter is ...
 type Converter struct {
 	FromExt        string
 	ToExt          string
 	TargetFilePath string
 }
 
-// Convert is main funf of Convert
-func (con *Converter) Convert() error {
+// Convert is a main func of image convert
+func (c *Converter) Convert() error {
 	var err error
-	reader, err := os.Open(con.TargetFilePath)
+
+	reader, err := os.Open(c.TargetFilePath)
 	if err != nil {
-		fmt.Printf("failed to open file: %v. error: %v", con.TargetFilePath, err)
+		fmt.Printf("failed to open file: %v. error: %v", c.TargetFilePath, err)
 		return err
 	}
 	defer reader.Close()
@@ -48,7 +49,7 @@ func (con *Converter) Convert() error {
 	// decode
 	var img image.Image
 
-	switch con.FromExt {
+	switch c.FromExt {
 	case ExtJPG, ExtJPEG:
 		img, err = jpeg.Decode(reader)
 	case ExtPNG:
@@ -63,7 +64,7 @@ func (con *Converter) Convert() error {
 	}
 
 	// create dist file
-	fileName := strings.Replace(con.TargetFilePath, con.FromExt, con.ToExt, 1)
+	fileName := strings.Replace(c.TargetFilePath, c.FromExt, c.ToExt, 1)
 	dist, err := os.Create(fileName)
 	if err != nil {
 		return err
@@ -75,7 +76,7 @@ func (con *Converter) Convert() error {
 	}()
 
 	// encode
-	switch con.ToExt {
+	switch c.ToExt {
 	case ExtJPG, ExtJPEG:
 		err = jpeg.Encode(dist, img, &jpeg.Options{})
 	case ExtPNG:

@@ -11,16 +11,19 @@ import (
 	"github.com/kynefuk/gopherdojo-studyroom/kadai1/converter"
 )
 
+// Exit codes are values that represents an exit code
 const (
 	ExitOk  = 0
 	ExitErr = 1
 )
 
+// CLI is a struct of cli
 type CLI struct {
 	OutStream io.Writer
 	ErrStream io.Writer
 }
 
+// Run is a main func of CLI
 func (c *CLI) Run(args []string) int {
 	var (
 		targetDir string
@@ -28,22 +31,17 @@ func (c *CLI) Run(args []string) int {
 		toExt     string
 	)
 
-	flags := flag.NewFlagSet("image-convert", flag.ContinueOnError)
-	flags.SetOutput(c.ErrStream)
-	flags.Usage = func() {
+	flag.CommandLine.SetOutput(c.ErrStream)
+	flag.Usage = func() {
 		fmt.Fprintf(c.ErrStream, helpText)
 	}
 
-	flags.StringVar(&targetDir, "d", "", "specify target directory")
-	flags.StringVar(&fromExt, "f", converter.ExtJPG, "specify \"fromExt\"")
-	flags.StringVar(&toExt, "t", converter.ExtPNG, "specify \"toExt\"")
+	flag.StringVar(&targetDir, "d", "", "specify target directory")
+	flag.StringVar(&fromExt, "f", converter.ExtJPG, "specify \"fromExt\"")
+	flag.StringVar(&toExt, "t", converter.ExtPNG, "specify \"toExt\"")
 
-	if err := flags.Parse(args[1:]); err != nil {
-		fmt.Printf("failed to parse flags: %v", err)
-		return ExitErr
-	}
+	flag.Parse()
 
-	// 指定された拡張子が変換可能かチェック
 	if ok := converter.IsConvertible(fromExt); !ok {
 		fmt.Printf("fromExt format is not convertible: %v\n", fromExt)
 		return ExitErr
@@ -54,7 +52,7 @@ func (c *CLI) Run(args []string) int {
 		return ExitErr
 	}
 
-	// 指定されたディレクトリをWalkして、fromExtの拡張子に該当する画像ファイルをスライスに入れる
+	// walking directory to collect target image files
 	var targetFiles []string
 	err := filepath.WalkDir(targetDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -74,7 +72,7 @@ func (c *CLI) Run(args []string) int {
 		return ExitErr
 	}
 
-	// スライスの中身を1つずつ変換する
+	// converting
 	for _, f := range targetFiles {
 		con := converter.Converter{FromExt: fromExt, ToExt: toExt, TargetFilePath: f}
 
