@@ -20,6 +20,13 @@ func Converter(directory, inputType, outputType string) error {
 
 func getFiles(directory, inputType string) ([]string, error) {
 	var fileNames []string
+
+	if f, err := os.Stat(directory); err != nil {
+		return nil, err
+	} else if !f.IsDir() {
+		return nil, fmt.Errorf("%s is not a directory", directory)
+	}
+
 	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
