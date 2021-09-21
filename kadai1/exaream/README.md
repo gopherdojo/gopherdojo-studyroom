@@ -21,15 +21,21 @@
 
 2. Convert image files
 ```shell
-$ go run main.go --src-ext .png --dst-ext .gif
+$ go run main.go --delete=true --src-ext=.png --dst-ext=.gif
 ```
 or
 ```shell
 $ go build main.go
-$ ./main --src-ext .png --dst-ext .gif
+$ ./main --delete=true --src-ext=.png --dst-ext=.gif
 ```
 
 3. Confirm result
 ```shell
 $ ls -al ./testdata/dst
 ```
+
+## TODO
+* Package: go get <path-to-repo>@<branch> 暫定でデフォルト以外のブランチを取得
+* Go Modules
+* Go Doc
+* --verbose 実行内容の詳細を表示

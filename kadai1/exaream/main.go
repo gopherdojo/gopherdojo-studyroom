@@ -1,12 +1,7 @@
 package main
 
-/*
-TODO
-* Package
-* Go Modules
-* Go Doc
-*/
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"image"
@@ -17,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -36,7 +32,7 @@ const (
 	DefaultSrcDir = "./testdata/src"
 	DefaultDstDir = "./testdata/dst"
 	// Flag
-	DefaultFileDelete = false
+	DefaultFileDeleteFlag = false
 )
 
 type Converter struct {
@@ -49,7 +45,7 @@ type Converter struct {
 
 // Mapping table of extensions and MIME types
 /*
-var ExtMimeTypeTable = map[string]string{
+var ExtMimeTypeList = map[string]string{
 	ExtJpg:  MimeTypeJpeg,
 	ExtJpeg: MimeTypeJpeg,
 	ExtPng:  MimeTypePng,
@@ -57,22 +53,16 @@ var ExtMimeTypeTable = map[string]string{
 }
 */
 
-// Mapping table of extensions
-var ExtTable = map[string]string{
-	ExtJpg:  ExtJpg,
-	ExtJpeg: ExtJpg,
-	ExtPng:  ExtPng,
-	ExtGif:  ExtGif,
-}
-
 var (
-	extChoices = "(choices \".jpg\" \".jpeg\" \".png\" \".gif\")"
+	// Extensions' list
+	ExtList    []string = []string{ExtJpg, ExtJpeg, ExtPng, ExtGif}
+	ExtListStr string   = strings.Join(ExtList, " ")
 	// Arguments
-	SrcExt         = flag.String("src-ext", DefaultSrcExt, "Source extension "+extChoices)
-	DstExt         = flag.String("dst-ext", DefaultDstExt, "Destination extension "+extChoices)
-	SrcDir         = flag.String("src-dir", DefaultSrcDir, "Source directory")
-	DstDir         = flag.String("dst-dir", DefaultDstDir, "Destination directory")
-	FileDeleteFlag = flag.Bool("delete", DefaultFileDelete, "File delete flag")
+	SrcExt         *string = flag.String("src-ext", DefaultSrcExt, "Source extension (choices "+ExtListStr+")")
+	DstExt         *string = flag.String("dst-ext", DefaultDstExt, "Destination extension (choices "+ExtListStr+")")
+	SrcDir         *string = flag.String("src-dir", DefaultSrcDir, "Source directory")
+	DstDir         *string = flag.String("dst-dir", DefaultDstDir, "Destination directory")
+	FileDeleteFlag *bool   = flag.Bool("delete", DefaultFileDeleteFlag, "File delete flag")
 )
 
 func main() {
@@ -81,7 +71,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
 	conv := NewConverter(*SrcExt, *DstExt, *SrcDir, *DstDir, *FileDeleteFlag)
 	err := conv.Run()
 	if err != nil {
@@ -91,32 +80,35 @@ func main() {
 }
 
 func ValidArgs() error {
-	if _, ok := ExtTable[*SrcExt]; !ok {
-		return fmt.Errorf("The src-ext is not supported: %v", *SrcExt)
+	if !ContainsStringInSlice(ExtList, *SrcExt) {
+		return fmt.Errorf("The selected \"src-ext\" does not exist in: %v", ExtListStr)
 	}
 
-	if _, ok := ExtTable[*DstExt]; !ok {
-		return fmt.Errorf("The dst-ext is not supported: %v", *DstExt)
+	if !ContainsStringInSlice(ExtList, *DstExt) {
+		return fmt.Errorf("The selected \"dst-ext\" does not exist in: %v", ExtListStr)
 	}
 
 	dir, err := os.Open(*SrcDir)
 	if err != nil {
-		return fmt.Errorf("The src-dir is not a directory: %v", *SrcDir)
+		return fmt.Errorf("Faild to open the directory of the \"src-dir\": %w", err)
 	}
 
 	dirInfo, err := dir.Stat()
 	if err != nil {
-		return fmt.Errorf("Failed to get the information of src-dir: %v", *SrcDir)
+		return fmt.Errorf("Failed to get the directory info of the \"src-dir\": %w", err)
 	}
 
 	if !dirInfo.IsDir() {
-		return fmt.Errorf("The src-dir is not a directory: %v", *SrcDir)
+		return errors.New("The \"src-dir\" must be an existing directory")
 	}
 
 	if err := dir.Close(); err != nil {
-		return fmt.Errorf("Failed to close the dir: %v\n", dir)
+		return fmt.Errorf("Failed to close the directory of \"src-dir\": %w", err)
 	}
 
+	if GetType(*FileDeleteFlag) != "bool" {
+		return errors.New("The \"delete\" option must be true or false")
+	}
 	return nil
 }
 
@@ -132,7 +124,7 @@ func NewConverter(srcExt string, dstExt string, srcDir string, dstDir string, fi
 
 func (conv *Converter) Run() error {
 	return filepath.Walk(conv.SrcDir, func(srcFilePath string, info os.FileInfo, err error) error {
-		// filepath.Walk 内部で os.FileInfo 取得時にエラーがある場合、処理をスキップ
+		// filepath.Walk() 内部で os.FileInfo 取得時にエラーがある場合、処理をスキップ
 		if err != nil {
 			return err
 		}
@@ -141,7 +133,7 @@ func (conv *Converter) Run() error {
 			return nil
 		}
 		// 取得した拡張子と変換元の拡張子が異なる場合、処理をスキップ
-		if ext := GetFormattedExt(srcFilePath); ext != conv.SrcExt {
+		if ext := GetFormattedFileExt(srcFilePath); ext != conv.SrcExt {
 			return nil
 		}
 		// 変換後のディレクトリ・パスを取得
@@ -149,7 +141,7 @@ func (conv *Converter) Run() error {
 		if err != nil {
 			return err
 		}
-		// 変換後のディレクトリが存在しない場合は作成 (os.MkdirAll内でディレクトリの有無を判定)
+		// 変換後のディレクトリが存在しない場合は作成 (os.MkdirAll() 内でディレクトリの有無を判定)
 		if err = os.MkdirAll(dstDir, 0777); err != nil {
 			return err
 		}
@@ -195,7 +187,7 @@ func (conv *Converter) GetSrcRelDir(srcFilePath string) (string, error) {
 }
 
 func (conv *Converter) GetDstFilePath(srcFilePath string, dstDir string) string {
-	dstFileName := GetStem(srcFilePath) + conv.DstExt
+	dstFileName := GetFileStem(srcFilePath) + conv.DstExt
 	return filepath.Join(dstDir, dstFileName)
 }
 
@@ -211,7 +203,6 @@ func (conv *Converter) Convert(srcFilePath string, dstFilePath string) error {
 	if err := conv.Encode(dstImage, srcImage); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -247,8 +238,20 @@ func GetDstImage(dstFilePath string) (*os.File, error) {
 }
 
 /*
-以下、汎用性の高いディレクトリ・ファイル関連メソッド
+以下、汎用性の高いメソッド
 */
+func ContainsStringInSlice(s []string, target string) bool {
+	for _, v := range s {
+		if v == target {
+			return true
+		}
+	}
+	return false
+}
+
+func GetType(i interface{}) string {
+	return reflect.TypeOf(i).String()
+}
 
 func GetDirName(path string) string {
 	return filepath.Dir(path)
@@ -266,18 +269,18 @@ func GetFileName(path string) string {
 	return filepath.Base(path)
 }
 
-func GetStem(path string) string {
+func GetFileStem(path string) string {
 	pathLength := len(path)
 	extLength := len(filepath.Ext(path))
 	return filepath.Base(path[:pathLength-extLength])
 }
 
-func GetFormattedExt(path string) string {
-	ext := GetExt(path)
+func GetFormattedFileExt(path string) string {
+	ext := GetFileExt(path)
 	return FormatExt(ext)
 }
 
-func GetExt(path string) string {
+func GetFileExt(path string) string {
 	return filepath.Ext(path)
 }
 
@@ -285,7 +288,11 @@ func FormatExt(ext string) string {
 	return strings.ToLower(ext)
 }
 
-func GetMimeType(file *os.File) (string, error) {
+func GetMimeType(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
 	buf := make([]byte, 512)
 	if _, err := file.Read(buf); err != nil {
 		return "", err
