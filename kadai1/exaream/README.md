@@ -35,7 +35,5 @@ $ ls -al ./testdata/dst
 ```
 
 ## TODO
-* Package: go get <path-to-repo>@<branch> 暫定でデフォルト以外のブランチを取得
-* Go Modules
 * Go Doc
 * --verbose 実行内容の詳細を表示
