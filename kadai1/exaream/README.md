@@ -4,16 +4,11 @@
 
 |option|default value|description|
 |---|---|---|
-|`--src-ext`|`jpg`|変換元の画像の拡張子|
-|`--dst-ext`|`png`|変換後の画像の拡張子|
-|`--src-dir`|`./testdata/src`|変換元の対象ディレクトリ|
-|`--dst-dir`|`./testdata/dst`|変換後の出力先ディレクトリ|
-|`--delete`|`false`|変換元の画像の削除の有無|
-
-### Valid extensions of options
-* `jpg`, `jpeg`
-* `png`
-* `gif`
+|`--src-ext`|`.jpg`|Source image extension. `jpg`, `jpeg`, `png`, `gif`|
+|`--dst-ext`|`.png`|destination image extension. `jpg`, `jpeg`, `png`, `gif`|
+|`--src-dir`|`./testdata/src`|Source directory|
+|`--dst-dir`|`./testdata/dst`|Destination directory|
+|`--delete`|`false`|Whether to delete source images after converting|
 
 ## Usage
 
@@ -34,6 +29,3 @@ $ ./main --delete=true --src-ext=.png --dst-ext=.gif
 $ ls -al ./testdata/dst
 ```
 
-## TODO
-* Go Doc
-* --verbose 実行内容の詳細を表示
