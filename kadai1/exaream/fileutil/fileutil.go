@@ -7,25 +7,6 @@ import (
 	"strings"
 )
 
-// Get a directory name by a path
-func GetDirName(path string) string {
-	return filepath.Dir(path)
-}
-
-// Get a relative path
-func GetRelPath(basePath string, targetPath string) (string, error) {
-	relPath, err := filepath.Rel(basePath, targetPath)
-	if err != nil {
-		return "", err
-	}
-	return relPath, nil
-}
-
-// Get a file name by a path
-func GetFileName(path string) string {
-	return filepath.Base(path)
-}
-
 // Get a file's stem (a file name without the extension) by a path
 func GetFileStem(path string) string {
 	pathLength := len(path)
@@ -35,13 +16,8 @@ func GetFileStem(path string) string {
 
 // Get a formatted file extension by a path
 func GetFormattedFileExt(path string) string {
-	ext := GetFileExt(path)
+	ext := filepath.Ext(path)
 	return FormatFileExt(ext)
-}
-
-// Get a file extension by a path
-func GetFileExt(path string) string {
-	return filepath.Ext(path)
 }
 
 // Format a file extension
@@ -64,9 +40,4 @@ func GetMimeType(path string) (string, error) {
 		return "", err
 	}
 	return mimeType, nil
-}
-
-// Delete a file by a path
-func DeleteFile(path string) error {
-	return os.Remove(path)
 }

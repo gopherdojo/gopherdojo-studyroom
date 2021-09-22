@@ -1,7 +1,6 @@
 package imgconv
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"image"
@@ -26,6 +25,13 @@ const (
 	defaultSrcExt = extJpg
 	defaultDstExt = extPng
 
+	// Arguments
+	argSrcExt         = "src-ext"
+	argDstExt         = "dst-ext"
+	argSrcDir         = "src-dir"
+	argDstDir         = "dst-dir"
+	argFileDeleteFlag = "delete"
+
 	// Directories
 	defaultSrcDir = "./testdata/src"
 	defaultDstDir = "./testdata/dst"
@@ -48,43 +54,43 @@ var (
 	extListStr string   = strings.Join(extList, " ")
 
 	// Arguments
-	SrcExt         *string = flag.String("src-ext", defaultSrcExt, "Source extension (choices "+extListStr+")")
-	DstExt         *string = flag.String("dst-ext", defaultDstExt, "Destination extension (choices "+extListStr+")")
-	SrcDir         *string = flag.String("src-dir", defaultSrcDir, "Source directory")
-	DstDir         *string = flag.String("dst-dir", defaultDstDir, "Destination directory")
-	FileDeleteFlag *bool   = flag.Bool("delete", defaultFileDeleteFlag, "File delete flag")
+	SrcExt         *string = flag.String(argSrcExt, defaultSrcExt, "Source extension (choices "+extListStr+")")
+	DstExt         *string = flag.String(argDstExt, defaultDstExt, "Destination extension (choices "+extListStr+")")
+	SrcDir         *string = flag.String(argSrcDir, defaultSrcDir, "Source directory")
+	DstDir         *string = flag.String(argDstDir, defaultDstDir, "Destination directory")
+	FileDeleteFlag *bool   = flag.Bool(argFileDeleteFlag, defaultFileDeleteFlag, "File delete flag")
 )
 
 // Validate arguments
 func ValidateArgs() error {
 	if !containsStringInSlice(extList, *SrcExt) {
-		return fmt.Errorf("the selected \"src-ext\" does not exist in: %v", extListStr)
+		return fmt.Errorf(`the "%v" must be selected from: %v`, argSrcExt, extListStr)
 	}
 
 	if !containsStringInSlice(extList, *DstExt) {
-		return fmt.Errorf("the selected \"dst-ext\" does not exist in: %v", extListStr)
+		return fmt.Errorf(`the "%v" must be selected from: %v`, argDstExt, extListStr)
 	}
 
-	dir, err := os.Open(*SrcDir)
+	srcDir, err := os.Open(*SrcDir)
 	if err != nil {
-		return fmt.Errorf("faild to open the directory of the \"src-dir\": %w", err)
+		return fmt.Errorf(`faild to open the directory of the "%v": %w`, argSrcDir, err)
 	}
 
-	dirInfo, err := dir.Stat()
+	srcDirInfo, err := srcDir.Stat()
 	if err != nil {
-		return fmt.Errorf("failed to get the directory info of the \"src-dir\": %w", err)
+		return fmt.Errorf(`failed to get the directory info of the "%v": %w`, argSrcDir, err)
 	}
 
-	if !dirInfo.IsDir() {
-		return errors.New("the \"src-dir\" must be an existing directory")
+	if !srcDirInfo.IsDir() {
+		return fmt.Errorf(`the "%v" must be an existing directory`, argSrcDir)
 	}
 
-	if err := dir.Close(); err != nil {
-		return fmt.Errorf("failed to close the directory of \"src-dir\": %w", err)
+	if err := srcDir.Close(); err != nil {
+		return fmt.Errorf(`failed to close the directory of "%v": %w`, argSrcDir, err)
 	}
 
 	if getType(*FileDeleteFlag) != "bool" {
-		return errors.New("the \"delete\" option must be true or false")
+		return fmt.Errorf(`the "%v" must be true or false`, argFileDeleteFlag)
 	}
 	return nil
 }
@@ -134,7 +140,7 @@ func (conv *Converter) Run() error {
 
 		if conv.fileDeleteFlag {
 			// Delete a source file
-			if err := fileutil.DeleteFile(srcFilePath); err != nil {
+			if err := os.Remove(srcFilePath); err != nil {
 				return err
 			}
 		}
@@ -150,8 +156,8 @@ func (conv *Converter) getAbsPathDstDir(srcFilePath string) (string, error) {
 		return "", err
 	}
 	// Get an absolute path of a destination directory
-	path := filepath.Join(conv.dstDir, relPathSrcDir)
-	absPathDstDir, err := filepath.Abs(path)
+	tmpDstDir := filepath.Join(conv.dstDir, relPathSrcDir)
+	absPathDstDir, err := filepath.Abs(tmpDstDir)
 	if err != nil {
 		return "", err
 	}
@@ -160,8 +166,8 @@ func (conv *Converter) getAbsPathDstDir(srcFilePath string) (string, error) {
 
 // Get a relative path of a source directory
 func (conv *Converter) getRelPathSrcDir(srcFilePath string) (string, error) {
-	dir := fileutil.GetDirName(srcFilePath)
-	return fileutil.GetRelPath(conv.srcDir, dir)
+	srcDir := filepath.Dir(srcFilePath)
+	return filepath.Rel(conv.srcDir, srcDir)
 }
 
 // Get a destination file path
@@ -196,7 +202,7 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 	case extGif:
 		return gif.Encode(dstImage, srcImage, nil)
 	default:
-		return fmt.Errorf("failed to encode due to unsupported extension: %v", conv.dstExt)
+		return fmt.Errorf(`the "%v" must be selected from: %v`, argDstExt, extListStr)
 	}
 }
 
@@ -206,7 +212,6 @@ func getSrcImage(srcFilePath string) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO defer 使用時 かつ Close() 失敗時の error の返却方法をレビュー時に確認
 	defer srcFile.Close()
 	srcImage, _, err := image.Decode(srcFile)
 	if err != nil {
