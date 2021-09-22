@@ -1,3 +1,4 @@
+// Package fileutil provides utility functions for files.
 package fileutil
 
 import (

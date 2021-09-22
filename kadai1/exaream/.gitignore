@@ -1,3 +1,6 @@
+# This .gitignore has created based on the following URL
+# https://github.com/github/gitignore/blob/master/Go.gitignore
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,6 +16,8 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Directories and files excluded for this project
 .DS_Store
 testdata/*
 !.gitkeep

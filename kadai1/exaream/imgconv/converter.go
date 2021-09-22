@@ -1,3 +1,4 @@
+// Package imgconv provides functions to convert images.
 package imgconv
 
 import (
@@ -40,6 +41,7 @@ const (
 	defaultFileDeleteFlag = false
 )
 
+// Image converter
 type Converter struct {
 	srcExt         string
 	dstExt         string
