@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+// Open a file
+func OpenFile(path string) (*os.File, error) {
+	return os.Open(filepath.Clean(path))
+}
+
 // Get a file's stem (a file name without the extension) by a path
 func GetFileStem(path string) string {
 	pathLength := len(path)
@@ -28,7 +33,7 @@ func FormatFileExt(ext string) string {
 
 // Get MIME type by a path
 func GetMimeType(path string) (string, error) {
-	file, err := os.Open(path)
+	file, err := OpenFile(path)
 	if err != nil {
 		return "", err
 	}

@@ -73,7 +73,7 @@ func ValidateArgs() error {
 		return fmt.Errorf(`the "%v" must be selected from: %v`, argDstExt, extListStr)
 	}
 
-	srcDir, err := os.Open(*SrcDir)
+	srcDir, err := fileutil.OpenFile(*SrcDir)
 	if err != nil {
 		return fmt.Errorf(`faild to open the directory of the "%v": %w`, argSrcDir, err)
 	}
@@ -130,7 +130,7 @@ func (conv *Converter) Run() error {
 		}
 		// Make a destination directory if it does not exist
 		// Determine the existence of a destination directory in os.MkdirAll()
-		if err = os.MkdirAll(dstDir, 0777); err != nil {
+		if err = os.MkdirAll(dstDir, 0750); err != nil {
 			return err
 		}
 		// Get a destination file path
@@ -209,17 +209,16 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 }
 
 // Get a source image
-func getSrcImage(srcFilePath string) (image.Image, error) {
-	srcFile, err := os.Open(srcFilePath)
+func getSrcImage(srcFilePath string) (srcImage image.Image, err error) {
+	srcFile, err := fileutil.OpenFile(srcFilePath)
 	if err != nil {
 		return nil, err
 	}
-	defer srcFile.Close()
-	srcImage, _, err := image.Decode(srcFile)
-	if err != nil {
-		return nil, err
-	}
-	return srcImage, nil
+	defer func() {
+		err = srcFile.Close()
+	}()
+	srcImage, _, err = image.Decode(srcFile)
+	return
 }
 
 // Get a destination image
