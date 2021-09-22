@@ -209,10 +209,12 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 }
 
 // Get a source image
+// (Use named return values to return an error from the inside of defer())
 func getSrcImage(srcFilePath string) (srcImage image.Image, err error) {
 	srcFile, err := fileutil.OpenFile(srcFilePath)
 	if err != nil {
-		return nil, err
+		// Return srcImage (zero value nil) and err (not nil) as named return values
+		return
 	}
 	defer func() {
 		err = srcFile.Close()
