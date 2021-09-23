@@ -51,7 +51,7 @@ type Converter struct {
 }
 
 var (
-	// Extensions' list
+	// Supported extensions
 	extList    []string = []string{extJpg, extJpeg, extPng, extGif}
 	extListStr string   = strings.Join(extList, " ")
 
@@ -66,33 +66,35 @@ var (
 // Validate arguments
 func ValidateArgs() error {
 	if !containsStringInSlice(extList, *SrcExt) {
-		return fmt.Errorf(`the "%v" must be selected from: %v`, argSrcExt, extListStr)
+		return fmt.Errorf("the %v must be selected from: %v", argSrcExt, extListStr)
 	}
 
 	if !containsStringInSlice(extList, *DstExt) {
-		return fmt.Errorf(`the "%v" must be selected from: %v`, argDstExt, extListStr)
+		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
 
 	srcDir, err := fileutil.OpenFile(*SrcDir)
 	if err != nil {
-		return fmt.Errorf(`faild to open the directory of the "%v": %w`, argSrcDir, err)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("the %v does not exist: %w", *SrcDir, err)
+		} else {
+			return fmt.Errorf("faild to open the %v: %w", *SrcDir, err)
+		}
 	}
 
 	srcDirInfo, err := srcDir.Stat()
 	if err != nil {
-		return fmt.Errorf(`failed to get the directory info of the "%v": %w`, argSrcDir, err)
+		return fmt.Errorf("failed to get the info of the %v: %w", *SrcDir, err)
 	}
-
 	if !srcDirInfo.IsDir() {
-		return fmt.Errorf(`the "%v" must be an existing directory`, argSrcDir)
+		return fmt.Errorf("the %v must be a directory", *SrcDir)
 	}
-
 	if err := srcDir.Close(); err != nil {
-		return fmt.Errorf(`failed to close the directory of "%v": %w`, argSrcDir, err)
+		return fmt.Errorf("failed to close the %v: %w", *SrcDir, err)
 	}
 
 	if getType(*FileDeleteFlag) != "bool" {
-		return fmt.Errorf(`the "%v" must be true or false`, argFileDeleteFlag)
+		return fmt.Errorf("the %v must be true or false", argFileDeleteFlag)
 	}
 	return nil
 }
@@ -204,23 +206,22 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 	case extGif:
 		return gif.Encode(dstImage, srcImage, nil)
 	default:
-		return fmt.Errorf(`the "%v" must be selected from: %v`, argDstExt, extListStr)
+		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
 }
 
 // Get a source image
-// (Use named return values to return an error from the inside of defer())
+// (Use named return values to return an error from the inside of defer)
 func getSrcImage(srcFilePath string) (srcImage image.Image, err error) {
 	srcFile, err := fileutil.OpenFile(srcFilePath)
 	if err != nil {
-		// Return srcImage (zero value nil) and err (not nil) as named return values
-		return
+		return nil, err
 	}
 	defer func() {
 		err = srcFile.Close()
 	}()
 	srcImage, _, err = image.Decode(srcFile)
-	return
+	return srcImage, err
 }
 
 // Get a destination image

@@ -4,8 +4,8 @@
 
 |option|default value|description|
 |---|---|---|
-|`--src-ext`|`.jpg`|Source image extension. `jpg`, `jpeg`, `png`, `gif`|
-|`--dst-ext`|`.png`|destination image extension. `jpg`, `jpeg`, `png`, `gif`|
+|`--src-ext`|`.jpg`|Source image extension. `.jpg`, `.jpeg`, `.png`, `.gif`|
+|`--dst-ext`|`.png`|destination image extension. `.jpg`, `.jpeg`, `.png`, `.gif`|
 |`--src-dir`|`./testdata/src`|Source directory|
 |`--dst-dir`|`./testdata/dst`|Destination directory|
 |`--delete`|`false`|Whether to delete source images after converting|
