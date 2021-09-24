@@ -14,7 +14,10 @@ import (
 	"reflect"
 	"strings"
 
-	"kadai1/fileutil"
+	"assignment/fileutil"
+
+	"golang.org/x/image/bmp"
+	"golang.org/x/image/tiff"
 )
 
 const (
@@ -23,6 +26,9 @@ const (
 	extJpeg       = ".jpeg"
 	extPng        = ".png"
 	extGif        = ".gif"
+	extTiff       = ".tiff"
+	extTif        = ".tif"
+	extBmp        = ".bmp"
 	defaultSrcExt = extJpg
 	defaultDstExt = extPng
 
@@ -52,7 +58,7 @@ type Converter struct {
 
 var (
 	// Supported extensions
-	extList    []string = []string{extJpg, extJpeg, extPng, extGif}
+	extList    []string = []string{extJpg, extJpeg, extPng, extGif, extTiff, extTif, extBmp}
 	extListStr string   = strings.Join(extList, " ")
 
 	// Arguments
@@ -76,21 +82,21 @@ func ValidateArgs() error {
 	srcDir, err := fileutil.OpenFile(*SrcDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("the %v does not exist: %w", *SrcDir, err)
+			return fmt.Errorf("the %v does not exist: %w", argSrcDir, err)
 		} else {
-			return fmt.Errorf("faild to open the %v: %w", *SrcDir, err)
+			return fmt.Errorf("faild to open the %v: %w", argSrcDir, err)
 		}
 	}
 
 	srcDirInfo, err := srcDir.Stat()
 	if err != nil {
-		return fmt.Errorf("failed to get the info of the %v: %w", *SrcDir, err)
+		return fmt.Errorf("failed to get the %v's info: %w", argSrcDir, err)
 	}
 	if !srcDirInfo.IsDir() {
-		return fmt.Errorf("the %v must be a directory", *SrcDir)
+		return fmt.Errorf("the %v must be a directory: %v", argSrcDir, *SrcDir)
 	}
 	if err := srcDir.Close(); err != nil {
-		return fmt.Errorf("failed to close the %v: %w", *SrcDir, err)
+		return fmt.Errorf("failed to close the %v: %w", argSrcDir, err)
 	}
 
 	if getType(*FileDeleteFlag) != "bool" {
@@ -199,12 +205,17 @@ func (conv *Converter) convert(srcFilePath string, dstFilePath string) error {
 // Encode an image
 func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 	switch conv.dstExt {
-	case extPng:
-		return png.Encode(dstImage, srcImage)
 	case extJpg, extJpeg:
 		return jpeg.Encode(dstImage, srcImage, nil)
+	case extPng:
+		return png.Encode(dstImage, srcImage)
 	case extGif:
 		return gif.Encode(dstImage, srcImage, nil)
+	case extTiff, extTif:
+		return tiff.Encode(dstImage, srcImage, nil)
+	case extBmp:
+		return bmp.Encode(dstImage, srcImage)
+
 	default:
 		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}

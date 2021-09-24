@@ -4,11 +4,11 @@
 
 |option|default value|description|
 |---|---|---|
-|`--src-ext`|`.jpg`|Source image extension. `.jpg`, `.jpeg`, `.png`, `.gif`|
-|`--dst-ext`|`.png`|destination image extension. `.jpg`, `.jpeg`, `.png`, `.gif`|
-|`--src-dir`|`./testdata/src`|Source directory|
-|`--dst-dir`|`./testdata/dst`|Destination directory|
-|`--delete`|`false`|Whether to delete source images after converting|
+|`-src-ext`|`.jpg`|Source image extension. `.jpg`, `.jpeg`, `.png`, `.gif`, `.tiff`, `.tif`, `.bmp`|
+|`-dst-ext`|`.png`|Destination image extension. `.jpg`, `.jpeg`, `.png`, `.gif`, `.tiff`, `.tif`, `.bmp`|
+|`-src-dir`|`./testdata/src`|Source directory|
+|`-dst-dir`|`./testdata/dst`|Destination directory|
+|`-delete`|`false`|Whether to delete source images after converting|
 
 ## Usage
 
@@ -16,12 +16,12 @@
 
 2. Convert image files
 ```shell
-$ go run main.go --delete=true --src-ext=.png --dst-ext=.gif
+$ go run main.go -delete=true -src-ext=.png -dst-ext=.gif
 ```
 or
 ```shell
 $ go build main.go
-$ ./main --delete=true --src-ext=.png --dst-ext=.gif
+$ ./main -delete=true -src-ext=.png -dst-ext=.gif
 ```
 
 3. Confirm result

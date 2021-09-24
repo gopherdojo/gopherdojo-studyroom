@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	ic "kadai1/imgconv"
+	ic "assignment/imgconv"
 )
 
 func main() {
