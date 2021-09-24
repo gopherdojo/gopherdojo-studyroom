@@ -26,8 +26,8 @@ const (
 	extJpeg       = ".jpeg"
 	extPng        = ".png"
 	extGif        = ".gif"
-	extTiff       = ".tiff"
 	extTif        = ".tif"
+	extTiff       = ".tiff"
 	extBmp        = ".bmp"
 	defaultSrcExt = extJpg
 	defaultDstExt = extPng
@@ -58,7 +58,7 @@ type Converter struct {
 
 var (
 	// Supported extensions
-	extList    []string = []string{extJpg, extJpeg, extPng, extGif, extTiff, extTif, extBmp}
+	extList    []string = []string{extJpg, extJpeg, extPng, extGif, extTif, extTiff, extBmp}
 	extListStr string   = strings.Join(extList, " ")
 
 	// Arguments
@@ -211,11 +211,10 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 		return png.Encode(dstImage, srcImage)
 	case extGif:
 		return gif.Encode(dstImage, srcImage, nil)
-	case extTiff, extTif:
+	case extTif, extTiff:
 		return tiff.Encode(dstImage, srcImage, nil)
 	case extBmp:
 		return bmp.Encode(dstImage, srcImage)
-
 	default:
 		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
