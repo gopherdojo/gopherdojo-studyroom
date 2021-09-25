@@ -96,12 +96,12 @@ func TestValidateArgsNormal(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			flag.Parse()
 			flag.CommandLine.Set(argSrcExt, test.srcExt)
 			flag.CommandLine.Set(argDstExt, test.dstExt)
 			flag.CommandLine.Set(argSrcDir, test.srcDir)
 			flag.CommandLine.Set(argDstDir, test.dstDir)
 			flag.CommandLine.Set(argFileDeleteFlag, test.fileDeleteFlag)
-			flag.Parse()
 			if err := ic.ValidateArgs(); err != nil {
 				t.Errorf("%v", err)
 			}
