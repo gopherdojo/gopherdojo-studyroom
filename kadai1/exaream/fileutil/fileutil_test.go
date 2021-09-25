@@ -158,7 +158,7 @@ func TestFormatFileExt(t *testing.T) {
 		{"19", ".tIF", extTif},
 		{"20", ".TiFf", extTiff},
 		{"21", ".bMp", extBmp},
-		{"8", emptyStr, emptyStr},
+		{"22", emptyStr, emptyStr},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
