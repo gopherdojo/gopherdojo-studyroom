@@ -71,10 +71,16 @@ var (
 
 // Validate arguments
 func ValidateArgs() error {
+	if *SrcDir == "" {
+		return fmt.Errorf("the %v must not be empty", argSrcDir)
+	}
+	if *DstDir == "" {
+		return fmt.Errorf("the %v must not be empty", argDstDir)
+	}
+
 	if !containsStringInSlice(extList, *SrcExt) {
 		return fmt.Errorf("the %v must be selected from: %v", argSrcExt, extListStr)
 	}
-
 	if !containsStringInSlice(extList, *DstExt) {
 		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
