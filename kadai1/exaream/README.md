@@ -1,5 +1,8 @@
 # Image Converter
 
+## Overview
+Image converter using Golang
+
 ## Options
 
 |option|default value|description|
@@ -12,19 +15,48 @@
 
 ## Usage
 
-1. Put your image files in `./testdata/src`
-
-2. Convert image files
+1. Clone this repository
 ```shell
-$ go run main.go -delete=true -src-ext=.png -dst-ext=.gif
+$ git clone -b kadai1-exaream https://github.com/exaream/gopherdojo-studyroom.git
+```
+
+2. Put your image files in `./testdata/src`
+
+3. Convert image files
+```shell
+$ go run main.go -delete=true -src-ext=.png -dst-ext=.jpg
 ```
 or
 ```shell
 $ go build main.go
-$ ./main -delete=true -src-ext=.png -dst-ext=.gif
+$ ./main -delete=true -src-ext=.png -dst-ext=.jpg
 ```
 
-3. Confirm result
+4. Confirm the result
 ```shell
 $ ls -al ./testdata/dst
 ```
+
+## Directory structure
+
+```
+gopherdojo-studyroom/kadai1/exaream
+├── README.md
+├── fileutil
+│   ├── fileutil.go
+│   └── fileutil_test.go
+├── go.mod
+├── go.sum
+├── imgconv
+│   ├── converter.go
+│   ├── converter_test.go
+│   └── export_test.go
+├── main.go
+└── testdata
+    ├── dst
+    └── src
+```
+
+## TODO
+* Add unit tests for Assignment 2
+* Find out a solution to an error that occurs when using `t.Parallel()` in a unit test with package `flag`
