@@ -159,6 +159,61 @@ func TestValidateArgsAbnormal(t *testing.T) {
 	}
 }
 
+func TestNewConverter(t *testing.T) {
+	tests := []struct {
+		name           string
+		srcExt         string
+		dstExt         string
+		srcDir         string
+		dstDir         string
+		fileDeleteFlag bool
+	}{
+		{"1", extJpg, extJpeg, srcDir, dstDir, false},
+		{"2", extPng, extJpg, srcDir, srcDir, true},
+		{"3", extJpg, extGif, dstDir, dstDir, false},
+		{"4", extTif, extJpg, dstDir, srcDir, true},
+		{"5", extJpg, extTiff, srcDir, srcDir, false},
+		{"6", extBmp, extJpg, dstDir, dstDir, true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			conv := ic.NewConverter(test.srcExt, test.dstExt, test.srcDir, test.dstDir, test.fileDeleteFlag)
+			if test.srcExt != ic.ExportSrcExt(conv) || test.dstExt != ic.ExportDstExt(conv) ||
+				test.srcDir != ic.ExportSrcDir(conv) || test.dstDir != ic.ExportDstDir(conv) ||
+				test.fileDeleteFlag != ic.ExportFileDeleteFlag(conv) {
+				t.Errorf("the values do not match: %v", *conv)
+			}
+		})
+	}
+}
+
+func TestContainsStringInSlice(t *testing.T) {
+	t.Parallel()
+	slice := []string{"Hello", "Good morning", "Good afternoon"}
+	sliceStr := `"` + strings.Join(slice, `" "`) + `"`
+	tests := []struct {
+		name     string
+		value    string
+		expected bool
+	}{
+		{"1", "Hello", true},
+		{"2", "Good afternoon", true},
+		{"3", "hello", false},
+		{"4", "morning", false},
+		{"5", "Good evening", false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			if ic.ExportContainsStringInSlice(slice, test.value) != test.expected {
+				t.Errorf(`value=%v, slice={%v}`, test.value, sliceStr)
+			}
+		})
+	}
+}
+
 func TestGetType(t *testing.T) {
 	t.Parallel()
 	type customType int
