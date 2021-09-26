@@ -2,6 +2,7 @@
 package imgconv_test
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strings"
@@ -152,6 +153,39 @@ func TestValidateArgsAbnormal(t *testing.T) {
 				if err := ic.ValidateArgs(); !strings.Contains(err.Error(), test.errMsg) {
 					t.Error(err)
 				}
+			}
+		})
+	}
+}
+
+func TestGetType(t *testing.T) {
+	type customType int
+	sampleCustomType := customType(1)
+	sampleArray := [...]int{10, 20, 30, 40, 50}
+	sampleSlice := []int{1, 2, 3}
+	sampleErr := errors.New("error!")
+
+	tests := []struct {
+		name     string
+		value    interface{}
+		expected interface{}
+	}{
+		{"bool", true, "bool"},
+		{"string", "Hello", "string"},
+		{"int", 1, "int"},
+		{"float", 1.0, "float64"},
+		{"complex", (0 + 0i), "complex128"},
+		{"array", sampleArray, "[5]int"},
+		{"slice", sampleSlice, "[]int"},
+		{"error", sampleErr, "*errors.errorString"},
+		{"custom_type", sampleCustomType, "imgconv_test.customType"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			if actual := ic.ExportGetType(test.value); actual != test.expected {
+				t.Errorf("The %v must be %v type", test.value, test.expected)
 			}
 		})
 	}
