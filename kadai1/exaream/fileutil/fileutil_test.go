@@ -31,13 +31,14 @@ const (
 	extNon  = "ext-non"
 
 	// Other
-	emptyStr = ""
+	strEmpty = ""
 )
 
 var randomDir string = testDataDir + "/" + fmt.Sprint(time.Now().UnixNano())
 
 func TestOpenFileNormal(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name string
 		path string
 	}{
@@ -46,35 +47,39 @@ func TestOpenFileNormal(t *testing.T) {
 		{"3", testPathPng},
 		{"4", testPathGif},
 	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := fileutil.OpenFile(testCase.path); err != nil {
-				t.Errorf("failed to open %v", testCase.path)
+			if _, err := fileutil.OpenFile(test.path); err != nil {
+				t.Errorf("failed to open %v", test.path)
 			}
 		})
 	}
 }
 
 func TestOpenFileAbnormal(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name string
 		path string
 	}{
 		{"1", randomDir},
 	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := fileutil.OpenFile(testCase.path); os.IsExist(err) {
-				t.Errorf("The path must not exist: %s", testCase.path)
+			if _, err := fileutil.OpenFile(test.path); os.IsExist(err) {
+				t.Errorf("The path must not exist: %s", test.path)
 			}
 		})
 	}
 }
 
 func TestGetFileStem(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name string
 		path string
 		stem string
@@ -91,18 +96,19 @@ func TestGetFileStem(t *testing.T) {
 		{"8", extNon, extNon},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.GetFileStem(testCase.path) != testCase.stem {
-				t.Errorf("The file stem must be %s", testCase.stem)
+			if fileutil.GetFileStem(test.path) != test.stem {
+				t.Errorf("The file stem must be %s", test.stem)
 			}
 		})
 	}
 }
 
 func TestGetFormattedFileExt(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name string
 		path string
 		ext  string
@@ -116,20 +122,21 @@ func TestGetFormattedFileExt(t *testing.T) {
 		{"6", testPathTiff, extTiff},
 		{"7", testPathBmp, extBmp},
 		// Abnormal
-		{"8", extNon, emptyStr},
+		{"8", extNon, strEmpty},
 	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.GetFormattedFileExt(testCase.path) != testCase.ext {
-				t.Errorf("The file extension must be %s", testCase.ext)
+			if fileutil.GetFormattedFileExt(test.path) != test.ext {
+				t.Errorf("The file extension must be %s", test.ext)
 			}
 		})
 	}
 }
 
 func TestFormatFileExt(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name     string
 		value    string
 		expected string
@@ -158,20 +165,21 @@ func TestFormatFileExt(t *testing.T) {
 		{"19", ".tIF", extTif},
 		{"20", ".TiFf", extTiff},
 		{"21", ".bMp", extBmp},
-		{"22", emptyStr, emptyStr},
+		{"22", strEmpty, strEmpty},
 	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.FormatFileExt(testCase.value) != testCase.expected {
-				t.Errorf("The file extension must convert from %s to %s", testCase.value, testCase.expected)
+			if fileutil.FormatFileExt(test.value) != test.expected {
+				t.Errorf("The file extension must convert from %s to %s", test.value, test.expected)
 			}
 		})
 	}
 }
 
 func TestGetMimeType(t *testing.T) {
-	testCases := []struct {
+	t.Parallel()
+	tests := []struct {
 		name     string
 		path     string
 		mimeType string
@@ -187,14 +195,14 @@ func TestGetMimeType(t *testing.T) {
 		{"7", testPathBmp, "image/bmp"},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			mimeType, err := fileutil.GetMimeType(testCase.path)
+			mimeType, err := fileutil.GetMimeType(test.path)
 			if err != nil {
 				t.Error(err)
 			}
-			if mimeType != testCase.mimeType {
+			if mimeType != test.mimeType {
 				t.Errorf("The file's MIME Type must be %s", mimeType)
 			}
 		})

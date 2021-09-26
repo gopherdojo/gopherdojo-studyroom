@@ -95,14 +95,15 @@ func TestValidateArgsNormal(t *testing.T) {
 		// -delete=false
 		{"21", extJpg, extPng, srcDir, dstDir, strFalse},
 	}
+
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			flag.Parse()
 			flag.CommandLine.Set(argSrcExt, test.srcExt)
 			flag.CommandLine.Set(argDstExt, test.dstExt)
 			flag.CommandLine.Set(argSrcDir, test.srcDir)
 			flag.CommandLine.Set(argDstDir, test.dstDir)
 			flag.CommandLine.Set(argFileDeleteFlag, test.fileDeleteFlag)
+			flag.Parse()
 			if err := ic.ValidateArgs(); err != nil {
 				t.Errorf("%v", err)
 			}
@@ -136,9 +137,9 @@ func TestValidateArgsAbnormal(t *testing.T) {
 		// -dst-dir
 		{"10", extJpg, extPng, srcDir, strEmpty, strTrue, errMstDstDirMustNotBeEmpty},
 	}
+
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			flag.CommandLine.Set(argSrcExt, test.srcExt)
 			flag.CommandLine.Set(argDstExt, test.dstExt)
 			flag.CommandLine.Set(argSrcDir, test.srcDir)
@@ -159,6 +160,7 @@ func TestValidateArgsAbnormal(t *testing.T) {
 }
 
 func TestGetType(t *testing.T) {
+	t.Parallel()
 	type customType int
 	sampleCustomType := customType(1)
 	sampleArray := [...]int{10, 20, 30, 40, 50}
