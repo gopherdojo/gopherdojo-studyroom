@@ -1,0 +1,1 @@
+go run main.go -te=png -ce=gif `pwd`
