@@ -98,11 +98,11 @@ func TestValidateArgsNormal(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			flag.CommandLine.Set(argSrcExt, test.srcExt)
-			flag.CommandLine.Set(argDstExt, test.dstExt)
-			flag.CommandLine.Set(argSrcDir, test.srcDir)
-			flag.CommandLine.Set(argDstDir, test.dstDir)
-			flag.CommandLine.Set(argFileDeleteFlag, test.fileDeleteFlag)
+			setFlagComamandLine(t, argSrcExt, test.srcExt)
+			setFlagComamandLine(t, argDstExt, test.dstExt)
+			setFlagComamandLine(t, argSrcDir, test.srcDir)
+			setFlagComamandLine(t, argDstDir, test.dstDir)
+			setFlagComamandLine(t, argFileDeleteFlag, test.fileDeleteFlag)
 			flag.Parse()
 			if err := ic.ValidateArgs(); err != nil {
 				t.Errorf("%v", err)
@@ -140,10 +140,10 @@ func TestValidateArgsAbnormal(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			flag.CommandLine.Set(argSrcExt, test.srcExt)
-			flag.CommandLine.Set(argDstExt, test.dstExt)
-			flag.CommandLine.Set(argSrcDir, test.srcDir)
-			flag.CommandLine.Set(argDstDir, test.dstDir)
+			setFlagComamandLine(t, argSrcExt, test.srcExt)
+			setFlagComamandLine(t, argDstExt, test.dstExt)
+			setFlagComamandLine(t, argSrcDir, test.srcDir)
+			setFlagComamandLine(t, argDstDir, test.dstDir)
 			flag.Parse()
 			switch test.name {
 			case "1", "2", "3", "4", "5", "6":
@@ -245,5 +245,12 @@ func TestGetType(t *testing.T) {
 				t.Errorf("The %v must be %v type", test.value, test.expected)
 			}
 		})
+	}
+}
+
+func setFlagComamandLine(t *testing.T, name string, value string) {
+	t.Helper()
+	if err := flag.CommandLine.Set(name, value); err != nil {
+		t.Fatalf("Faild to set a flag of command line:name=%v, value=%v", name, value)
 	}
 }
