@@ -1,4 +1,4 @@
-package main
+package kadai1
 
 import (
 	"flag"
@@ -12,17 +12,15 @@ import (
 	"path/filepath"
 )
 
-var (
-	targetDir  string
-	targetExt  string
-	convertExt string
-	decodeFunc map[string]func(io.Reader) (image.Image, error)
-	encodeFunc map[string]func(io.Writer, image.Image) error
-)
+type Converter struct {
+	targetDir string
+	fromExt   string
+	toExt     string
+}
 
-func getArg() error {
-	flag.StringVar(&targetExt, "te", "jpg", "target extention of image file")
-	flag.StringVar(&convertExt, "ce", "png", "convert extention of image file")
+func (c Converter) Init() error {
+	flag.StringVar(&c.fromExt, "fe", "jpg", "target extention of image file")
+	flag.StringVar(&c.toExt, "te", "png", "convert extention of image file")
 	flag.Parse()
 	args := flag.Args()
 	switch {
@@ -31,57 +29,65 @@ func getArg() error {
 	case len(args) > 1:
 		return fmt.Errorf("too many args")
 	}
-	targetDir = args[0]
+	c.targetDir = args[0]
 	return nil
 }
 
-func makeMapFunc() {
-	decodeFunc = make(map[string]func(io.Reader) (image.Image, error))
-	decodeFunc["png"] = png.Decode
-	decodeFunc["jpg"] = jpeg.Decode
-	decodeFunc["gif"] = gif.Decode
-
-	encodeFunc = make(map[string]func(io.Writer, image.Image) error)
-	encodeFunc["png"] = png.Encode
-	encodeFunc["jpg"] = func(w io.Writer, m image.Image) error {
-		return jpeg.Encode(w, m, &jpeg.Options{Quality: 100})
-	}
-	encodeFunc["gif"] = func(w io.Writer, m image.Image) error {
-		return gif.Encode(w, m, &gif.Options{NumColors: 256})
+func (c Converter) Decode(sf io.Reader) (image.Image, error) {
+	switch c.fromExt {
+	case "png":
+		return png.Decode(sf)
+	case "jpg":
+		return jpeg.Decode(sf)
+	case "gif":
+		return gif.Decode(sf)
+	default:
+		return png.Decode(sf)
 	}
 }
 
-func convert(path string) {
+func (c Converter) Encode(df io.Writer, img image.Image) error {
+	switch c.toExt {
+	case "png":
+		return png.Encode(df, img)
+	case "jpg":
+		return jpeg.Encode(df, img, &jpeg.Options{Quality: 100})
+	case "gif":
+		return gif.Encode(df, img, &gif.Options{NumColors: 256})
+	default:
+		return png.Encode(df, img)
+	}
+}
+
+func (c Converter) Create(path string) error {
 	sf, err := os.Open(path)
 	if err != nil {
-		fmt.Println("error :", err)
-		return
+		return err
 	}
 	defer sf.Close()
-
-	img, err := decodeFunc[targetExt](sf)
+	img, err := c.Decode(sf)
 	if err != nil {
-		fmt.Println("error :", err)
-		return
+		return err
 	}
-
 	fileName := filepath.Base(path)
-	df, err := os.Create(fileName[:len(fileName)-len(filepath.Ext(path))] + "." + convertExt)
+	df, err := os.Create(fileName[:len(fileName)-len(filepath.Ext(path))] + "." + c.toExt)
 	if err != nil {
-		fmt.Println("error :", err)
-		return
+		return err
 	}
 	defer df.Close()
-
-	encodeFunc[convertExt](df, img)
+	err = c.Encode(df, img)
+	if err != nil {
+		return nil
+	}
+	return nil
 }
 
-func walk(dir string) {
-	ext := "." + targetExt
-	err := filepath.Walk(dir,
+func (c Converter) Convert() {
+	ext := "." + c.fromExt
+	err := filepath.Walk(c.targetDir,
 		func(path string, info os.FileInfo, err error) error {
 			if filepath.Ext(path) == ext {
-				convert(path)
+				c.Create(path)
 			}
 			return nil
 		})
@@ -89,14 +95,4 @@ func walk(dir string) {
 		fmt.Println("error :", err)
 		return
 	}
-}
-
-func MyConvert() {
-	getArg()
-	makeMapFunc()
-	walk(targetDir)
-}
-
-func main() {
-	MyConvert()
 }

@@ -1,1 +1,1 @@
-go run main.go -te=png -ce=gif `pwd`
+go run test.go -fe=jpg -te=gif `pwd`
