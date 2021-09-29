@@ -1,1 +1,0 @@
-go run test.go -fe=jpg -te=gif `pwd`
