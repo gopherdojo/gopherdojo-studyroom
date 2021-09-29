@@ -1,7 +1,6 @@
 package kadai1
 
 import (
-	"flag"
 	"fmt"
 	"image"
 	"image/gif"
@@ -18,19 +17,20 @@ type Converter struct {
 	toExt     string
 }
 
-func (c Converter) Init() error {
-	flag.StringVar(&c.fromExt, "fe", "jpg", "target extention of image file")
-	flag.StringVar(&c.toExt, "te", "png", "convert extention of image file")
-	flag.Parse()
-	args := flag.Args()
-	switch {
-	case len(args) == 0:
-		return fmt.Errorf("no target directory")
-	case len(args) > 1:
-		return fmt.Errorf("too many args")
+type Option func(*Converter) error
+
+func FromExt(ext string) Option {
+	return func(c *Converter) error {
+		c.fromExt = ext
+		return nil
 	}
-	c.targetDir = args[0]
-	return nil
+}
+
+func ToExt(ext string) Option {
+	return func(c *Converter) error {
+		c.toExt = ext
+		return nil
+	}
 }
 
 func (c Converter) Decode(sf io.Reader) (image.Image, error) {
@@ -42,7 +42,7 @@ func (c Converter) Decode(sf io.Reader) (image.Image, error) {
 	case "gif":
 		return gif.Decode(sf)
 	default:
-		return png.Decode(sf)
+		return nil, fmt.Errorf("no setting Converter.fromExt")
 	}
 }
 
@@ -55,7 +55,7 @@ func (c Converter) Encode(df io.Writer, img image.Image) error {
 	case "gif":
 		return gif.Encode(df, img, &gif.Options{NumColors: 256})
 	default:
-		return png.Encode(df, img)
+		return fmt.Errorf("no setting Converter.toExt")
 	}
 }
 
@@ -95,4 +95,16 @@ func (c Converter) Convert() {
 		fmt.Println("error :", err)
 		return
 	}
+}
+
+func NewConverter(dirPath string, options ...Option) *Converter {
+	c := Converter{
+		targetDir: dirPath,
+		fromExt:   "jpg",
+		toExt:     "png",
+	}
+	for _, option := range options {
+		option(&c)
+	}
+	return &c
 }
