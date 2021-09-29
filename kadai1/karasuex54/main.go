@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
-	"github.com/karasuex54/gopherdojo-studyroom/converter"
+	"github.com/karasuex54/gopherdojo-studyroom/kadai1/karasuex54/converter"
 )
 
 var (
@@ -13,17 +14,19 @@ var (
 )
 
 func main() {
-	flag.Parse()
 	flag.StringVar(&fromExt, "from", "jpg", "target image file extention")
 	flag.StringVar(&toExt, "to", "png", "convert image file extention")
+	flag.Parse()
 
 	args := flag.Args()
 	switch len(args) {
 	case 0:
+		fmt.Println("few arguments")
 		return
 	case 1:
 		targetDir = args[0]
 	default:
+		fmt.Println("too arguments")
 		return
 	}
 
