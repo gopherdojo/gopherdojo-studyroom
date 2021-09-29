@@ -1,11 +1,9 @@
 package main
 
-import (
-	"github.com/karasuex54/kadai1"
-)
+import k1 "github.com/karasuex54/kadai1"
 
 func main() {
-	var c kadai1.Converter
-	c.Init()
-	c.Convert()
+	dirPath := "/home/ubuntu/MyWork/gopherdojo-studyroom"
+	c := k1.NewConverter(dirPath, k1.ToExt("gifa"), k1.FromExt("png"))
+	c.Run()
 }
