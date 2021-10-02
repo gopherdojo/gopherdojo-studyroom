@@ -18,7 +18,11 @@ devel-deps: devel-deps
 ## Run tests
 .PHONY: test
 test: deps
-	go test -v ./...
+	go test -v -race -cover -coverprofile=coverage.out ./...
+
+.PHONY: cover
+cover:
+	go tool cover -html=coverage.out
 
 ## Lint
 .PHONY: lint
