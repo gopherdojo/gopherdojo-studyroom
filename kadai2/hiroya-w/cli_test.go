@@ -20,7 +20,7 @@ func TestCLI(t *testing.T) {
 		{options: "", exitStatus: 1, want: "directory is required"},
 		{options: "-h", exitStatus: 1, want: "Usage"},
 		{options: "-input-type=bmp testdata", exitStatus: 1, want: "invalid input type:"},
-		{options: "-output-type=ttif testdata", exitStatus: 1, want: "invalid output type:"},
+		{options: "-output-type=tiff testdata", exitStatus: 1, want: "invalid output type:"},
 		{options: "-input-type=jpg -output-type=jpg testdata", exitStatus: 1, want: "input type and output type must be different"},
 		{options: "testdata", exitStatus: 0, want: ""},
 	}
