@@ -17,8 +17,12 @@ devel-deps: devel-deps
 
 ## Run tests
 .PHONY: test
-test: deps
+test: deps test-deps
 	go test -v -race -cover -coverprofile=coverage.out ./...
+
+.PHONY: test-deps
+test-deps:
+	cd _tools && sh gen_testdata.sh
 
 .PHONY: cover
 cover:
