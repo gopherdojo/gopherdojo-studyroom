@@ -1,6 +1,7 @@
 package imgconv
 
 import (
+	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -56,34 +57,27 @@ func (e *GIFEncoder) Encode(w io.Writer, m image.Image) error {
 	return gif.Encode(w, m, nil)
 }
 
-type ImageConverter struct {
-	Decoder
-	Encoder
-}
-
 type ImgConv struct {
 	OutStream io.Writer
 }
 
-func NewConverter(config *Config) Converter {
-	var encorder Encoder
-	var decorder Decoder = &ImageDecoder{}
+func NewDecoder() Decoder {
+	return &ImageDecoder{}
+}
 
-	switch config.InputType {
+func NewEncoder(outputType string) (Encoder, error) {
+	switch outputType {
 	case "jpg":
-		encorder = &JPGEncoder{}
+		return &JPGEncoder{}, nil
 	case "png":
-		encorder = &PNGEncoder{}
+		return &PNGEncoder{}, nil
 	case "gif":
-		encorder = &GIFEncoder{}
-	}
-
-	return &ImageConverter{
-		decorder,
-		encorder,
+		return &GIFEncoder{}, nil
+	default:
+		return nil, fmt.Errorf("unsupported output type: %s", outputType)
 	}
 }
 
-func (c *ImgConv) Run(converter Converter, directory string) error {
+func (c *ImgConv) Run(dec Decoder, enc Encoder, directory string) error {
 	return nil
 }

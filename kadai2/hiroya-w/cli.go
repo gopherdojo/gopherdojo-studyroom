@@ -59,8 +59,13 @@ func (cli *CLI) Run() int {
 	imgConv := &ImgConv{
 		OutStream: cli.OutStream,
 	}
-	converter := NewConverter(config)
-	imgConv.Run(converter, config.Directory)
+	dec := NewDecoder()
+	enc, err := NewEncoder(config.InputType)
+	if err != nil {
+		fmt.Fprintf(cli.ErrStream, "failed to create encoder: %s\n", err)
+		return 1
+	}
+	imgConv.Run(dec, enc, config.Directory)
 
 	return 0
 }
