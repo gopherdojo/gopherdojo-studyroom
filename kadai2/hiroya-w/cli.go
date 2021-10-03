@@ -56,5 +56,11 @@ func (cli *CLI) Run() int {
 
 	config.Directory = fs.Arg(0)
 
+	imgConv := &ImgConv{
+		OutStream: cli.OutStream,
+	}
+	converter := NewConverter(config)
+	imgConv.Run(converter, config.Directory)
+
 	return 0
 }
