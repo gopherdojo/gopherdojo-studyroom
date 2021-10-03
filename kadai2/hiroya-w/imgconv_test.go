@@ -74,15 +74,17 @@ func TestGetFiles(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			outStream := new(bytes.Buffer)
-			config := &imgconv.Config{
-				InputType: tt.inputType,
-				Directory: tt.directory,
+			dec, err := imgconv.NewDecoder(tt.inputType)
+			if err != nil {
+				t.Errorf("NewDecoder() error = %s", err)
 			}
+
 			imgConv := &imgconv.ImgConv{
 				OutStream: outStream,
-				Config:    *config,
+				Decoder:   dec,
+				TargetDir: tt.directory,
 			}
-			_, err := imgConv.GetFiles()
+			_, err = imgConv.GetFiles()
 			if err != nil {
 				if !strings.Contains(err.Error(), tt.want) {
 					t.Errorf("expected %q to eq %q", err.Error(), tt.want)
