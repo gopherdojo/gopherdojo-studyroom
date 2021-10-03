@@ -1,6 +1,8 @@
 package imgconv_test
 
 import (
+	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/gopherdojo-studyroom/kadai2/hiroya-w/imgconv"
@@ -49,6 +51,41 @@ func TestEncoder(t *testing.T) {
 			default:
 				if err == nil {
 					t.Errorf("NewEncoder needs to return an error. But enc = %T", enc)
+				}
+			}
+		})
+	}
+}
+
+func TestGetFiles(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name      string
+		inputType string
+		directory string
+		want      string
+	}{
+		{name: "jpg", inputType: "jpg", directory: "testdata"},
+		{name: "png", inputType: "png", directory: "testdata"},
+		{name: "no_such_dir", inputType: "jpg", directory: "hogehoge", want: "no such file or directory"},
+		{name: "no_such_dir", inputType: "jpg", directory: "testdata/image1.png", want: "is not a directory"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outStream := new(bytes.Buffer)
+			config := &imgconv.Config{
+				InputType: tt.inputType,
+				Directory: tt.directory,
+			}
+			imgConv := &imgconv.ImgConv{
+				OutStream: outStream,
+				Config:    *config,
+			}
+			_, err := imgConv.GetFiles()
+			if err != nil {
+				if !strings.Contains(err.Error(), tt.want) {
+					t.Errorf("expected %q to eq %q", err.Error(), tt.want)
 				}
 			}
 		})

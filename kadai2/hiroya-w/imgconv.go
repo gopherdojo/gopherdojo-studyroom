@@ -7,6 +7,8 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"os"
+	"path/filepath"
 )
 
 type Decoder interface {
@@ -59,6 +61,7 @@ func (e *GIFEncoder) Encode(w io.Writer, m image.Image) error {
 
 type ImgConv struct {
 	OutStream io.Writer
+	Config    Config
 }
 
 func NewDecoder() Decoder {
@@ -78,6 +81,39 @@ func NewEncoder(outputType string) (Encoder, error) {
 	}
 }
 
-func (c *ImgConv) Run(dec Decoder, enc Encoder, directory string) error {
+func (c *ImgConv) GetFiles() ([]string, error) {
+	var imgPaths []string
+
+	if f, err := os.Stat(c.Config.Directory); err != nil {
+		return nil, err
+	} else if !f.IsDir() {
+		return nil, fmt.Errorf("%s is not a directory", c.Config.Directory)
+	}
+
+	err := filepath.Walk(c.Config.Directory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if filepath.Ext(path) == "."+c.Config.InputType {
+			imgPaths = append(imgPaths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return imgPaths, nil
+}
+
+func (c *ImgConv) Run(dec Decoder, enc Encoder) error {
+	_, err := c.GetFiles()
+	if err != nil {
+		return err
+	}
 	return nil
 }
