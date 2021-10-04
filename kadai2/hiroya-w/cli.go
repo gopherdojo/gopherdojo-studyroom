@@ -72,10 +72,15 @@ func (cli *CLI) Run() int {
 		Encoder:   enc,
 		TargetDir: config.Directory,
 	}
-	err = imgConv.Run()
+	convertedFiles, err := imgConv.Run()
 	if err != nil {
 		fmt.Fprintf(cli.ErrStream, "failed to convert images: %s\n", err)
 		return 1
+	}
+
+	fmt.Fprintf(cli.OutStream, "converted %d files\n", len(convertedFiles))
+	for _, f := range convertedFiles {
+		fmt.Fprintf(cli.OutStream, "%s\n", f)
 	}
 
 	return 0

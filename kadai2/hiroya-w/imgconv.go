@@ -7,6 +7,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -102,6 +103,11 @@ func NewEncoder(outputType string) (Encoder, error) {
 	}
 }
 
+// renameExt renames the file extension of the file at filePath to newExt.
+func renameExt(filePath, newExt string) string {
+	return filePath[:len(filePath)-len(filepath.Ext(filePath))] + "." + newExt
+}
+
 func (c *ImgConv) GetFiles() ([]string, error) {
 	var imgPaths []string
 
@@ -131,14 +137,53 @@ func (c *ImgConv) GetFiles() ([]string, error) {
 	return imgPaths, nil
 }
 
-func (c *ImgConv) Convert(dec Decoder, enc Encoder, filePath string) error {
-	return nil
+func (c *ImgConv) Convert(dec Decoder, enc Encoder, filePath string) (string, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return "", err
+	}
+
+	outputPath := renameExt(filePath, enc.GetExt())
+	output, err := os.Create(outputPath)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		if err := output.Close(); err != nil {
+			log.Printf("Error closing file: %s\n", err)
+		}
+	}()
+
+	if err := enc.Encode(output, img); err != nil {
+		return "", err
+	}
+	return outputPath, nil
 }
 
-func (c *ImgConv) Run() error {
-	_, err := c.GetFiles()
+func (c *ImgConv) Run() ([]string, error) {
+	var convertedFiles []string
+	imgPaths, err := c.GetFiles()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	for _, path := range imgPaths {
+		outputPath, err := c.Convert(c.Decoder, c.Encoder, path)
+		if err != nil {
+			return convertedFiles, err
+		}
+		convertedFiles = append(convertedFiles, outputPath)
+	}
+
+	return convertedFiles, nil
 }

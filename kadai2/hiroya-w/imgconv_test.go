@@ -127,3 +127,46 @@ func TestGetFilesCount(t *testing.T) {
 		})
 	}
 }
+
+func TestConvert(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name       string
+		inputType  string
+		outputType string
+		inputFile  string
+		want       string
+	}{
+		{name: "JPGtoPNG", inputType: "jpg", outputType: "png", inputFile: "testdata/image_jpg.jpg", want: "testdata/image_jpg.png"},
+		{name: "JPGtoGIF", inputType: "jpg", outputType: "gif", inputFile: "testdata/image_jpg.jpg", want: "testdata/image_jpg.gif"},
+		{name: "PNGtoJPG", inputType: "png", outputType: "jpg", inputFile: "testdata/image_png.png", want: "testdata/image_png.jpg"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outStream := new(bytes.Buffer)
+			dec, err := imgconv.NewDecoder(tt.inputType)
+			if err != nil {
+				t.Errorf("NewDecoder() error = %s", err)
+			}
+			enc, err := imgconv.NewEncoder(tt.outputType)
+			if err != nil {
+				t.Errorf("NewEncoder() error = %s", err)
+			}
+
+			imgConv := &imgconv.ImgConv{
+				OutStream: outStream,
+				Decoder:   dec,
+				Encoder:   enc,
+			}
+			outputPath, err := imgConv.Convert(dec, enc, tt.inputFile)
+			if err != nil {
+				t.Errorf("Convert() error = %s", err)
+			}
+
+			if outputPath != tt.want {
+				t.Errorf("expected %q to eq %q", outputPath, tt.want)
+			}
+		})
+	}
+}
