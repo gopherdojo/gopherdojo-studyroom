@@ -9,7 +9,7 @@ deps:
 	go get -v -d
 
 ## Setup
-.PHONY: deps
+.PHONY: devel-deps
 devel-deps: devel-deps
 	go install golang.org/x/lint/golint@latest
 	go install github.com/x-motemen/gobump/cmd/gobump@latest
@@ -17,12 +17,12 @@ devel-deps: devel-deps
 
 ## Run tests
 .PHONY: test
-test: deps test-deps
+test: deps
 	go test -v -race -cover -coverprofile=coverage.out ./...
 
 .PHONY: test-deps
 test-deps:
-	cd _tools && sh gen_testdata.sh
+	cd _tools && sh gen_testdata.sh ../testdata
 
 .PHONY: cover
 cover:
