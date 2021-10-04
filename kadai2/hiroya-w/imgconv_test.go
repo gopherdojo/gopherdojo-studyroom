@@ -93,3 +93,37 @@ func TestGetFiles(t *testing.T) {
 		})
 	}
 }
+
+func TestGetFilesCount(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name      string
+		inputType string
+		directory string
+		want      int
+	}{
+		{name: "go_files", inputType: "go", directory: ".", want: 7},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outStream := new(bytes.Buffer)
+
+			dec := &imgconv.ImageDecoder{
+				&imgconv.Extention{tt.inputType},
+			}
+			imgConv := &imgconv.ImgConv{
+				OutStream: outStream,
+				Decoder:   dec,
+				TargetDir: tt.directory,
+			}
+			files, err := imgConv.GetFiles()
+			if err != nil {
+				t.Errorf("GetFiles() error = %s", err)
+			}
+			if len(files) != tt.want {
+				t.Errorf("expected %q to eq %q", len(files), tt.want)
+			}
+		})
+	}
+}
