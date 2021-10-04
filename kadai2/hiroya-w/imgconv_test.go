@@ -68,7 +68,7 @@ func TestGetFiles(t *testing.T) {
 		{name: "jpg", inputType: "jpg", directory: "testdata"},
 		{name: "png", inputType: "png", directory: "testdata"},
 		{name: "no_such_dir", inputType: "jpg", directory: "hogehoge", want: "no such file or directory"},
-		{name: "no_such_dir", inputType: "jpg", directory: "testdata/image1.png", want: "is not a directory"},
+		{name: "no_such_dir", inputType: "jpg", directory: "cmd/imgconv/main.go", want: "is not a directory"},
 	}
 
 	for _, tt := range tests {
