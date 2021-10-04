@@ -129,7 +129,7 @@ func TestGetFilesCount(t *testing.T) {
 }
 
 func TestConvert(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	tests := []struct {
 		name       string
 		inputType  string

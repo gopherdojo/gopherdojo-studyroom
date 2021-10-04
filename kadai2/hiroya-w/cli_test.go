@@ -11,7 +11,7 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	tests := []struct {
 		options    string
 		exitStatus int
@@ -22,7 +22,7 @@ func TestCLI(t *testing.T) {
 		{options: "-input-type=bmp testdata", exitStatus: 1, want: "invalid input type:"},
 		{options: "-output-type=tiff testdata", exitStatus: 1, want: "invalid output type:"},
 		{options: "-input-type=jpg -output-type=jpg testdata", exitStatus: 1, want: "input type and output type must be different"},
-		// {options: "testdata", exitStatus: 0, want: ""},
+		{options: "testdata", exitStatus: 0, want: ""},
 	}
 
 	for _, test := range tests {
