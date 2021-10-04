@@ -56,12 +56,12 @@ func (cli *CLI) Run() int {
 
 	config.Directory = fs.Arg(0)
 
-	dec, err := NewDecoder(config.OutputType)
+	dec, err := NewDecoder(config.InputType)
 	if err != nil {
 		fmt.Fprintf(cli.ErrStream, "failed to create decoder: %s\n", err)
 		return 1
 	}
-	enc, err := NewEncoder(config.InputType)
+	enc, err := NewEncoder(config.OutputType)
 	if err != nil {
 		fmt.Fprintf(cli.ErrStream, "failed to create encoder: %s\n", err)
 		return 1
