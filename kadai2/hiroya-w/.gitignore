@@ -1,0 +1,5 @@
+# binaries
+bin/
+
+# coverage outputs
+coverage.out
