@@ -11,7 +11,8 @@ deps:
 ## Setup
 .PHONY: devel-deps
 devel-deps: devel-deps
-	go install golang.org/x/lint/golint@latest
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	go install github.com/kisielk/errcheck@latest
 	go install github.com/x-motemen/gobump/cmd/gobump@latest
 	go install github.com/Songmu/make2help/cmd/make2help@latest
 
@@ -20,10 +21,12 @@ devel-deps: devel-deps
 test: deps
 	go test -v -race -cover -coverprofile=coverage.out ./...
 
+## Generate testdatas
 .PHONY: test-deps
 test-deps:
 	cd _tools && sh gen_testdata.sh ../testdata
 
+## Show coverage
 .PHONY: cover
 cover:
 	go tool cover -html=coverage.out
@@ -32,7 +35,8 @@ cover:
 .PHONY: lint
 lint: devel-deps
 	go vet ./...
-	golint -set_exit_status ./...
+	staticcheck ./...
+	errcheck ./...
 
 ## build binaries
 bin/%: cmd/%/main.go deps
@@ -41,6 +45,11 @@ bin/%: cmd/%/main.go deps
 ## build binary
 .PHONY: build
 build: bin/imgconv
+
+## show go documention
+.PHONY: doc
+doc:
+	godoc -http=:8080
 
 ## Show help
 .PHONY: help
