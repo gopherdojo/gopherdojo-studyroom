@@ -102,7 +102,7 @@ func TestGetFilesCount(t *testing.T) {
 		directory string
 		want      int
 	}{
-		{name: "go_files", inputType: "go", directory: ".", want: 7},
+		{name: "go_files", inputType: "go", directory: ".", want: 6},
 	}
 
 	for _, tt := range tests {

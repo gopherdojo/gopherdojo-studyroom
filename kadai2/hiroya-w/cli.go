@@ -34,7 +34,10 @@ func (cli *CLI) Run() int {
 		fs.PrintDefaults()
 	}
 
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		fmt.Fprintf(cli.ErrStream, "Error parsing arguments: %s\n", err)
+		return 1
+	}
 
 	if err := validateType(config.InputType); err != nil {
 		fmt.Fprintf(cli.ErrStream, "invalid input type: %s\n", err)
