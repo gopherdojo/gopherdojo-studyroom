@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gopherdojo-studyroom/kadai2/hiroya-w/imgconv"
+	imgconv "github.com/Hiroya-W/gopherdojo-studyroom/kadai2/hiroya-w"
 )
 
 func main() {
