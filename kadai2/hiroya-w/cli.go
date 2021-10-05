@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// CLI is the command line interface
 type CLI struct {
 	OutStream, ErrStream io.Writer
 }
@@ -21,6 +22,7 @@ func validateType(t string) error {
 	}
 }
 
+// Run parses the command line arguments and runs the imgConv
 func (cli *CLI) Run() int {
 	config := &Config{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)

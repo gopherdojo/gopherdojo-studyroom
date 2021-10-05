@@ -1,3 +1,8 @@
+/*
+	Package imgconv provides image converter functions.
+	JPG, PNG, and GIF are supported.
+*/
+
 package imgconv
 
 import (
@@ -12,35 +17,36 @@ import (
 	"path/filepath"
 )
 
+// Decoder is an interface for image decoding.
 type Decoder interface {
 	Decode(r io.Reader) (image.Image, error)
 	GetExt() string
 }
 
+// Encoder is an interface for image encoding.
 type Encoder interface {
 	Encode(w io.Writer, m image.Image) error
 	GetExt() string
 }
 
-type Converter interface {
-	Decoder
-	Encoder
-}
-
+// Config is the configuration for arguments and flags.
 type Config struct {
 	InputType  string
 	OutputType string
 	Directory  string
 }
 
+// Extention is a struct for holding the file extension.
 type Extention struct {
 	Ext string
 }
 
+// GetExtt returns the file extension.
 func (e *Extention) GetExt() string {
 	return e.Ext
 }
 
+// ImageDecoder is an image decoder for jpg, png, and gif.
 type ImageDecoder struct {
 	*Extention
 }
@@ -50,6 +56,7 @@ func (d *ImageDecoder) Decode(r io.Reader) (image.Image, error) {
 	return img, err
 }
 
+// JPGEncoder is an image encoder for jpg.
 type JPGEncoder struct {
 	*Extention
 }
@@ -58,6 +65,7 @@ func (e *JPGEncoder) Encode(w io.Writer, m image.Image) error {
 	return jpeg.Encode(w, m, nil)
 }
 
+// PNGEncoder is an image encoder for png.
 type PNGEncoder struct {
 	*Extention
 }
@@ -66,6 +74,7 @@ func (e *PNGEncoder) Encode(w io.Writer, m image.Image) error {
 	return png.Encode(w, m)
 }
 
+// GIFEncoder is an image encoder for gif.
 type GIFEncoder struct {
 	*Extention
 }
@@ -74,6 +83,7 @@ func (e *GIFEncoder) Encode(w io.Writer, m image.Image) error {
 	return gif.Encode(w, m, nil)
 }
 
+// ImgConv is the main struct for the image converter.
 type ImgConv struct {
 	OutStream io.Writer
 	Decoder   Decoder
@@ -81,6 +91,7 @@ type ImgConv struct {
 	TargetDir string
 }
 
+// NewDecoder returns a new image decoder.
 func NewDecoder(inputType string) (Decoder, error) {
 	switch inputType {
 	case "jpg", "png", "gif":
@@ -90,6 +101,7 @@ func NewDecoder(inputType string) (Decoder, error) {
 	}
 }
 
+// NewEncoder returns a new image encoder for the given outputType.
 func NewEncoder(outputType string) (Encoder, error) {
 	switch outputType {
 	case "jpg":
@@ -108,6 +120,8 @@ func renameExt(filePath, newExt string) string {
 	return filePath[:len(filePath)-len(filepath.Ext(filePath))] + "." + newExt
 }
 
+// GetFiles returns a slice of file paths for specific extension in the target directory.
+// Decoder.GetExt() is used to determine the extension.
 func (c *ImgConv) GetFiles() ([]string, error) {
 	var imgPaths []string
 
@@ -137,6 +151,7 @@ func (c *ImgConv) GetFiles() ([]string, error) {
 	return imgPaths, nil
 }
 
+// Convert converts an image file at filePath to the outputType.
 func (c *ImgConv) Convert(dec Decoder, enc Encoder, filePath string) (string, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -170,6 +185,7 @@ func (c *ImgConv) Convert(dec Decoder, enc Encoder, filePath string) (string, er
 	return outputPath, nil
 }
 
+// Run converts all images in the target directory to the outputType.
 func (c *ImgConv) Run() ([]string, error) {
 	var convertedFiles []string
 	imgPaths, err := c.GetFiles()
