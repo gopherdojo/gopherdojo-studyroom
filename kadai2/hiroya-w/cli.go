@@ -72,7 +72,6 @@ func (cli *CLI) Run() int {
 		return 1
 	}
 	imgConv := &ImgConv{
-		OutStream: cli.OutStream,
 		Decoder:   dec,
 		Encoder:   enc,
 		TargetDir: config.Directory,

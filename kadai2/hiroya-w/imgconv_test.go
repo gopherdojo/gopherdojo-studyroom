@@ -1,7 +1,6 @@
 package imgconv_test
 
 import (
-	"bytes"
 	"strings"
 	"testing"
 
@@ -73,14 +72,12 @@ func TestGetFiles(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			outStream := new(bytes.Buffer)
 			dec, err := imgconv.NewDecoder(tt.inputType)
 			if err != nil {
 				t.Errorf("NewDecoder() error = %s", err)
 			}
 
 			imgConv := &imgconv.ImgConv{
-				OutStream: outStream,
 				Decoder:   dec,
 				TargetDir: tt.directory,
 			}
@@ -107,13 +104,10 @@ func TestGetFilesCount(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			outStream := new(bytes.Buffer)
-
 			dec := &imgconv.ImageDecoder{
 				&imgconv.Extention{tt.inputType},
 			}
 			imgConv := &imgconv.ImgConv{
-				OutStream: outStream,
 				Decoder:   dec,
 				TargetDir: tt.directory,
 			}
@@ -122,7 +116,7 @@ func TestGetFilesCount(t *testing.T) {
 				t.Errorf("GetFiles() error = %s", err)
 			}
 			if len(files) != tt.want {
-				t.Errorf("expected %q to eq %q", len(files), tt.want)
+				t.Errorf("expected %d to eq %d", len(files), tt.want)
 			}
 		})
 	}
@@ -144,7 +138,6 @@ func TestConvert(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			outStream := new(bytes.Buffer)
 			dec, err := imgconv.NewDecoder(tt.inputType)
 			if err != nil {
 				t.Errorf("NewDecoder() error = %s", err)
@@ -155,9 +148,8 @@ func TestConvert(t *testing.T) {
 			}
 
 			imgConv := &imgconv.ImgConv{
-				OutStream: outStream,
-				Decoder:   dec,
-				Encoder:   enc,
+				Decoder: dec,
+				Encoder: enc,
 			}
 			outputPath, err := imgConv.Convert(dec, enc, tt.inputFile)
 			if err != nil {

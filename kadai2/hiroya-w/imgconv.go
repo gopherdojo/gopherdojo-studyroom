@@ -85,7 +85,6 @@ func (e *GIFEncoder) Encode(w io.Writer, m image.Image) error {
 
 // ImgConv is the main struct for the image converter.
 type ImgConv struct {
-	OutStream io.Writer
 	Decoder   Decoder
 	Encoder   Encoder
 	TargetDir string
