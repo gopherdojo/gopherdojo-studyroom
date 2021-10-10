@@ -1,0 +1,4 @@
+main
+coverage.out
+testdata/dst/**/*
+!.gitkeep
