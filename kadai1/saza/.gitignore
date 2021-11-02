@@ -6,6 +6,7 @@ https://github.com/simonwhitaker/gibo
 .DS_Store
 .AppleDouble
 .LSOverride
+bin/
 
 # Icon must end with two \r
 Icon
