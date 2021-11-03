@@ -45,13 +45,13 @@ func getFileNameWithoutExt(path string) string {
 }
 
 // filename をdst に変換します。
-func Convert(srcFilename string, dstExt string) error {
+func Convert(srcFilename string, dstExt string, path string) error {
 
 	dstFileName := getFileNameWithoutExt(srcFilename) + dstExt
 	fmt.Println("srcFileName: ", srcFilename)
 	fmt.Println("dstFileName: ", dstFileName)
 	// 変換対象ファイルをopen
-	srcFile, err := os.Open(srcFilename)
+	srcFile, err := os.Open(path + srcFilename)
 	if err != nil {
 		return err
 	}
@@ -64,14 +64,14 @@ func Convert(srcFilename string, dstExt string) error {
 	}
 
 	// 変換後ファイル作成
-	dstFile, err := os.Create(dstFileName)
+	dstFile, err := os.Create(path + dstFileName)
 	if err != nil {
 		return err
 	}
 	defer dstFile.Close()
 
 	// ファイル変換実行
-	switch filepath.Ext(dstFileName) {
+	switch filepath.Ext(path + dstFileName) {
 	case ".gif":
 		err = gif.Encode(dstFile, img, nil)
 	case ".png":
@@ -82,7 +82,7 @@ func Convert(srcFilename string, dstExt string) error {
 	if err != nil {
 		return err
 	}
-	removeFile(srcFilename)
+	err = removeFile(path + srcFilename)
 
 	if err != nil {
 		return err

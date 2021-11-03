@@ -22,7 +22,10 @@ func main() {
 	fmt.Println("strFlag:", targetPath)
 	fileNames := convert.GetFiles(targetPath, targetSrcExt)
 	for _, fileName := range fileNames {
-		convert.Convert(fileName, targetDstExt)
+		err := convert.Convert(fileName, targetDstExt, targetPath)
+		if err != nil {
+			fmt.Println("Error Occuerrd ", err)
+		}
 		fmt.Println("Converted ", fileName)
 	}
 }

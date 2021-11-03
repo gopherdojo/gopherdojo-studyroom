@@ -18,7 +18,7 @@
 $ pwd
 (YOUR_PATH)/gopherdojo-studyroom/kadai1/kotaaaa
 $ go build main.go 
-$ ./main -path="./pic" -srcExt=".jpg" -dstExt=".png"
+$ ./main -path="./pic/" -srcExt=".png" -dstExt=".jpg" 
 ```
 
 ### Help
