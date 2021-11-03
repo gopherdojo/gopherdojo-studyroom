@@ -1,4 +1,5 @@
 #!/bin/sh
+rm -rf testdata
 mkdir testdata
 mkdir testdata/fuga
 

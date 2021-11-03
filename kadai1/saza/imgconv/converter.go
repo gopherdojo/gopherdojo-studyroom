@@ -3,6 +3,7 @@ package imgconv
 import (
 	"fmt"
 	"image"
+	_ "image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -10,6 +11,25 @@ import (
 
 type Converter struct {
 	Root string
+}
+
+type fileType int
+
+const (
+	jpegType = iota
+	pngType
+	others
+)
+
+func extToType (ext string) fileType {
+	switch ext {
+	case ".jpg", ".jpeg":
+		return jpegType
+	case ".png":
+		return pngType
+	default:
+		return others
+	}
 }
 
 func (c Converter) Run() {
@@ -21,8 +41,9 @@ func (c Converter) Run() {
 		fmt.Println(path)
 
 		ext := filepath.Ext(path)
+		ft := extToType(ext)
 
-		if ext == ".jpg" || ext == ".jpeg" {
+		if ft == jpegType {
 			err = convertToPng(path, path + ".png")
 			if err != nil {
 				fmt.Println("failed to load jpeg")

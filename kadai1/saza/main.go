@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "image/jpeg"
 	"os"
 
 	"github.com/saza-ku/gopherdojo-studyroom/kadai1/saza/imgconv"
