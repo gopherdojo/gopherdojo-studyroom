@@ -1,4 +1,4 @@
-### 仕様
+### Specification
 - 次の仕様を満たすコマンドを作って下さい
   - ディレクトリを指定する
   - 指定したディレクトリ以下のJPGファイルをPNGに変換（デフォルト）
@@ -11,3 +11,25 @@
   - ユーザ定義型を作ってみる
   - GoDocを生成してみる
   - Go Modulesを使ってみる
+
+### How to use
+
+```
+$ pwd
+(YOUR_PATH)/gopherdojo-studyroom/kadai1/kotaaaa
+$ go build main.go 
+$ ./main -path="./pic" -srcExt=".jpg" -dstExt=".png"
+```
+
+### Help
+```
+$ go run main.go --help
+Usage of /var/folders/nx/xqljz2y954qbyppfwn4w0tcr0000gn/T/go-build027276676/b001/exe/main:
+  -dstExt string
+        変換後の拡張子 (default ".png")
+  -path string
+        ファイルパス
+  -srcExt string
+        変換前の拡張子 (default ".jpg")
+exit status 2
+```

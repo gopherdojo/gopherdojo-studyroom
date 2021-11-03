@@ -20,9 +20,9 @@ func init() {
 func main() {
 	flag.Parse()
 	fmt.Println("strFlag:", targetPath)
-	// fileNames := convert.GetFiles(targetPath, targetSrcExt)
-	fileNames := [...]string{"owl.jpg"}
+	fileNames := convert.GetFiles(targetPath, targetSrcExt)
 	for _, fileName := range fileNames {
 		convert.Convert(fileName, targetDstExt)
+		fmt.Println("Converted ", fileName)
 	}
 }

@@ -6,16 +6,29 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
 
 // ディレクトリ以下のファイル一覧を取得します。
 func GetFiles(dir string, ext string) []string {
-	var files []string
-	// ioutil.ReadDir("./")
+	files, err := ioutil.ReadDir(dir)
 	// ここで再帰的にファイルを取得する
-	return files
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var arr []string
+	for _, file := range files {
+		name := file.Name()
+		fmt.Println(name)
+		if filepath.Ext(name) == ext {
+			arr = append(arr, name)
+		}
+	}
+	return arr
 }
 
 func removeFile(fileName string) error {
