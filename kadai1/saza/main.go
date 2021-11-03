@@ -21,7 +21,7 @@ func main() {
 		ext := filepath.Ext(path)
 
 		if ext == ".jpg" || ext == ".jpeg" {
-			err = convertToJpeg(path, path + ".png")
+			err = convertToPng(path, path + ".png")
 			if err != nil {
 				fmt.Println("failed to load jpeg")
 			}
@@ -35,7 +35,7 @@ func main() {
 	}
 }
 
-func convertToJpeg(src string, dest string) error {
+func convertToPng(src string, dest string) error {
 	file, err := os.Open(src)
 	fmt.Println(err)
 	defer file.Close()
