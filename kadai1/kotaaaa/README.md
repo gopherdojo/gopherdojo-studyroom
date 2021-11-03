@@ -33,3 +33,10 @@ Usage of /var/folders/nx/xqljz2y954qbyppfwn4w0tcr0000gn/T/go-build027276676/b001
         変換前の拡張子 (default ".jpg")
 exit status 2
 ```
+
+### TODO 
+-  再帰的にファイル取得
+- ユーザ定義型を作ってみる
+- GoDocを生成してみる
+- Go Modulesを使ってみる
+
