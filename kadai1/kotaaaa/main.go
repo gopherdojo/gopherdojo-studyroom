@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/kotaaaa/gopherdojo-studyroom/kadai1/kotaaaa/convert" // TODO GO module
+	"github.com/kotaaaa/gopherdojo-studyroom/kadai1/kotaaaa/convert"
+	"github.com/kotaaaa/gopherdojo-studyroom/kadai1/kotaaaa/search"
 )
 
 var targetPath string
@@ -19,8 +20,8 @@ func init() {
 
 func main() {
 	flag.Parse()
-	fmt.Println("strFlag:", targetPath)
-	fileNames := convert.GetFiles(targetPath, targetSrcExt)
+	fmt.Println("targetPath:", targetPath)
+	fileNames := search.GetFiles(targetPath, targetSrcExt)
 	for _, fileName := range fileNames {
 		err := convert.Convert(fileName, targetDstExt, targetPath)
 		if err != nil {
