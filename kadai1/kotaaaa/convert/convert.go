@@ -9,7 +9,19 @@ import (
 	"path/filepath"
 )
 
-// ファイルを削除する
+// User create Type
+type fileInfo struct {
+	srcFilename string
+	dstExt      string
+	basePath    string
+}
+
+// Create new FileInfo
+func NewFileInfo(srcFilename string, dstExt string, basePath string) *fileInfo {
+	return &fileInfo{srcFilename, dstExt, basePath}
+}
+
+// Remove file
 func removeFile(fileName string) error {
 	err := os.Remove(fileName)
 	if err != nil {
@@ -23,45 +35,43 @@ func getFilePathFromBase(path string) string {
 	return path[:len(path)-len(filepath.Ext(path))]
 }
 
-// filename をdst に変換します。
-func Convert(srcFilename string, dstExt string, path string) error {
+// Convert file from src extension to dst extension
+func (fi *fileInfo) Convert() error {
 
-	dstFileName := getFilePathFromBase(srcFilename) + dstExt
-	// 変換対象ファイルをopen
-	srcFile, err := os.Open(path + srcFilename)
+	dstFileName := getFilePathFromBase(fi.srcFilename) + fi.dstExt
+	// Open target image file object
+	srcFile, err := os.Open(fi.basePath + fi.srcFilename)
 	if err != nil {
 		return err
 	}
 	defer srcFile.Close()
 
-	// 変換対象ファイルの画像読み込み
+	// Read target image file
 	img, _, err := image.Decode(srcFile)
 	if err != nil {
 		return err
 	}
 
-	// 変換後ファイル作成
-	dstFile, err := os.Create(path + dstFileName)
+	// Create transformed file object
+	dstFile, err := os.Create(fi.basePath + dstFileName)
 	if err != nil {
 		return err
 	}
 	defer dstFile.Close()
 
-	// ファイル変換実行
-	switch filepath.Ext(path + dstFileName) {
+	// Execute file transform
+	switch filepath.Ext(fi.basePath + dstFileName) {
 	case ".gif":
 		err = gif.Encode(dstFile, img, nil)
 	case ".png":
 		err = png.Encode(dstFile, img)
 	case ".jpg", "jpeg":
 		err = jpeg.Encode(dstFile, img, nil)
-	}
-	if err != nil {
+	default:
 		return err
 	}
-
-	// srcファイル削除
-	err = removeFile(path + srcFilename)
+	// Remove src file
+	err = removeFile(fi.basePath + fi.srcFilename)
 
 	if err != nil {
 		return err

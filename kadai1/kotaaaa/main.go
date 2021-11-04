@@ -21,9 +21,14 @@ func init() {
 func main() {
 	flag.Parse()
 	fmt.Println("targetPath:", targetPath)
+
+	// Get file list (Relative path from basePath)
 	fileNames := search.GetFiles(targetPath, targetSrcExt)
+
 	for _, fileName := range fileNames {
-		err := convert.Convert(fileName, targetDstExt, targetPath)
+		fileInfo := convert.NewFileInfo(fileName, targetDstExt, targetPath)
+		// 変換処理
+		err := fileInfo.Convert()
 		if err != nil {
 			fmt.Println("Error Occuerrd ", err)
 		}

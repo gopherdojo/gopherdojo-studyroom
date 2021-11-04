@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 )
 
-// ディレクトリ以下のファイル一覧を取得します。
+// Get a list of files under the directory.
 func GetFiles(dir string, ext string) []string {
-	//対象ディレクトリのファイルを取得する
+	// Get the files in the target directory
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
@@ -17,7 +17,7 @@ func GetFiles(dir string, ext string) []string {
 	var arr []string
 	for _, file := range files {
 		name := file.Name()
-		// ディレクトリであれば、再帰的にファイル名を追加する
+		// If the file is directory, add files recursively.
 		if file.IsDir() {
 			for _, subFile := range GetFiles(dir+name, ext) {
 				arr = append(arr, name+"/"+subFile)
