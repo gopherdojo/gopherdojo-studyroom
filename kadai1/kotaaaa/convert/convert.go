@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 )
 
+// ファイルを削除する
 func removeFile(fileName string) error {
 	err := os.Remove(fileName)
 	if err != nil {
@@ -17,8 +18,8 @@ func removeFile(fileName string) error {
 	return nil
 }
 
+//ファイルパスの拡張子を除いた文字列を取得する
 func getFilePathFromBase(path string) string {
-	// Fixed with a nice method given by mattn-san
 	return path[:len(path)-len(filepath.Ext(path))]
 }
 
