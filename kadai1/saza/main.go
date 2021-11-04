@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 	root = flag.Args()[0]
 	src = *flag.String("s", "jpeg", "source image type")
-	dest = *flag.String("s", "png", "destination image type")
+	dest = *flag.String("d", "png", "destination image type")
 
 	c := imgconv.NewConverter(root, src, dest)
 
