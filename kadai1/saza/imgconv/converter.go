@@ -21,6 +21,19 @@ const (
 	others
 )
 
+func String (ft fileType) string {
+	switch ft {
+	case jpegType:
+		return "jpeg"
+	case pngType:
+		return "png"
+	case others:
+		return "other type"
+	default:
+		return "invalid fileType"
+	}
+}
+
 func extToType (ext string) fileType {
 	switch ext {
 	case ".jpg", ".jpeg":
@@ -37,8 +50,6 @@ func (c Converter) Run() {
 		if info.IsDir() {
 			return err
 		}
-
-		fmt.Println(path)
 
 		ext := filepath.Ext(path)
 		ft := extToType(ext)
