@@ -10,8 +10,18 @@ import (
 	"strings"
 )
 
-type Converter struct {
-	Root string
+type converter struct {
+	root string
+	src  fileType
+	dest fileType
+}
+
+func NewConverter (r string, s string, d string) converter {
+	return converter{
+	root: r,
+	src: extToType(s),
+	dest: extToType(d),
+	}
 }
 
 type fileType int
@@ -37,17 +47,17 @@ func (ft fileType) String() string {
 
 func extToType (ext string) fileType {
 	switch ext {
-	case ".jpg", ".jpeg":
+	case ".jpg", ".jpeg", "jpg", "jpeg":
 		return jpegType
-	case ".png":
+	case ".png", "png":
 		return pngType
 	default:
 		return others
 	}
 }
 
-func (c Converter) Run() {
-	err := filepath.Walk(c.Root, func(path string, info os.FileInfo, err error) error {
+func (c converter) Run() {
+	err := filepath.Walk(c.root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return err
 		}
