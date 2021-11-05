@@ -21,8 +21,15 @@ func main() {
 	s := flag.String("s", "jpg", "source image type")
 	d := flag.String("d", "png", "destination image type")
 	flag.Parse()
+	args := flag.Args()
 
-	root = flag.Args()[0]
+	// TODO: validateInput と一緒にしたい
+	if len(args) != 1 {
+		fmt.Println("root directory is not provided")
+		return
+	}
+
+	root = args[0]
 	src = *s
 	dest = *d
 
