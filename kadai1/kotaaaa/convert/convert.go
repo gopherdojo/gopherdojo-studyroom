@@ -30,7 +30,7 @@ func removeFile(fileName string) error {
 	return nil
 }
 
-//Get strings except for file's extension.
+// Get strings except for file's extension.
 func getFilePathFromBase(path string) string {
 	return path[:len(path)-len(filepath.Ext(path))]
 }
