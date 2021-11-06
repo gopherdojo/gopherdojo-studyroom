@@ -3,6 +3,9 @@ package imgconv
 import (
 	"fmt"
 	"image"
+	"image/gif"
+	_ "image/gif"
+	"image/jpeg"
 	_ "image/jpeg"
 	"image/png"
 	"os"
@@ -29,15 +32,18 @@ type fileType int
 const (
 	jpegType = iota
 	pngType
+	gifType
 	others
 )
 
 func (ft fileType) String() string {
 	switch ft {
 	case jpegType:
-		return "jpeg"
+		return "jpg"
 	case pngType:
 		return "png"
+	case gifType:
+		return "gif"
 	case others:
 		return "other type"
 	default:
@@ -51,6 +57,8 @@ func extToType (ext string) fileType {
 		return jpegType
 	case ".png", "png":
 		return pngType
+	case ".gif", "gif":
+		return gifType
 	default:
 		return others
 	}
@@ -65,8 +73,8 @@ func (c converter) Run() {
 		ext := filepath.Ext(path)
 		ft := extToType(ext)
 
-		if ft == jpegType {
-			err = convertToPng(path)
+		if ft == c.src {
+			err = c.convert(path)
 			if err != nil {
 				return err
 			}
@@ -76,11 +84,11 @@ func (c converter) Run() {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error: " + err.Error())
 	}
 }
 
-func convertToPng(src string) error {
+func (c converter) convert(src string) error {
 	file, err := os.Open(src)
 	if err != nil {
 		return err
@@ -92,18 +100,29 @@ func convertToPng(src string) error {
 		return err
 	}
 
-	dest := changeExt(src, pngType)
+	dest := changeExt(src, c.dest)
 	out, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
 	defer closeFile(out)
 
-	err = png.Encode(out, img)
-	if err == nil {
-		fmt.Printf("converted jpeg image \"%s\" to png image \"%s\"\n",
-			src, dest)
+	switch c.dest {
+	case jpegType:
+		err = jpeg.Encode(out, img, &jpeg.Options{})
+	case pngType:
+		err = png.Encode(out, img)
+	case gifType:
+		err = gif.Encode(out, img, &gif.Options{})
+	default:
+		err = fmt.Errorf("unknown file type: %s", src)
 	}
+
+	if err == nil {
+		fmt.Printf("converted %s image \"%s\" to %s image \"%s\"\n",
+			c.src, src, c.dest, dest)
+	}
+
 	return err
 }
 
