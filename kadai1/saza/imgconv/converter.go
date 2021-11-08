@@ -82,7 +82,7 @@ func (c converter) Run() {
 		ft := extToType(ext)
 
 		if ft == c.src {
-			err = c.convert(path)
+			err = convert(path, c.src, c.dest)
 			if err != nil {
 				return err
 			}
@@ -96,7 +96,7 @@ func (c converter) Run() {
 	}
 }
 
-func (c converter) convert(src string) error {
+func convert(src string, srcType fileType, destType fileType) error {
 	file, err := os.Open(src)
 	if err != nil {
 		return err
@@ -108,18 +108,18 @@ func (c converter) convert(src string) error {
 		return err
 	}
 
-	dest := changeExt(src, c.dest)
+	dest := changeExt(src, destType)
 	out, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
 	defer closeFile(out)
 
-	err = encode(out, img, c.dest)
+	err = encode(out, img, destType)
 
 	if err == nil {
 		fmt.Printf("converted %s image \"%s\" to %s image \"%s\"\n",
-			c.src, src, c.dest, dest)
+			srcType, src, destType, dest)
 	}
 
 	return err
