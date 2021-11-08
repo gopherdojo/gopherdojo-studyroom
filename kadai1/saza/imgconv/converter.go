@@ -20,15 +20,18 @@ type converter struct {
 	dest fileType
 }
 
+// Converter provides a function that convert image file format.
 type Converter interface {
 	Run()
 }
 
-func NewConverter(r string, s string, d string) Converter {
+// NewConverter creates a new Converter object,
+// specifying root directory, src image file format, and dest file format.
+func NewConverter(root string, src string, dest string) Converter {
 	return converter{
-		root: r,
-		src:  extToType(s),
-		dest: extToType(d),
+		root: root,
+		src:  extToType(src),
+		dest: extToType(dest),
 	}
 }
 
