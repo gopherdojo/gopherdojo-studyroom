@@ -108,23 +108,14 @@ func (c converter) convert(src string) error {
 		return err
 	}
 
-	dest := c.changeExt(src)
+	dest := changeExt(src, c.dest)
 	out, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
 	defer closeFile(out)
 
-	switch c.dest {
-	case jpegType:
-		err = jpeg.Encode(out, img, &jpeg.Options{})
-	case pngType:
-		err = png.Encode(out, img)
-	case gifType:
-		err = gif.Encode(out, img, &gif.Options{})
-	default:
-		err = fmt.Errorf("unknown file type: %s", src)
-	}
+	err = encode(out, img, c.dest)
 
 	if err == nil {
 		fmt.Printf("converted %s image \"%s\" to %s image \"%s\"\n",
@@ -134,15 +125,15 @@ func (c converter) convert(src string) error {
 	return err
 }
 
-func (c converter) changeExt(path string) string {
+func changeExt(path string, destExt fileType) string {
 	path = strings.TrimSuffix(path, filepath.Ext(path))
-	return path + "." + c.dest.String()
+	return path + "." + destExt.String()
 }
 
-func (c converter) encode(out io.Writer, img image.Image) error {
+func encode(out io.Writer, img image.Image, dest fileType) error {
 	var err error
 
-	switch c.dest {
+	switch dest {
 	case jpegType:
 		err = jpeg.Encode(out, img, &jpeg.Options{})
 	case pngType:
@@ -150,7 +141,7 @@ func (c converter) encode(out io.Writer, img image.Image) error {
 	case gifType:
 		err = gif.Encode(out, img, &gif.Options{})
 	default:
-		err = fmt.Errorf("unknown output file type")
+		panic("unknown output file type")
 	}
 
 	return err
