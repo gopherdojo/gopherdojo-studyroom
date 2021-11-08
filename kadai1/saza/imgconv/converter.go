@@ -24,11 +24,11 @@ type Converter interface {
 	Run()
 }
 
-func NewConverter (r string, s string, d string) Converter {
+func NewConverter(r string, s string, d string) Converter {
 	return converter{
-	root: r,
-	src: extToType(s),
-	dest: extToType(d),
+		root: r,
+		src:  extToType(s),
+		dest: extToType(d),
 	}
 }
 
@@ -56,7 +56,7 @@ func (ft fileType) String() string {
 	}
 }
 
-func extToType (ext string) fileType {
+func extToType(ext string) fileType {
 	switch ext {
 	case ".jpg", ".jpeg", "jpg", "jpeg":
 		return jpegType

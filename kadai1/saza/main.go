@@ -10,12 +10,11 @@ import (
 
 var (
 	root string
-	src string
+	src  string
 	dest string
 
 	types = []string{"jpg", "png", "gif"}
 )
-
 
 func main() {
 	s := flag.String("s", "jpg", "source image type")
@@ -33,7 +32,7 @@ func main() {
 	src = *s
 	dest = *d
 
-	if valid, message :=validateInput(); !valid {
+	if valid, message := validateInput(); !valid {
 		fmt.Println("Error: " + message)
 		return
 	}
