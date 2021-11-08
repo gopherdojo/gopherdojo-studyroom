@@ -8,6 +8,7 @@ import (
 	"image/jpeg"
 	_ "image/jpeg"
 	"image/png"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,7 +20,11 @@ type converter struct {
 	dest fileType
 }
 
-func NewConverter (r string, s string, d string) converter {
+type Converter interface {
+	Run()
+}
+
+func NewConverter (r string, s string, d string) Converter {
 	return converter{
 	root: r,
 	src: extToType(s),
@@ -100,7 +105,7 @@ func (c converter) convert(src string) error {
 		return err
 	}
 
-	dest := changeExt(src, c.dest)
+	dest := c.changeExt(src)
 	out, err := os.Create(dest)
 	if err != nil {
 		return err
@@ -126,9 +131,26 @@ func (c converter) convert(src string) error {
 	return err
 }
 
-func changeExt(path string, destExt fileType) string {
+func (c converter) changeExt(path string) string {
 	path = strings.TrimSuffix(path, filepath.Ext(path))
-	return path + "." + destExt.String()
+	return path + "." + c.dest.String()
+}
+
+func (c converter) encode(out io.Writer, img image.Image) error {
+	var err error
+
+	switch c.dest {
+	case jpegType:
+		err = jpeg.Encode(out, img, &jpeg.Options{})
+	case pngType:
+		err = png.Encode(out, img)
+	case gifType:
+		err = gif.Encode(out, img, &gif.Options{})
+	default:
+		err = fmt.Errorf("unknown output file type")
+	}
+
+	return err
 }
 
 func closeFile(f *os.File) {
