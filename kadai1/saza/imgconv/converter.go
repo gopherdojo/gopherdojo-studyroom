@@ -26,7 +26,7 @@ type Converter interface {
 }
 
 // NewConverter creates a new Converter object,
-// specifying root directory, src image file format, and dest file format.
+// specifying root directory, src image file format, and dest image file format.
 func NewConverter(root string, src string, dest string) Converter {
 	return converter{
 		root: root,
