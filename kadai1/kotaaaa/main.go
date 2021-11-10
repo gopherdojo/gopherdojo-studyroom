@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/kotaaaa/gopherdojo-studyroom/kadai1/kotaaaa/convert"
 	"github.com/kotaaaa/gopherdojo-studyroom/kadai1/kotaaaa/search"
@@ -26,7 +27,10 @@ func main() {
 	fmt.Println("targetPath:", targetPath)
 	targetPath = targetPath + "/"
 	// Get file list (Relative path from basePath)
-	fileNames := search.GetFiles(targetPath, targetSrcExt)
+	fileNames, err := search.GetFiles(targetPath, targetSrcExt)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for _, fileName := range fileNames {
 		fileInfo := convert.NewFileInfo(fileName, targetDstExt, targetPath)

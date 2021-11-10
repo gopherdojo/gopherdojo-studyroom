@@ -20,11 +20,11 @@ func TestValidateArgs(t *testing.T) {
 		convertedImgFormat string
 		errRaisedFlag      bool
 	}{
-		{"Success1", "../testdata", ".png", ".jpg", false},
-		{"Success2", "../testdata", ".jpg", ".gif", false},
-		{"Success2", "../testdata", ".gif", ".png", false},
-		{"Fail1 .svg is not supported.", "../testdata", ".jpg", ".svg", true},
-		{"Fail2 path is not correct.", "../not_existed", ".png", ".jpg", true},
+		{"png to jpg", "../testdata", ".png", ".jpg", false},
+		{"jpg to gif", "../testdata", ".jpg", ".gif", false},
+		{"gif to png", "../testdata", ".gif", ".png", false},
+		{".svg is not supported.", "../testdata", ".jpg", ".svg", true},
+		{"path is not correct.", "../not_existed", ".png", ".jpg", true},
 	}
 
 	for _, tt := range imgDirDataTests {

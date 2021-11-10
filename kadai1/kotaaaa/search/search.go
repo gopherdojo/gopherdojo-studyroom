@@ -2,30 +2,33 @@ package search
 
 import (
 	"io/ioutil"
-	"log"
 	"path/filepath"
 )
 
 // Get a list of files under the directory.
-func GetFiles(dir string, ext string) []string {
+func GetFiles(dir string, ext string) ([]string, error) {
 	// Get the files in the target directory
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	var arr []string
+	var targetFiles []string
 	for _, file := range files {
 		name := file.Name()
 		// If the file is directory, add files recursively.
 		if file.IsDir() {
-			for _, subFile := range GetFiles(dir+name, ext) {
-				arr = append(arr, name+"/"+subFile)
+			filesInDir, err := GetFiles(filepath.Join(dir, name), ext)
+			if err != nil {
+				return nil, err
+			}
+			for _, subFile := range filesInDir {
+				targetFiles = append(targetFiles, filepath.Join(name, subFile))
 			}
 		}
 		if filepath.Ext(name) == ext {
-			arr = append(arr, name)
+			targetFiles = append(targetFiles, name)
 		}
 	}
-	return arr
+	return targetFiles, err
 }

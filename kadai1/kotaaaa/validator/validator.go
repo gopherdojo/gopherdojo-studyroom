@@ -9,8 +9,11 @@ func ValidateArgs(targetPath string, targetSrcExt string, targetDstExt string) e
 	if _, err := os.Stat(targetPath); err != nil {
 		return errors.New("Error: Doesn't exists the directory that you specified")
 	}
-	if !validateFileFormat(targetSrcExt) || !validateFileFormat(targetDstExt) {
-		return errors.New("Error: Invalid or Unsupported file format")
+	if !validateFileFormat(targetSrcExt) {
+		return errors.New("Error: Conversion source extention is invalid or unsupported.: " + targetSrcExt)
+	}
+	if !validateFileFormat(targetDstExt) {
+		return errors.New("Error: Conversion destination extention is invalid or unsupported.: " + targetDstExt)
 	}
 	return nil
 }
