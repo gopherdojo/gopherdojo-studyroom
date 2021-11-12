@@ -23,8 +23,8 @@ func init() {
 }
 
 func main() {
-	if valid, message := validateInput(); !valid {
-		fmt.Println("Error: " + message)
+	if err := validateInput(); err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -34,19 +34,19 @@ func main() {
 	c.Run()
 }
 
-func validateInput() (bool, string) {
+func validateInput() error {
 	// check argument
 	if len(flag.Args()) == 0 {
-		return false, "root directory is not provided"
+		return fmt.Errorf("root directory is not provided")
 	}
 	if len(flag.Args()) > 1 {
-		return false, "too many arguments"
+		return fmt.Errorf("too many arguments")
 	}
 
 	// check whether root exists
 	r := flag.Args()[0]
 	if f, err := os.Stat(r); err != nil || !f.IsDir() {
-		return false, fmt.Sprintf("directory %s doesn't exists", root)
+		return fmt.Errorf("directory %s doesn't exists", root)
 	}
 
 	// check image types
@@ -57,7 +57,7 @@ func validateInput() (bool, string) {
 		}
 	}
 	if !valid {
-		return false, fmt.Sprintf("image type %s is invalid", src)
+		return fmt.Errorf("image type %s is invalid", src)
 	}
 
 	valid = false
@@ -67,8 +67,8 @@ func validateInput() (bool, string) {
 		}
 	}
 	if !valid {
-		return false, fmt.Sprintf("image type %s is invalid", src)
+		return fmt.Errorf("image type %s is invalid", src)
 	}
 
-	return true, ""
+	return nil
 }
