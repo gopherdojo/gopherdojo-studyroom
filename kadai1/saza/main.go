@@ -16,9 +16,12 @@ var (
 	types = []string{"jpg", "png", "gif"}
 )
 
+func init() {
+	flag.StringVar(&src, "s", "jpg", "source image type")
+	flag.StringVar(&dest, "d", "png", "destination image type")
+}
+
 func main() {
-	s := flag.String("s", "jpg", "source image type")
-	d := flag.String("d", "png", "destination image type")
 	flag.Parse()
 	args := flag.Args()
 
@@ -29,8 +32,6 @@ func main() {
 	}
 
 	root = args[0]
-	src = *s
-	dest = *d
 
 	if valid, message := validateInput(); !valid {
 		fmt.Println("Error: " + message)
