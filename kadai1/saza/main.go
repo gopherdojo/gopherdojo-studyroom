@@ -19,33 +19,33 @@ var (
 func init() {
 	flag.StringVar(&src, "s", "jpg", "source image type")
 	flag.StringVar(&dest, "d", "png", "destination image type")
+	flag.Parse()
 }
 
 func main() {
-	flag.Parse()
-	args := flag.Args()
-
-	// TODO: validateInput と一緒にしたい
-	if len(args) != 1 {
-		fmt.Println("root directory is not provided")
-		return
-	}
-
-	root = args[0]
-
 	if valid, message := validateInput(); !valid {
 		fmt.Println("Error: " + message)
 		return
 	}
 
+	root = flag.Args()[0]
 	c := imgconv.NewConverter(root, src, dest)
 
 	c.Run()
 }
 
 func validateInput() (bool, string) {
+	// check argument
+	if len(flag.Args()) == 0 {
+		return false, "root directory is not provided"
+	}
+	if len(flag.Args()) > 1 {
+		return false, "too many arguments"
+	}
+
 	// check whether root exists
-	if f, err := os.Stat(root); err != nil || !f.IsDir() {
+	r := flag.Args()[0]
+	if f, err := os.Stat(r); err != nil || !f.IsDir() {
 		return false, fmt.Sprintf("directory %s doesn't exists", root)
 	}
 
