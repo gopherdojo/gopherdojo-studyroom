@@ -37,7 +37,7 @@ func main() {
 func validateInput() error {
 	// check argument
 	if len(flag.Args()) == 0 {
-		return fmt.Errorf("root directory is not provided")
+		return fmt.Errorf("target directory is not provided")
 	}
 	if len(flag.Args()) > 1 {
 		return fmt.Errorf("too many arguments")
