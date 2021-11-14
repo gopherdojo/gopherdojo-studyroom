@@ -18,8 +18,8 @@ func TestReadWords(t *testing.T) {
 
 func TestCreateProblem(t *testing.T) {
 	vc := Vocab{
-		[]string{"apple", "red fruit"},
-		[]string{"orange", "orange fruit"},
+		Words:    []string{"apple", "orange"},
+		Meanings: []string{"red fruit", "orange fruit"},
 	}
 	result := CreateProblem(&vc)
 	if result != 0 && result != 1 {

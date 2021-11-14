@@ -2,44 +2,40 @@ package starter
 
 import (
 	"fmt"
-	"os"
 	"time"
 
-	questions "github.com/kotaaaa/gopherdojo-studyroom/kadai3-1/kotaaaa/question"
+	"github.com/kotaaaa/gopherdojo-studyroom/kadai3-1/kotaaaa/questions"
 )
 
-var vc *questions.Vocab
+type Status int
 
-const wordPath string = "./testdata/ielts_words.txt"
-const limit_time int = 30
+const (
+	Success Status = iota
+	Fail
+	TimeUp
+)
 
-func Run() {
+func Solve(vc *questions.Vocab, timeCh *time.Timer) Status {
 
-	vc = questions.ReadWords(wordPath)
+	var input string // for input from user
+	idx := questions.CreateProblem(vc)
+	fmt.Println("Target: ", vc.Words[idx])
 	ch := make(chan string)
-	var cnt int
-	var input string
-	timeCh := time.NewTimer(time.Duration(limit_time) * time.Second)
-	for {
-		idx := questions.CreateProblem(vc)
-		fmt.Println("Target: ", vc.Words[idx])
-		go func() {
-			// Read input by user
-			fmt.Scan(&input)
-			ch <- input
-		}()
-		select {
-		case <-timeCh.C:
-			fmt.Println("\n======================\nTimeup! point: ", cnt, "pt\n======================") // time up process
-			os.Exit(0)
-		case val := <-ch:
-			if val == vc.Words[idx] {
-				cnt++
-				fmt.Print("Correct! ", cnt, "pt ") // Correct answer
-			} else {
-				fmt.Print("Miss! ", cnt, "pt ") // Missed answer
-			}
-			fmt.Println(vc.Meanings[idx])
+	go func() {
+		// Read input by user
+		fmt.Scan(&input)
+		ch <- input
+	}()
+	// each cases
+	select {
+	case <-timeCh.C:
+		return TimeUp
+	case val := <-ch: // if there is user's input
+		fmt.Println("Meaning: ", vc.Meanings[idx])
+		if val == vc.Words[idx] {
+			return Success
+		} else {
+			return Fail
 		}
 	}
 }

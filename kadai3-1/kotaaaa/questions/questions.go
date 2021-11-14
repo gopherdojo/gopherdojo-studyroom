@@ -33,5 +33,5 @@ func CreateProblem(vc *Vocab) int {
 	rand.Seed(time.Now().UnixNano())
 	// get idx of target word
 	idx := rand.Intn(len(vc.Words))
-	return idx //, vc.words[idx]
+	return idx
 }
