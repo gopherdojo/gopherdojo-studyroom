@@ -1,7 +1,7 @@
 # Typing Game
 - Receive one line from standard input
-- Display English words on the standard output (you can choose what to display) - Receive one line from the standard input
-- Display English words on standard output (any output) - Receive one line from standard input - Display how many questions were solved within the time limit
+- Output English words to standard output (you can choose what to output) 
+- Receive one line from standard input
 - (Original Function) Display word's meaning of target English word.
 
 # How to use
