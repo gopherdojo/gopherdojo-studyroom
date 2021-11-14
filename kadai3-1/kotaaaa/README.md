@@ -8,6 +8,7 @@
 ```
 $ go build -o game
 $ ./game 
+( or $ go run .)
 ```
 
 # How to test
@@ -23,3 +24,37 @@ ok      github.com/kotaaaa/gopherdojo-studyroom/kadai3-1/kotaaaa/starter        
   - https://tuxdoc.com/download/ielts-4000-academic-word-listpdf-4_pdf
   - Vocabulary file format  
     - "word:meaning"
+
+
+# How to play
+```
+$ go run .
+Target:  generation
+generation
+Meaning:   all offspring at same stage from common ancestor; interval of time between the birth of parents and their offspring
+Correct! 1pt 
+Target:  centigrade
+centigrade
+Meaning:   measure of temperature, used widely in Europe
+Correct! 2pt 
+Target:  shield
+shield
+Meaning:   protective covering or structure; protect; guard
+Correct! 3pt 
+Target:  ultimate
+ultimate
+Meaning:   final; being the last or concluding; fundamental; elemental; extreme
+Correct! 4pt 
+Target:  numerous
+aaaaa
+Meaning:   many; various; amounting to a large indefinite number
+Miss! 4pt Target:  network
+rrrr
+Meaning:   any system of lines or channels crossing like the fabric of a net; complex, interconnected group or system
+Miss! 4pt Target:  admit
+
+======================
+Times up! point:  4 pt
+======================
+
+```
