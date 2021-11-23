@@ -11,13 +11,14 @@ import (
 const (
 	// Paths
 	testDataDir  = "../testdata"
-	testPathJpg  = testDataDir + "/src/sample1.jpg"
-	testPathJpeg = testDataDir + "/src/sample2.jpeg"
-	testPathPng  = testDataDir + "/src/sample3.png"
-	testPathGif  = testDataDir + "/src/sample4.gif"
-	testPathTif  = testDataDir + "/src/sample5.tif"
-	testPathTiff = testDataDir + "/src/sample6.tiff"
-	testPathBmp  = testDataDir + "/src/sample7.bmp"
+	srcDir       = testDataDir + "/src"
+	testPathJpg  = srcDir + "/sample1.jpg"
+	testPathJpeg = srcDir + "/sample2.jpeg"
+	testPathPng  = srcDir + "/sample3.png"
+	testPathGif  = srcDir + "/sample4.gif"
+	testPathTif  = srcDir + "/sample5.tif"
+	testPathTiff = srcDir + "/sample6.tiff"
+	testPathBmp  = srcDir + "/sample7.bmp"
 
 	// Extensions
 	extJpg  = ".jpg"
