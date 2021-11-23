@@ -1,11 +1,12 @@
 package files_test
 
 import (
-	"assignment/files"
 	"fmt"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/files"
 )
 
 const (

@@ -1,8 +1,9 @@
 package slices_test
 
 import (
-	"assignment/slices"
 	"testing"
+
+	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/slices"
 )
 
 func TestSlices(t *testing.T) {

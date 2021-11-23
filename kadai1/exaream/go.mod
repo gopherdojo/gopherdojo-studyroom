@@ -1,4 +1,4 @@
-module assignment
+module "github.com/exaream/gopherdojo-studyroom/kadai1/exaream"
 
 go 1.17
 

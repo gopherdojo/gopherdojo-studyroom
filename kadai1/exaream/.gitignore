@@ -17,7 +17,9 @@
 # Directories and files excluded for this project
 .DS_Store
 testdata/*
-!.gitkeep
+main
 cover.out
 cover.html
 TODO.md
+
+!.gitkeep

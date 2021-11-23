@@ -14,8 +14,8 @@ import (
 	"reflect"
 	"strings"
 
-	"assignment/files"
-	"assignment/slices"
+	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/files"
+	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/slices"
 
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
@@ -42,8 +42,8 @@ const (
 	argFileDeleteFlag = "delete"
 
 	// Directories
-	defaultSrcDir = "../testdata/src"
-	defaultDstDir = "../testdata/dst"
+	defaultSrcDir = "../../testdata/src"
+	defaultDstDir = "../../testdata/dst"
 
 	// Flag
 	defaultFileDeleteFlag = false

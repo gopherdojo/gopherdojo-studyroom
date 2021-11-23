@@ -33,19 +33,19 @@ $ cd gopherdojo-studyroom/kadai1/exaream
 4. Convert image files  
 Change the following options to match the extension of your image file.
 ```shell
-$ cd cmd
+$ cd cmd/imgconv
 $ go run main.go -src-ext=png -dst-ext=jpg
 ```
 or
 ```shell
-$ cd cmd
+$ cd cmd/imgconv
 $ go build main.go
 $ ./main -src-ext=png -dst-ext=jpg
 ```
 
 Confirm the result
 ```shell
-$ ls -al ../testdata/dst
+$ ls -al ../../testdata/dst
 ```
 
 ## Directory structure
@@ -53,7 +53,8 @@ $ ls -al ../testdata/dst
 ```
 gopherdojo-studyroom/kadai1/exaream
 ├── cmd
-│   └── main.go
+│   └── imgconv
+│       └── main.go
 ├── files
 │   ├── files.go
 │   └── files_test.go

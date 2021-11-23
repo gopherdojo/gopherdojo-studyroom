@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	ic "assignment/imgconv"
-	"assignment/slices"
+	ic "github.com/exaream/gopherdojo-studyroom/kadai1/exaream/imgconv"
+	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/slices"
 )
 
 const (

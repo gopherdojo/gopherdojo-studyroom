@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	ic "assignment/imgconv"
+	ic "github.com/exaream/gopherdojo-studyroom/kadai1/exaream/imgconv"
 )
 
 func main() {
