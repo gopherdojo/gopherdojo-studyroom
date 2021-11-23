@@ -7,8 +7,8 @@ Image converter using Golang
 
 |option|default value|description|
 |---|---|---|
-|`-src-ext`|`.jpg`|Source image extension `.jpg` `.jpeg` `.png` `.gif` `.tif` `.tiff` `.bmp`|
-|`-dst-ext`|`.png`|Destination image extension `.jpg` `.jpeg` `.png` `.gif` `.tif` `.tiff` `.bmp`|
+|`-src-ext`|`jpg`|Source image extension `jpg` `jpeg` `png` `gif` `tif` `tiff` `bmp`|
+|`-dst-ext`|`png`|Destination image extension `jpg` `jpeg` `png` `gif` `tif` `tiff` `bmp`|
 |`-src-dir`|`./testdata/src`|Source directory|
 |`-dst-dir`|`./testdata/dst`|Destination directory|
 |`-delete`|`false`|Whether to delete source images after converting|
@@ -23,22 +23,29 @@ If you delete sample images using `-delete`, unit tests will not work properly.
 $ git clone -b kadai1-exaream https://github.com/exaream/gopherdojo-studyroom.git
 ```
 
-2. Put your image files in `./testdata/src`
+2. Move to the project directory
+```shell
+$ cd gopherdojo-studyroom/kadai1/exaream
+```
 
-3. Convert image files
+3. Put your image files in `./testdata/src`
+
+4. Convert image files
 Change the following options to match the extension of your image file.
 ```shell
-$ go run main.go -src-ext=.png -dst-ext=.jpg
+$ cd cmd
+$ go run main.go -src-ext=png -dst-ext=jpg
 ```
 or
 ```shell
+$ cd cmd
 $ go build main.go
-$ ./main -src-ext=.png -dst-ext=.jpg
+$ ./main -src-ext=png -dst-ext=jpg
 ```
 
-4. Confirm the result
+Confirm the result
 ```shell
-$ ls -al ./testdata/dst
+$ ls -al ../testdata/dst
 ```
 
 ## Directory structure
@@ -62,10 +69,4 @@ gopherdojo-studyroom/kadai1/exaream
 ├── README.md
 ├── go.mod
 └── go.sum
-
-
 ```
-
-## TODO
-* Add unit tests for Assignment 2.
-* Find out a solution to an error that occurs when using `t.Parallel()` in a unit test with package `flag`.

@@ -14,14 +14,14 @@ import (
 
 const (
 	// Extensions
-	extJpg  = ".jpg"
-	extJpeg = ".jpeg"
-	extPng  = ".png"
-	extGif  = ".gif"
-	extTiff = ".tiff"
-	extTif  = ".tif"
-	extBmp  = ".bmp"
-	extTxt  = ".txt"
+	extJpg  = "jpg"
+	extJpeg = "jpeg"
+	extPng  = "png"
+	extGif  = "gif"
+	extTiff = "tiff"
+	extTif  = "tif"
+	extBmp  = "bmp"
+	extTxt  = "txt"
 
 	// Arguments
 	argSrcExt         = "src-ext"
@@ -42,8 +42,8 @@ const (
 	testPathTif  = testDataDir + "/src/sample6.tif"
 	testPathBmp  = testDataDir + "/src/sample7.bmp"
 
-	errMsgSrcExtMustBeSelected = "the src-ext must be selected from: .jpg .jpeg .png .gif .tif .tiff .bmp"
-	errMsgDstExtMustBeSelected = "the dst-ext must be selected from: .jpg .jpeg .png .gif .tif .tiff .bmp"
+	errMsgSrcExtMustBeSelected = "the src-ext must be selected from: jpg jpeg png gif tif tiff bmp"
+	errMsgDstExtMustBeSelected = "the dst-ext must be selected from: jpg jpeg png gif tif tiff bmp"
 	errMsgSrcDirDoesNotExist   = "the src-dir does not exist:"
 	errMsgSrcDirMustBeDir      = "the src-dir must be a directory:"
 	errMsgSrcDirMustNotBeEmpty = "the src-dir must not be empty"

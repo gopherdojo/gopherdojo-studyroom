@@ -23,11 +23,7 @@ func GetFileStem(path string) string {
 // Get a formatted file extension by a path
 func GetFormattedFileExt(path string) string {
 	ext := filepath.Ext(path)
-	return FormatFileExt(ext)
-}
-
-// Format a file extension
-func FormatFileExt(ext string) string {
+	ext = strings.TrimLeft(ext, ".")
 	return strings.ToLower(ext)
 }
 

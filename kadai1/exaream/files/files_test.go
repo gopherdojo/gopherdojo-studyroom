@@ -21,13 +21,13 @@ const (
 	testPathBmp  = srcDir + "/sample7.bmp"
 
 	// Extensions
-	extJpg  = ".jpg"
-	extJpeg = ".jpeg"
-	extPng  = ".png"
-	extGif  = ".gif"
-	extTif  = ".tif"
-	extTiff = ".tiff"
-	extBmp  = ".bmp"
+	extJpg  = "jpg"
+	extJpeg = "jpeg"
+	extPng  = "png"
+	extGif  = "gif"
+	extTif  = "tif"
+	extTiff = "tiff"
+	extBmp  = "bmp"
 	extNon  = "ext-non"
 
 	// Other
@@ -129,49 +129,6 @@ func TestGetFormattedFileExt(t *testing.T) {
 			t.Parallel()
 			if files.GetFormattedFileExt(test.path) != test.ext {
 				t.Errorf("The file extension must be %s", test.ext)
-			}
-		})
-	}
-}
-
-func TestFormatFileExt(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name     string
-		value    string
-		expected string
-	}{
-		// Normal
-		{"1", extJpg, extJpg},
-		{"2", extJpeg, extJpeg},
-		{"3", extPng, extPng},
-		{"4", extGif, extGif},
-		{"5", extTif, extTif},
-		{"6", extTiff, extTiff},
-		{"7", extBmp, extBmp},
-		// Normal(uppercase)
-		{"8", ".JPG", extJpg},
-		{"9", ".JPEG", extJpeg},
-		{"10", ".PNG", extPng},
-		{"11", ".GIF", extGif},
-		{"12", ".TIF", extTif},
-		{"13", ".TIFF", extTiff},
-		{"14", ".BMP", extBmp},
-		// Abnormal
-		{"15", ".JpG", extJpg},
-		{"16", ".jPEg", extJpeg},
-		{"17", ".Png", extPng},
-		{"18", ".giF", extGif},
-		{"19", ".tIF", extTif},
-		{"20", ".TiFf", extTiff},
-		{"21", ".bMp", extBmp},
-		{"22", strEmpty, strEmpty},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-			if files.FormatFileExt(test.value) != test.expected {
-				t.Errorf("The file extension must convert from %s to %s", test.value, test.expected)
 			}
 		})
 	}

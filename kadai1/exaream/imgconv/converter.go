@@ -23,15 +23,16 @@ import (
 
 const (
 	// Extensions
-	extJpg        = ".jpg"
-	extJpeg       = ".jpeg"
-	extPng        = ".png"
-	extGif        = ".gif"
-	extTif        = ".tif"
-	extTiff       = ".tiff"
-	extBmp        = ".bmp"
+	extJpg        = "jpg"
+	extJpeg       = "jpeg"
+	extPng        = "png"
+	extGif        = "gif"
+	extTif        = "tif"
+	extTiff       = "tiff"
+	extBmp        = "bmp"
 	defaultSrcExt = extJpg
 	defaultDstExt = extPng
+	dot           = "."
 
 	// Arguments
 	argSrcExt         = "src-ext"
@@ -189,7 +190,7 @@ func (conv *Converter) getRelPathSrcDir(srcFilePath string) (string, error) {
 
 // Get a destination file path
 func (conv *Converter) getDstFilePath(srcFilePath string, dstDir string) string {
-	dstFileName := files.GetFileStem(srcFilePath) + conv.dstExt
+	dstFileName := files.GetFileStem(srcFilePath) + dot + conv.dstExt
 	return filepath.Join(dstDir, dstFileName)
 }
 
