@@ -30,7 +30,7 @@ $ cd gopherdojo-studyroom/kadai1/exaream
 
 3. Put your image files in `./testdata/src`
 
-4. Convert image files
+4. Convert image files  
 Change the following options to match the extension of your image file.
 ```shell
 $ cd cmd
