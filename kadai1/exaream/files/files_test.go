@@ -1,12 +1,11 @@
-package fileutil_test
+package files_test
 
 import (
+	"assignment/files"
 	"fmt"
 	"os"
 	"testing"
 	"time"
-
-	"assignment/fileutil"
 )
 
 const (
@@ -51,7 +50,7 @@ func TestOpenFileNormal(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := fileutil.OpenFile(test.path); err != nil {
+			if _, err := files.OpenFile(test.path); err != nil {
 				t.Errorf("failed to open %v", test.path)
 			}
 		})
@@ -70,7 +69,7 @@ func TestOpenFileAbnormal(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := fileutil.OpenFile(test.path); os.IsExist(err) {
+			if _, err := files.OpenFile(test.path); os.IsExist(err) {
 				t.Errorf("The path must not exist: %s", test.path)
 			}
 		})
@@ -99,7 +98,7 @@ func TestGetFileStem(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.GetFileStem(test.path) != test.stem {
+			if files.GetFileStem(test.path) != test.stem {
 				t.Errorf("The file stem must be %s", test.stem)
 			}
 		})
@@ -127,7 +126,7 @@ func TestGetFormattedFileExt(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.GetFormattedFileExt(test.path) != test.ext {
+			if files.GetFormattedFileExt(test.path) != test.ext {
 				t.Errorf("The file extension must be %s", test.ext)
 			}
 		})
@@ -170,7 +169,7 @@ func TestFormatFileExt(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if fileutil.FormatFileExt(test.value) != test.expected {
+			if files.FormatFileExt(test.value) != test.expected {
 				t.Errorf("The file extension must convert from %s to %s", test.value, test.expected)
 			}
 		})
@@ -185,7 +184,7 @@ func TestGetMimeType(t *testing.T) {
 		mimeType string
 	}{
 		// .tif and .tiff cannot be detected as image/tiff
-		// when using http.DetectContentType in fileutil.GetMimeType()
+		// when using http.DetectContentType in files.GetMimeType()
 		{"1", testPathJpg, "image/jpeg"},
 		{"2", testPathJpeg, "image/jpeg"},
 		{"3", testPathPng, "image/png"},
@@ -198,7 +197,7 @@ func TestGetMimeType(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			mimeType, err := fileutil.GetMimeType(test.path)
+			mimeType, err := files.GetMimeType(test.path)
 			if err != nil {
 				t.Error(err)
 			}

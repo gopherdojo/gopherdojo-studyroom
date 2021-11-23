@@ -1,4 +1,3 @@
-// Package fileutil provides utility functions for files.
 package imgconv_test
 
 import (

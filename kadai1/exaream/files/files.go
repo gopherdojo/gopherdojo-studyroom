@@ -1,5 +1,5 @@
-// Package fileutil provides utility functions for files.
-package fileutil
+// Package files provides utility functions for files.
+package files
 
 import (
 	"net/http"

@@ -45,9 +45,9 @@ $ ls -al ./testdata/dst
 
 ```
 gopherdojo-studyroom/kadai1/exaream
-├── fileutil
-│   ├── fileutil.go
-│   └── fileutil_test.go
+├── files
+│   ├── files.go
+│   └── files_test.go
 ├── imgconv
 │   ├── converter.go
 │   ├── converter_test.go
