@@ -10,6 +10,7 @@ import (
 	"time"
 
 	ic "assignment/imgconv"
+	"assignment/slices"
 )
 
 const (
@@ -207,7 +208,7 @@ func TestContainsStringInSlice(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if ic.ExportContainsStringInSlice(slice, test.value) != test.expected {
+			if slices.Contains(slice, test.value) != test.expected {
 				t.Errorf(`value=%v, slice={%v}`, test.value, sliceStr)
 			}
 		})

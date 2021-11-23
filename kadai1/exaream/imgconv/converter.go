@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"assignment/fileutil"
+	"assignment/slices"
 
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
@@ -78,10 +79,10 @@ func ValidateArgs() error {
 		return fmt.Errorf("the %v must not be empty", argDstDir)
 	}
 
-	if !containsStringInSlice(extList, *SrcExt) {
+	if !slices.Contains(extList, *SrcExt) {
 		return fmt.Errorf("the %v must be selected from: %v", argSrcExt, extListStr)
 	}
-	if !containsStringInSlice(extList, *DstExt) {
+	if !slices.Contains(extList, *DstExt) {
 		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
 
@@ -243,16 +244,6 @@ func getSrcImage(srcFilePath string) (srcImage image.Image, err error) {
 // Get a destination image
 func getDstImage(dstFilePath string) (*os.File, error) {
 	return os.Create(dstFilePath)
-}
-
-// Check if a slice contains a target string
-func containsStringInSlice(s []string, target string) bool {
-	for _, v := range s {
-		if v == target {
-			return true
-		}
-	}
-	return false
 }
 
 // Get a type

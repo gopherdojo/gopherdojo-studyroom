@@ -45,31 +45,24 @@ $ ls -al ./testdata/dst
 
 ```
 gopherdojo-studyroom/kadai1/exaream
-├── .gitignore
-├── README.md
 ├── fileutil
 │   ├── fileutil.go
 │   └── fileutil_test.go
-├── go.mod
-├── go.sum
 ├── imgconv
 │   ├── converter.go
 │   ├── converter_test.go
 │   └── export_test.go
-├── main.go
-└── testdata
-    ├── .gitkeep
-    ├── dst
-    │   └── .gitkeep
-    └── src
-        ├── .gitkeep
-        ├── sample1.jpg
-        ├── sample2.jpeg
-        ├── sample3.png
-        ├── sample4.gif
-        ├── sample5.tif
-        ├── sample6.tiff
-        └── sample7.bmp
+├── slices
+│   ├── slices.go
+│   └── slices_test.go
+├── testdata
+├── .gitignore
+├── README.md
+├── go.mod
+├── go.sum
+└── main.go
+
+
 ```
 
 ## TODO
