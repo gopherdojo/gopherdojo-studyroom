@@ -45,6 +45,8 @@ $ ls -al ./testdata/dst
 
 ```
 gopherdojo-studyroom/kadai1/exaream
+├── cmd
+│   └── main.go
 ├── files
 │   ├── files.go
 │   └── files_test.go
@@ -59,8 +61,7 @@ gopherdojo-studyroom/kadai1/exaream
 ├── .gitignore
 ├── README.md
 ├── go.mod
-├── go.sum
-└── main.go
+└── go.sum
 
 
 ```

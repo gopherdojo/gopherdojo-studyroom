@@ -41,8 +41,8 @@ const (
 	argFileDeleteFlag = "delete"
 
 	// Directories
-	defaultSrcDir = "./testdata/src"
-	defaultDstDir = "./testdata/dst"
+	defaultSrcDir = "../testdata/src"
+	defaultDstDir = "../testdata/dst"
 
 	// Flag
 	defaultFileDeleteFlag = false
