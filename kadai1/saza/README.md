@@ -11,7 +11,7 @@ imgconv [-s <src image type>] [-d <dest image type>] <target directory path>
 
 例えば、jpeg ファイルを png ファイルに変換すると、
 指定されたディレクトリ以下の jpeg ファイル、`hoge.jpeg` に対し、
-同じディレクトリにそれを　png ファイルに変換した `hoge.png` が生成されます。
+同じディレクトリにそれを png ファイルに変換した `hoge.png` が生成されます。
 
 オプションの画像形式で指定できるものは以下の通りです。
 
