@@ -52,7 +52,7 @@ func TestOpenFileNormal(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := files.OpenFile(test.path); err != nil {
+			if _, err := files.Open(test.path); err != nil {
 				t.Errorf("failed to open %v", test.path)
 			}
 		})
@@ -71,7 +71,7 @@ func TestOpenFileAbnormal(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if _, err := files.OpenFile(test.path); os.IsExist(err) {
+			if _, err := files.Open(test.path); os.IsExist(err) {
 				t.Errorf("The path must not exist: %s", test.path)
 			}
 		})
@@ -100,7 +100,7 @@ func TestGetFileStem(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if files.GetFileStem(test.path) != test.stem {
+			if files.Stem(test.path) != test.stem {
 				t.Errorf("The file stem must be %s", test.stem)
 			}
 		})
@@ -128,7 +128,7 @@ func TestGetFormattedFileExt(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			if files.GetFormattedFileExt(test.path) != test.ext {
+			if files.Ext(test.path) != test.ext {
 				t.Errorf("The file extension must be %s", test.ext)
 			}
 		})
@@ -156,7 +156,7 @@ func TestGetMimeType(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			mimeType, err := files.GetMimeType(test.path)
+			mimeType, err := files.MimeType(test.path)
 			if err != nil {
 				t.Error(err)
 			}

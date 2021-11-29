@@ -87,7 +87,7 @@ func ValidateArgs() error {
 		return fmt.Errorf("the %v must be selected from: %v", argDstExt, extListStr)
 	}
 
-	srcDir, err := files.OpenFile(*SrcDir)
+	srcDir, err := files.Open(*SrcDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("the %v does not exist: %w", argSrcDir, err)
@@ -136,7 +136,7 @@ func (conv *Converter) Run() error {
 			return nil
 		}
 		// Skip the process if an acquired extension and a source extension are different
-		if ext := files.GetFormattedFileExt(srcFilePath); ext != conv.srcExt {
+		if ext := files.Ext(srcFilePath); ext != conv.srcExt {
 			return nil
 		}
 		// Get an absolute path of a destination directory
@@ -190,7 +190,7 @@ func (conv *Converter) getRelPathSrcDir(srcFilePath string) (string, error) {
 
 // Get a destination file path
 func (conv *Converter) getDstFilePath(srcFilePath string, dstDir string) string {
-	dstFileName := files.GetFileStem(srcFilePath) + dot + conv.dstExt
+	dstFileName := files.Stem(srcFilePath) + dot + conv.dstExt
 	return filepath.Join(dstDir, dstFileName)
 }
 
@@ -231,7 +231,7 @@ func (conv *Converter) encode(dstImage io.Writer, srcImage image.Image) error {
 // Get a source image
 // (Use named return values to return an error from the inside of defer)
 func getSrcImage(srcFilePath string) (srcImage image.Image, err error) {
-	srcFile, err := files.OpenFile(srcFilePath)
+	srcFile, err := files.Open(srcFilePath)
 	if err != nil {
 		return nil, err
 	}
