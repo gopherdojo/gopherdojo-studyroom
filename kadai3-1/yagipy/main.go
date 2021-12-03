@@ -33,9 +33,9 @@ func main() {
 		word := typing.RandomWord()
 		fmt.Printf("Input: %s \n", word)
 		fmt.Print("> ")
-		c := typing.CreateChan()
+		channel := typing.CreateChan()
 		select {
-			case res := <- c:
+			case res := <- channel:
 				if word == res {
 					score++
 					fmt.Println("success!")
