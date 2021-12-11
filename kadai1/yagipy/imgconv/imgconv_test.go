@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func TestDo (t *testing.T) {
+func TestDo(t *testing.T) {
+	t.Parallel()
 	cases := []struct{
 		name string
 		filePath string
@@ -17,6 +18,7 @@ func TestDo (t *testing.T) {
 	}
 
 	for _, c := range cases {
+		c := c
 		conv := &imgconv.ImgConv{FilePath: c.filePath, Ext: c.ext}
 		err := conv.Do()
 		if err != c.output {
