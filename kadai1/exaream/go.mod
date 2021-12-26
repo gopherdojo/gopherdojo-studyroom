@@ -1,8 +1,7 @@
-module "github.com/exaream/gopherdojo-studyroom/kadai1/exaream"
+module github.com/exaream/gopherdojo-studyroom/kadai1/exaream
 
-go 1.17
+go 1.18
 
-require (
-	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/text v0.3.7 // indirect
-)
+require golang.org/x/exp v0.0.0-20211221223016-e29036178569
+
+require golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d

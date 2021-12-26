@@ -9,7 +9,7 @@ import (
 	"time"
 
 	ic "github.com/exaream/gopherdojo-studyroom/kadai1/exaream/imgconv"
-	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/slices"
+	"golang.org/x/exp/slices"
 )
 
 const (

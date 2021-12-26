@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/files"
-	"github.com/exaream/gopherdojo-studyroom/kadai1/exaream/slices"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 )
