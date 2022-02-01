@@ -12,3 +12,20 @@ mainパッケージと分離する
 - ユーザ定義型を作ってみる
 - GoDocを生成してみる
 - Go Modulesを使ってみる
+
+
+
+
+# 使い方
+## コマンド
+```zsh
+./main -from={extension} -to={extension} {directory}
+```
+
+### オプション
+
+| flag | Options |
+|:--|:--|
+|`-from`|`png`, `jpeg`, `jpg`, `gif`|
+|`-to`|`png`, `jpeg`, `jpg`, `gif`|
+
