@@ -29,3 +29,5 @@ mainパッケージと分離する
 |`-from`|`png`, `jpeg`, `jpg`, `gif`|
 |`-to`|`png`, `jpeg`, `jpg`, `gif`|
 
+### GoDoc
+https://pkg.go.dev/github.com/ryutaudo/imgcvt
