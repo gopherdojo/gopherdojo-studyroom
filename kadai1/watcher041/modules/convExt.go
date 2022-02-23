@@ -17,6 +17,7 @@ func ConvExt() {
 	// オプションの初期設定をする
 	beforeExt := flag.String("beforeExt", "jpg", "変換前のオプション")
 	afterExt := flag.String("afterExt", "png", "変換後のオプション")
+	flag.Parse()
 
 	// 画像が存在するパスを入力する
 	scanner := bufio.NewScanner(os.Stdin)
@@ -39,25 +40,33 @@ func ConvExt() {
 
 			// 対象の画像をオープンする
 			imageFile, err := os.Open(filename)
-			assert(err, "Invalid image file path "+filename)
+			if err != nil {
+				return err
+			}
 			defer imageFile.Close()
 
 			// ファイルオブジェクトを画像オブジェクトに変換
 			imgData, _, err := image.Decode(imageFile)
-			assert(err, "Failed to convert file to image.")
+			if err != nil {
+				return err
+			}
 
 			// 変換後の拡張子ごとに使用する関数を変更する
 			switch *afterExt {
 			case "png":
 				filename = strings.Replace(filename, "."+*beforeExt, ".png", 1)
 				outputFile, err := os.Create(filename)
-				assert(err, "Failed to create destination path.")
+				if err != nil {
+					return err
+				}
 				defer outputFile.Close()
 				png.Encode(outputFile, imgData)
 			case "jpg":
 				filename = strings.Replace(filename, "."+*beforeExt, ".jpg", 1)
 				outputFile, err := os.Create(filename)
-				assert(err, "Failed to create destination path.")
+				if err != nil {
+					return err
+				}
 				defer outputFile.Close()
 				jpeg.Encode(outputFile, imgData, nil)
 			}
@@ -68,17 +77,7 @@ func ConvExt() {
 	})
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
-	fmt.Println(*beforeExt)
-	fmt.Println(*afterExt)
-
-}
-
-// errorオブジェクトをチェックし、nilの場合例外を送出
-func assert(err error, msg string) {
-	if err != nil {
-		panic(err.Error() + ":" + msg)
-	}
 }
