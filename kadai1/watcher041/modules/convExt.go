@@ -19,6 +19,12 @@ func ConvExt() {
 	afterExt := flag.String("afterExt", "png", "変換後のオプション")
 	flag.Parse()
 
+	// 変換前後の拡張子が同じ場合は何もせずに終了する
+	if *beforeExt == *afterExt {
+		fmt.Println("変換する拡張子が前後で同じものです！別々の拡張子に指定してください…")
+		return
+	}
+
 	// 画像が存在するパスを入力する
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("変換する画像が存在する相対パスを入力してください >>")
