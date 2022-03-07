@@ -1,8 +1,8 @@
-package modules
+package convExt
 
 import (
 	"bufio"
-	"flag"
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -12,25 +12,20 @@ import (
 	"strings"
 )
 
-func ConvExt() {
-
-	// オプションの初期設定をする
-	beforeExt := flag.String("beforeExt", "jpg", "変換前のオプション")
-	afterExt := flag.String("afterExt", "png", "変換後のオプション")
-	flag.Parse()
+func ConvExt(beforeExt string, afterExt string) error {
 
 	// 変換前後の拡張子が同じ場合は何もせずに終了する
-	if *beforeExt == *afterExt {
-		fmt.Println("変換する拡張子が前後で同じものです！別々の拡張子に指定してください…")
-		return
+	if beforeExt == afterExt {
+		err := errors.New("this is errors.New sample.")
+		return err
 	}
 
 	// 画像が存在するパスを入力する
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("変換する画像が存在する相対パスを入力してください >>")
-	if !scanner.Scan() {
-		fmt.Println("Please input source image file path.")
-		return
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		panic(err)
 	}
 
 	// 画像があるパスを指定する。
@@ -42,7 +37,7 @@ func ConvExt() {
 		}
 
 		ext := filepath.Ext(filename)
-		if ext == "."+*beforeExt {
+		if ext == "."+beforeExt {
 
 			// 対象の画像をオープンする
 			imageFile, err := os.Open(filename)
@@ -50,6 +45,9 @@ func ConvExt() {
 				return err
 			}
 			defer imageFile.Close()
+			if err := imageFile.Sync(); err != nil {
+				return err
+			}
 
 			// ファイルオブジェクトを画像オブジェクトに変換
 			imgData, _, err := image.Decode(imageFile)
@@ -58,25 +56,33 @@ func ConvExt() {
 			}
 
 			// 変換後の拡張子ごとに使用する関数を変更する
-			switch *afterExt {
+			switch afterExt {
 			case "png":
-				filename = strings.Replace(filename, "."+*beforeExt, ".png", 1)
+				filename = strings.Replace(filename, "."+beforeExt, ".png", 1)
 				outputFile, err := os.Create(filename)
 				if err != nil {
 					return err
 				}
 				defer outputFile.Close()
-				png.Encode(outputFile, imgData)
+				if err := outputFile.Sync(); err != nil {
+					return err
+				}
+				err = png.Encode(outputFile, imgData)
 			case "jpg":
-				filename = strings.Replace(filename, "."+*beforeExt, ".jpg", 1)
+				filename = strings.Replace(filename, "."+beforeExt, ".jpg", 1)
 				outputFile, err := os.Create(filename)
 				if err != nil {
 					return err
 				}
 				defer outputFile.Close()
-				jpeg.Encode(outputFile, imgData, nil)
+				if err := outputFile.Sync(); err != nil {
+					return err
+				}
+				err = jpeg.Encode(outputFile, imgData, nil)
 			}
-
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -86,4 +92,5 @@ func ConvExt() {
 		fmt.Println(err)
 	}
 
+	return nil
 }
