@@ -16,7 +16,7 @@ func ConvExt(beforeExt string, afterExt string) error {
 
 	// 変換前後の拡張子が同じ場合は何もせずに終了する
 	if beforeExt == afterExt {
-		err := errors.New("this is errors.New sample.")
+		err := errors.New("拡張子が変換前と後で同じです！別の拡張子を指定してください！")
 		return err
 	}
 
@@ -25,7 +25,7 @@ func ConvExt(beforeExt string, afterExt string) error {
 	fmt.Print("変換する画像が存在する相対パスを入力してください >>")
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
-		panic(err)
+		return err
 	}
 
 	// 画像があるパスを指定する。

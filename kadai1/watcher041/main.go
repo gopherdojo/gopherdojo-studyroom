@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"watcher041/convExt"
 )
 
@@ -20,5 +21,9 @@ func init() {
 func main() {
 
 	// 画像の拡張子を変換する
-	convExt.ConvExt(*beforeExt, *afterExt)
+	err := convExt.ConvExt(*beforeExt, *afterExt)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 }
