@@ -11,13 +11,14 @@ import (
 	"strings"
 )
 
-func Cmd(dirpath string, from_ex string, to_ex string) {
+// 画像の拡張子を変更する
+func ConvertExtensions(dirpath string, from_ex string, to_ex string) {
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if arr := strings.Split(path, "."); info.IsDir() || arr[len(arr)-1] != from_ex {
+		if ext := strings.Replace(filepath.Ext(path), ".", "", -1); info.IsDir() || ext != from_ex {
 			return nil
 		}
 
@@ -31,10 +32,8 @@ func Cmd(dirpath string, from_ex string, to_ex string) {
 }
 
 func convert(before_path string, to_ex string) {
-	arr := strings.Split(before_path, ".")
-	// 拡張子以外"ドット"を使っていないと仮定
-	after_path := arr[0] + "." + to_ex
-	before_ex := arr[len(arr)-1]
+	before_ex := strings.Replace(filepath.Ext(before_path), ".", "", -1)
+	after_path := strings.Replace(before_path, before_ex, to_ex, -1)
 	f, err := os.Open(before_path)
 	fmt.Println(before_path, "before_path")
 	defer f.Close()
