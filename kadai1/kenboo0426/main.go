@@ -7,14 +7,14 @@ import (
 )
 
 func main() {
-	dirpath := flag.String("path", "/", "パスを指定する")
-	from := flag.String("from", "jpg", "変換前の形式を指定する")
-	to := flag.String("to", "png", "変換後の形式を指定する")
+	dirpath := flag.String("path", "/", "Enter the path")
+	from := flag.String("from", "jpg", "Enter the img extension before conversion")
+	to := flag.String("to", "png", "Enter the img extension after conversion")
 	flag.Parse()
 
 	if dirpath == nil {
 		log.Fatal("パスを指定する")
 	}
 
-	imgconv.Cmd(*dirpath, *from, *to)
+	imgconv.ConvertExtensions(*dirpath, *from, *to)
 }
