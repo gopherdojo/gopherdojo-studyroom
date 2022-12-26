@@ -36,7 +36,6 @@ func convert(before_path string, to_ex string) {
 	before_ex := strings.Replace(filepath.Ext(before_path), ".", "", -1)
 	after_path := strings.Replace(before_path, before_ex, to_ex, -1)
 	f, err := os.Open(before_path)
-	fmt.Println(before_path, "before_path")
 	defer func() {
 		if err := f.Close(); err != nil {
 			log.Fatal(err)
