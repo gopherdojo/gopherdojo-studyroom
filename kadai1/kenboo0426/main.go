@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 
 	if dirpath == nil {
-		log.Fatal("パスを指定する")
+		log.Fatal("Enter the path")
 	}
 
 	imgconv.ConvertExtensions(*dirpath, *from, *to)

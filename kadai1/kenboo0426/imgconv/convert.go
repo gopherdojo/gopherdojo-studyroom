@@ -6,6 +6,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,7 +37,11 @@ func convert(before_path string, to_ex string) {
 	after_path := strings.Replace(before_path, before_ex, to_ex, -1)
 	f, err := os.Open(before_path)
 	fmt.Println(before_path, "before_path")
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	if err != nil {
 		fmt.Println("open:", err)
 		return
@@ -47,7 +52,11 @@ func convert(before_path string, to_ex string) {
 		return
 	}
 	fso, err := os.Create(after_path)
-	defer fso.Close()
+	defer func() {
+		if err := fso.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	if err != nil {
 		fmt.Println("create:", err)
 		return
@@ -55,12 +64,15 @@ func convert(before_path string, to_ex string) {
 
 	switch before_ex {
 	case "jpeg", "jpg":
-		jpeg.Encode(fso, img, &jpeg.Options{})
+		err = jpeg.Encode(fso, img, &jpeg.Options{})
 	case "png":
-		png.Encode(fso, img)
+		err = png.Encode(fso, img)
 	case "gif":
-		gif.Encode(fso, img, &gif.Options{})
+		err = gif.Encode(fso, img, &gif.Options{})
 	default:
 		fmt.Println("その変換前の形式は対応していません")
+	}
+	if err != nil {
+		fmt.Println("encode:", err)
 	}
 }
